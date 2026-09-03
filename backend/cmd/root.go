@@ -10,9 +10,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "parkin backend",
-	Short: "API Parkin Backend",
-	Long:  "API Parkin Backend",
+	Use:   "desa backend",
+	Short: "API Backend Desa Bahontobungku",
+	Long:  "Backend untuk Sistem Informasi Web Desa (hybrid e-government)",
 }
 
 func Execute() {
