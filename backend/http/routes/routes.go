@@ -82,9 +82,20 @@ func RegisterRoutes(application app.App) http.Handler {
 		penduduk.GET("/", application.PendudukHandler.GetAll)
 		penduduk.GET("/nik/:nik", application.PendudukHandler.GetByNIK)
 		penduduk.POST("/", application.PendudukHandler.Create)
-		penduduk.PUT("/update", application.PendudukHandler.Update)
+		penduduk.PUT("/update/:nik", application.PendudukHandler.Update)
 		penduduk.DELETE("/delete/:nik", application.PendudukHandler.Delete)
 		penduduk.GET("/kepala-keluarga", application.PendudukHandler.GetKepalaKeluarga)
+	}
+
+	suratTemplate := v1.Group("/surat-template")
+	suratTemplate.Use(middlewares.AuthMiddleware())
+	{
+		suratTemplate.POST("/", application.SuratTemplateHandler.Create)
+		suratTemplate.GET("/", application.SuratTemplateHandler.GetAll)
+		suratTemplate.GET("/:id", application.SuratTemplateHandler.GetByID)
+		suratTemplate.PUT("/:id", application.SuratTemplateHandler.Update)
+		suratTemplate.DELETE("/:id", application.SuratTemplateHandler.Delete)
+		suratTemplate.PUT("/:id/toggle-status", application.SuratTemplateHandler.ToggleStatus)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

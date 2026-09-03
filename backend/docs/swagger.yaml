@@ -137,9 +137,6 @@ definitions:
       new_nik:
         example: "7371015001820002"
         type: string
-      nik:
-        example: "7371015001820001"
-        type: string
       status:
         example: kepala keluarga
         type: string
@@ -149,8 +146,6 @@ definitions:
       tempat_lahir:
         example: Palu
         type: string
-    required:
-    - nik
     type: object
   dto.RefreshTokenRequestDTO:
     properties:
@@ -191,6 +186,30 @@ definitions:
       total:
         example: 150
         type: integer
+    type: object
+  dto.SuratTemplateResponseDTO:
+    properties:
+      created_at:
+        type: string
+      deskripsi:
+        type: string
+      file_template:
+        example: templates/SK_DOMISILI.html.enc
+        type: string
+      id:
+        example: 1
+        type: integer
+      kode:
+        example: SK_DOMISILI
+        type: string
+      nama_template:
+        example: Surat Keterangan Domisili
+        type: string
+      status:
+        example: aktif
+        type: string
+      updated_at:
+        type: string
     type: object
   dto.TransferSuperadminRequestDTO:
     properties:
@@ -628,11 +647,16 @@ paths:
       summary: Statistik umur
       tags:
       - stats
-  /penduduk/update:
+  /penduduk/update/{nik}:
     put:
       consumes:
       - application/json
       parameters:
+      - description: NIK penduduk yang akan di-update
+        in: path
+        name: nik
+        required: true
+        type: string
       - description: Data update
         in: body
         name: request
@@ -663,6 +687,241 @@ paths:
       summary: Update data penduduk
       tags:
       - penduduk
+  /surat-template:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SuratTemplateResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all template surat
+      tags:
+      - surat-template
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload file template HTML (.html) form-data multipart: field file_template,
+        kode, nama_template, deskripsi, status. File dienkripsi menjadi .html.enc'
+      parameters:
+      - description: File template HTML
+        in: formData
+        name: file_template
+        required: true
+        type: file
+      - description: Kode unik template
+        example: SK_DOMISILI
+        in: formData
+        name: kode
+        required: true
+        type: string
+      - description: Nama template
+        example: '"Surat Keterangan Domisili"'
+        in: formData
+        name: nama_template
+        required: true
+        type: string
+      - description: Deskripsi template
+        in: formData
+        name: deskripsi
+        type: string
+      - description: aktif / nonaktif
+        example: aktif
+        in: formData
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah template surat baru
+      tags:
+      - surat-template
+  /surat-template/{id}:
+    delete:
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus template surat
+      tags:
+      - surat-template
+    get:
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SuratTemplateResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get template surat by id
+      tags:
+      - surat-template
+    put:
+      consumes:
+      - multipart/form-data
+      description: Upload multipart, file_template opsional. Jika tidak diupload,
+        file lama dipertahankan
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Kode unik template
+        example: SK_DOMISILI
+        in: formData
+        name: kode
+        required: true
+        type: string
+      - description: File template HTML (opsional)
+        in: formData
+        name: file_template
+        type: file
+      - description: Nama template
+        example: '"Surat Keterangan Domisili"'
+        in: formData
+        name: nama_template
+        type: string
+      - description: Deskripsi template
+        in: formData
+        name: deskripsi
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update template surat
+      tags:
+      - surat-template
+  /surat-template/{id}/toggle-status:
+    put:
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Toggle status template (aktif/nonaktif)
+      tags:
+      - surat-template
   /user/{id}:
     delete:
       parameters:

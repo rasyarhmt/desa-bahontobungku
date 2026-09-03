@@ -671,7 +671,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/penduduk/update": {
+        "/penduduk/update/{nik}": {
             "put": {
                 "security": [
                     {
@@ -690,6 +690,13 @@ const docTemplate = `{
                 "summary": "Update data penduduk",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "NIK penduduk yang akan di-update",
+                        "name": "nik",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Data update",
                         "name": "request",
                         "in": "body",
@@ -697,6 +704,376 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.PendudukUpdateRequestDTO"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-template": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Get all template surat",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.SuratTemplateResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload file template HTML (.html) form-data multipart: field file_template, kode, nama_template, deskripsi, status. File dienkripsi menjadi .html.enc",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Tambah template surat baru",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File template HTML",
+                        "name": "file_template",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "SK_DOMISILI",
+                        "description": "Kode unik template",
+                        "name": "kode",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Surat Keterangan Domisili\"",
+                        "description": "Nama template",
+                        "name": "nama_template",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Deskripsi template",
+                        "name": "deskripsi",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "aktif",
+                        "description": "aktif / nonaktif",
+                        "name": "status",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-template/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Get template surat by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SuratTemplateResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multipart, file_template opsional. Jika tidak diupload, file lama dipertahankan",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Update template surat",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "SK_DOMISILI",
+                        "description": "Kode unik template",
+                        "name": "kode",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File template HTML (opsional)",
+                        "name": "file_template",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Surat Keterangan Domisili\"",
+                        "description": "Nama template",
+                        "name": "nama_template",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Deskripsi template",
+                        "name": "deskripsi",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Hapus template surat",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-template/{id}/toggle-status": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Toggle status template (aktif/nonaktif)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1251,9 +1628,6 @@ const docTemplate = `{
         },
         "dto.PendudukUpdateRequestDTO": {
             "type": "object",
-            "required": [
-                "nik"
-            ],
             "properties": {
                 "agama": {
                     "type": "string",
@@ -1277,10 +1651,6 @@ const docTemplate = `{
                 "new_nik": {
                     "type": "string",
                     "example": "7371015001820002"
-                },
-                "nik": {
-                    "type": "string",
-                    "example": "7371015001820001"
                 },
                 "status": {
                     "type": "string",
@@ -1352,6 +1722,40 @@ const docTemplate = `{
                 "total": {
                     "type": "integer",
                     "example": 150
+                }
+            }
+        },
+        "dto.SuratTemplateResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deskripsi": {
+                    "type": "string"
+                },
+                "file_template": {
+                    "type": "string",
+                    "example": "templates/SK_DOMISILI.html.enc"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "kode": {
+                    "type": "string",
+                    "example": "SK_DOMISILI"
+                },
+                "nama_template": {
+                    "type": "string",
+                    "example": "Surat Keterangan Domisili"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "aktif"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
