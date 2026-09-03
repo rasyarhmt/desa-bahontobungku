@@ -1,0 +1,889 @@
+basePath: /api/v1
+definitions:
+  domain.HttpResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: Success
+        type: string
+    type: object
+  dto.AddUserRequestDTO:
+    properties:
+      email:
+        example: budi@desa.test
+        type: string
+      nama:
+        example: Budi Santoso
+        type: string
+      password:
+        example: Rahasia123!
+        minLength: 8
+        type: string
+    required:
+    - email
+    - nama
+    - password
+    type: object
+  dto.LoginRequestDTO:
+    properties:
+      email:
+        example: admin@desa.test
+        type: string
+      password:
+        example: Rahasia123!
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.LoginResponseDTO:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      refresh_token:
+        example: dGhpc0lzUmVmcmVGb2tlblRva2Vu...
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserResponseDTO'
+    type: object
+  dto.PendudukRequestDTO:
+    properties:
+      agama:
+        example: Islam
+        type: string
+      alamat:
+        example: Jl. Sudirman No. 10
+        type: string
+      id_kepalakeluarga:
+        type: integer
+      jenis_kelamin:
+        example: laki-laki
+        type: string
+      nama:
+        example: Ahmad Fauzi
+        type: string
+      nik:
+        example: "7371015001820001"
+        type: string
+      status:
+        example: kepala keluarga
+        type: string
+      tanggal_lahir:
+        example: 15-08-1990
+        type: string
+      tempat_lahir:
+        example: Palu
+        type: string
+    required:
+    - jenis_kelamin
+    - nama
+    - nik
+    type: object
+  dto.PendudukResponseDTO:
+    properties:
+      agama:
+        example: Islam
+        type: string
+      alamat:
+        example: Jl. Sudirman No. 10
+        type: string
+      id:
+        example: 1
+        type: integer
+      id_kepalakeluarga:
+        type: integer
+      jenis_kelamin:
+        example: laki-laki
+        type: string
+      nama:
+        example: Ahmad Fauzi
+        type: string
+      nama_kepalakeluarga:
+        example: Suardi
+        type: string
+      nik:
+        example: "7371015001820001"
+        type: string
+      status:
+        example: kepala keluarga
+        type: string
+      tanggal_lahir:
+        example: 15-08-1990
+        type: string
+      tempat_lahir:
+        example: Palu
+        type: string
+    type: object
+  dto.PendudukUpdateRequestDTO:
+    properties:
+      agama:
+        example: Islam
+        type: string
+      alamat:
+        example: Jl. Gatot Subroto No. 5
+        type: string
+      id_kepalakeluarga:
+        type: integer
+      jenis_kelamin:
+        example: laki-laki
+        type: string
+      nama:
+        example: Ahmad Fauzi Baru
+        type: string
+      new_nik:
+        example: "7371015001820002"
+        type: string
+      nik:
+        example: "7371015001820001"
+        type: string
+      status:
+        example: kepala keluarga
+        type: string
+      tanggal_lahir:
+        example: 15-08-1990
+        type: string
+      tempat_lahir:
+        example: Palu
+        type: string
+    required:
+    - nik
+    type: object
+  dto.RefreshTokenRequestDTO:
+    properties:
+      refresh_token:
+        example: dGhpc0lzUmVmcmVGb2tlblRva2Vu...
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.RefreshTokenResponseDTO:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      refresh_token:
+        example: dGhpc0lzUmVmcmVGb2tlblRva2Vu...
+        type: string
+    type: object
+  dto.ReligiStatsDTO:
+    properties:
+      agama:
+        example: Islam
+        type: string
+      jumlah:
+        example: 120
+        type: integer
+    type: object
+  dto.ResetPasswordRequestDTO:
+    properties:
+      email:
+        example: budi@desa.test
+        type: string
+    required:
+    - email
+    type: object
+  dto.StatCountDTO:
+    properties:
+      total:
+        example: 150
+        type: integer
+    type: object
+  dto.TransferSuperadminRequestDTO:
+    properties:
+      to_id:
+        example: 2
+        type: integer
+    required:
+    - to_id
+    type: object
+  dto.UmurStatsDTO:
+    properties:
+      jumlah:
+        example: 45
+        type: integer
+      rentang:
+        example: 18-30
+        type: string
+    type: object
+  dto.UpdateProfileRequestDTO:
+    properties:
+      nama:
+        example: Budi Santoso
+        type: string
+      password:
+        example: Baru12345!
+        type: string
+    type: object
+  dto.UserResponseDTO:
+    properties:
+      email:
+        example: admin@desa.test
+        type: string
+      id:
+        example: 1
+        type: integer
+      last_login:
+        type: string
+      nama:
+        example: Super Admin
+        type: string
+      role:
+        example: superadmin
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Backend API Sistem Informasi Desa Bahontobungku
+  title: Desa Bahontobungku API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LoginResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Login admin
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout admin
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RefreshTokenResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Refresh access token
+      tags:
+      - auth
+  /penduduk:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PendudukResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all penduduk
+      tags:
+      - penduduk
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data penduduk
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PendudukRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah penduduk baru
+      tags:
+      - penduduk
+  /penduduk/delete/{nik}:
+    delete:
+      parameters:
+      - description: NIK penduduk
+        in: path
+        name: nik
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus penduduk
+      tags:
+      - penduduk
+  /penduduk/kepala-keluarga:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PendudukResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all kepala keluarga
+      tags:
+      - penduduk
+  /penduduk/nik/{nik}:
+    get:
+      parameters:
+      - description: NIK penduduk
+        in: path
+        name: nik
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PendudukResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Cari penduduk by NIK
+      tags:
+      - penduduk
+  /penduduk/stats/agama:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ReligiStatsDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Statistik agama
+      tags:
+      - stats
+  /penduduk/stats/kepala-keluarga:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StatCountDTO'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Total kepala keluarga
+      tags:
+      - stats
+  /penduduk/stats/laki-laki:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StatCountDTO'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Total laki-laki
+      tags:
+      - stats
+  /penduduk/stats/perempuan:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StatCountDTO'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Total perempuan
+      tags:
+      - stats
+  /penduduk/stats/total:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StatCountDTO'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Total penduduk
+      tags:
+      - stats
+  /penduduk/stats/umur:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.UmurStatsDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Statistik umur
+      tags:
+      - stats
+  /penduduk/update:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PendudukUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update data penduduk
+      tags:
+      - penduduk
+  /user/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus admin
+      tags:
+      - user
+  /user/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data admin baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddUserRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah admin baru
+      tags:
+      - user
+  /user/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.UserResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all admin
+      tags:
+      - user
+  /user/current-user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponseDTO'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user
+      tags:
+      - user
+  /user/reset-password:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Email user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResetPasswordRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Reset password ke default
+      tags:
+      - user
+  /user/transfer-superadmin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Target user ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TransferSuperadminRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Transfer superadmin
+      tags:
+      - user
+  /user/update:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProfileRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update profile
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,9 +1,7 @@
 package domain
 
-type (
-	HttpResponse struct {
-		Code    int         `json:"code"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data,omitempty"`
-	}
-)
+type HttpResponse struct {
+	Code    int         `json:"code" example:"200"`
+	Message string      `json:"message" example:"Success"`
+	Data    interface{} `json:"data,omitempty"`
+}

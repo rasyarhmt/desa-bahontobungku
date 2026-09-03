@@ -19,6 +19,17 @@ func NewPendudukHandler(pendudukUsecase domain.PendudukUsecase) domain.PendudukH
 	return &pendudukHandler{pendudukUsecase: pendudukUsecase}
 }
 
+// Create godoc
+// @Summary      Tambah penduduk baru
+// @Tags         penduduk
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      dto.PendudukRequestDTO  true  "Data penduduk"
+// @Success      201      {object}  domain.HttpResponse
+// @Failure      400      {object}  domain.HttpResponse
+// @Failure      401      {object}  domain.HttpResponse
+// @Router       /penduduk [post]
 func (h *pendudukHandler) Create(c *gin.Context) {
 	var req dto.PendudukRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
@@ -44,6 +55,17 @@ func (h *pendudukHandler) Create(c *gin.Context) {
 	})
 }
 
+// GetByNIK godoc
+// @Summary      Cari penduduk by NIK
+// @Tags         penduduk
+// @Produce      json
+// @Security     BearerAuth
+// @Param        nik   path      string  true  "NIK penduduk"
+// @Success      200   {object}  domain.HttpResponse{data=dto.PendudukResponseDTO}
+// @Failure      400   {object}  domain.HttpResponse
+// @Failure      401   {object}  domain.HttpResponse
+// @Failure      404   {object}  domain.HttpResponse
+// @Router       /penduduk/nik/{nik} [get]
 func (h *pendudukHandler) GetByNIK(c *gin.Context) {
 	nik := strings.TrimSpace(c.Param("nik"))
 	if nik == "" {
@@ -75,6 +97,15 @@ func (h *pendudukHandler) GetByNIK(c *gin.Context) {
 	})
 }
 
+// GetAll godoc
+// @Summary      Get all penduduk
+// @Tags         penduduk
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  domain.HttpResponse{data=[]dto.PendudukResponseDTO}
+// @Failure      401  {object}  domain.HttpResponse
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk [get]
 func (h *pendudukHandler) GetAll(c *gin.Context) {
 	list, err := h.pendudukUsecase.GetAll(c.Request.Context())
 	if err != nil {
@@ -93,6 +124,15 @@ func (h *pendudukHandler) GetAll(c *gin.Context) {
 	})
 }
 
+// GetKepalaKeluarga godoc
+// @Summary      Get all kepala keluarga
+// @Tags         penduduk
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  domain.HttpResponse{data=[]dto.PendudukResponseDTO}
+// @Failure      401  {object}  domain.HttpResponse
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/kepala-keluarga [get]
 func (h *pendudukHandler) GetKepalaKeluarga(c *gin.Context) {
 	list, err := h.pendudukUsecase.GetKepalaKeluarga(c.Request.Context())
 	if err != nil {
@@ -111,6 +151,18 @@ func (h *pendudukHandler) GetKepalaKeluarga(c *gin.Context) {
 	})
 }
 
+// Update godoc
+// @Summary      Update data penduduk
+// @Tags         penduduk
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      dto.PendudukUpdateRequestDTO  true  "Data update"
+// @Success      200      {object}  domain.HttpResponse
+// @Failure      400      {object}  domain.HttpResponse
+// @Failure      401      {object}  domain.HttpResponse
+// @Failure      404      {object}  domain.HttpResponse
+// @Router       /penduduk/update [put]
 func (h *pendudukHandler) Update(c *gin.Context) {
 	var req dto.PendudukUpdateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
@@ -144,6 +196,17 @@ func (h *pendudukHandler) Update(c *gin.Context) {
 	})
 }
 
+// Delete godoc
+// @Summary      Hapus penduduk
+// @Tags         penduduk
+// @Produce      json
+// @Security     BearerAuth
+// @Param        nik   path      string  true  "NIK penduduk"
+// @Success      200   {object}  domain.HttpResponse
+// @Failure      400   {object}  domain.HttpResponse
+// @Failure      401   {object}  domain.HttpResponse
+// @Failure      404   {object}  domain.HttpResponse
+// @Router       /penduduk/delete/{nik} [delete]
 func (h *pendudukHandler) Delete(c *gin.Context) {
 	nik := strings.TrimSpace(c.Param("nik"))
 	if nik == "" {
@@ -173,6 +236,13 @@ func (h *pendudukHandler) Delete(c *gin.Context) {
 	})
 }
 
+// GetTotalStats godoc
+// @Summary      Total penduduk
+// @Tags         stats
+// @Produce      json
+// @Success      200  {object}  domain.HttpResponse{data=dto.StatCountDTO}
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/stats/total [get]
 func (h *pendudukHandler) GetTotalStats(c *gin.Context) {
 	total, err := h.pendudukUsecase.CountTotal(c.Request.Context())
 	if err != nil {
@@ -191,6 +261,13 @@ func (h *pendudukHandler) GetTotalStats(c *gin.Context) {
 	})
 }
 
+// GetKepalaKeluargaStats godoc
+// @Summary      Total kepala keluarga
+// @Tags         stats
+// @Produce      json
+// @Success      200  {object}  domain.HttpResponse{data=dto.StatCountDTO}
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/stats/kepala-keluarga [get]
 func (h *pendudukHandler) GetKepalaKeluargaStats(c *gin.Context) {
 	total, err := h.pendudukUsecase.CountKepalaKeluarga(c.Request.Context())
 	if err != nil {
@@ -209,6 +286,13 @@ func (h *pendudukHandler) GetKepalaKeluargaStats(c *gin.Context) {
 	})
 }
 
+// GetLakiLakiStats godoc
+// @Summary      Total laki-laki
+// @Tags         stats
+// @Produce      json
+// @Success      200  {object}  domain.HttpResponse{data=dto.StatCountDTO}
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/stats/laki-laki [get]
 func (h *pendudukHandler) GetLakiLakiStats(c *gin.Context) {
 	total, err := h.pendudukUsecase.CountLakiLaki(c.Request.Context())
 	if err != nil {
@@ -227,6 +311,13 @@ func (h *pendudukHandler) GetLakiLakiStats(c *gin.Context) {
 	})
 }
 
+// GetPerempuanStats godoc
+// @Summary      Total perempuan
+// @Tags         stats
+// @Produce      json
+// @Success      200  {object}  domain.HttpResponse{data=dto.StatCountDTO}
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/stats/perempuan [get]
 func (h *pendudukHandler) GetPerempuanStats(c *gin.Context) {
 	total, err := h.pendudukUsecase.CountPerempuan(c.Request.Context())
 	if err != nil {
@@ -245,6 +336,13 @@ func (h *pendudukHandler) GetPerempuanStats(c *gin.Context) {
 	})
 }
 
+// GetReligiStats godoc
+// @Summary      Statistik agama
+// @Tags         stats
+// @Produce      json
+// @Success      200  {object}  domain.HttpResponse{data=[]dto.ReligiStatsDTO}
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/stats/agama [get]
 func (h *pendudukHandler) GetReligiStats(c *gin.Context) {
 	stats, err := h.pendudukUsecase.GetReligiStats(c.Request.Context())
 	if err != nil {
@@ -263,6 +361,13 @@ func (h *pendudukHandler) GetReligiStats(c *gin.Context) {
 	})
 }
 
+// GetUmurStats godoc
+// @Summary      Statistik umur
+// @Tags         stats
+// @Produce      json
+// @Success      200  {object}  domain.HttpResponse{data=[]dto.UmurStatsDTO}
+// @Failure      500  {object}  domain.HttpResponse
+// @Router       /penduduk/stats/umur [get]
 func (h *pendudukHandler) GetUmurStats(c *gin.Context) {
 	stats, err := h.pendudukUsecase.GetUmurStats(c.Request.Context())
 	if err != nil {

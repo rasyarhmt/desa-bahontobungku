@@ -10,6 +10,8 @@ import (
 	"github.com/rasyarhmt/desa-bahontobungku/config"
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 	"github.com/rasyarhmt/desa-bahontobungku/http/middlewares"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func health(c *gin.Context) {
@@ -84,6 +86,8 @@ func RegisterRoutes(application app.App) http.Handler {
 		penduduk.DELETE("/delete/:nik", application.PendudukHandler.Delete)
 		penduduk.GET("/kepala-keluarga", application.PendudukHandler.GetKepalaKeluarga)
 	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }
