@@ -14,7 +14,7 @@ type (
 	}
 
 	PendudukUpdateRequestDTO struct {
-		NIK              string  `json:"nik" binding:"required" example:"7371015001820001"`
+		NIK              string  `json:"-"`
 		NewNIK           *string `json:"new_nik" example:"7371015001820002"`
 		Nama             *string `json:"nama" example:"Ahmad Fauzi Baru"`
 		Alamat           *string `json:"alamat" example:"Jl. Gatot Subroto No. 5"`

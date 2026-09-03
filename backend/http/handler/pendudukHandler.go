@@ -157,12 +157,13 @@ func (h *pendudukHandler) GetKepalaKeluarga(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
+// @Param        nik      path      string                    true  "NIK penduduk yang akan di-update"
 // @Param        request  body      dto.PendudukUpdateRequestDTO  true  "Data update"
 // @Success      200      {object}  domain.HttpResponse
 // @Failure      400      {object}  domain.HttpResponse
 // @Failure      401      {object}  domain.HttpResponse
 // @Failure      404      {object}  domain.HttpResponse
-// @Router       /penduduk/update [put]
+// @Router       /penduduk/update/{nik} [put]
 func (h *pendudukHandler) Update(c *gin.Context) {
 	var req dto.PendudukUpdateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
@@ -173,9 +174,7 @@ func (h *pendudukHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if paramNIK := strings.TrimSpace(c.Param("nik")); paramNIK != "" {
-		req.NIK = paramNIK
-	}
+	req.NIK = strings.TrimSpace(c.Param("nik"))
 
 	if err := h.pendudukUsecase.Update(c.Request.Context(), req); err != nil {
 		logrus.WithError(err).Error("handler.Penduduk.Update: failed")
