@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/rasyarhmt/desa-bahontobungku/config"
@@ -45,6 +46,8 @@ func (u *authUsecase) Login(ctx context.Context, req dto.LoginRequestDTO, userAg
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println("ini di hit fungsi login")
 
 	return &dto.LoginResponseDTO{
 		User: dto.UserResponseDTO{

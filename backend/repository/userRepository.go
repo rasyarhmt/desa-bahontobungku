@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
@@ -40,7 +41,7 @@ func scanUser(row interface {
 
 func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	row := r.db.QueryRowContext(ctx,
-		"SELECT id, nama, email, password, role, last_login, created_at, updated_at FROM users WHERE email = ?", email)
+		"SELECT id, nama, email, password, role, last_login, created_at, updated_at FROM user WHERE email = ?", email)
 
 	u, err := scanUser(row)
 	if err != nil {
@@ -49,12 +50,13 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 		}
 		return nil, err
 	}
+	fmt.Println("ini di get user by email")
 	return u, nil
 }
 
 func (r *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
 	row := r.db.QueryRowContext(ctx,
-		"SELECT id, nama, email, password, role, last_login, created_at, updated_at FROM users WHERE id = ?", id)
+		"SELECT id, nama, email, password, role, last_login, created_at, updated_at FROM user WHERE id = ?", id)
 
 	u, err := scanUser(row)
 	if err != nil {
@@ -68,7 +70,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User,
 
 func (r *userRepository) GetAllUsers(ctx context.Context) ([]domain.User, error) {
 	rows, err := r.db.QueryContext(ctx,
-		"SELECT id, nama, email, password, role, last_login, created_at, updated_at FROM users ORDER BY id ASC")
+		"SELECT id, nama, email, password, role, last_login, created_at, updated_at FROM user ORDER BY id ASC")
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +114,7 @@ func (r *userRepository) UpdateLastLogin(ctx context.Context, id int, lastLogin 
 }
 
 func (r *userRepository) DeleteUser(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM users WHERE id = ?", id)
+	result, err := r.db.ExecContext(ctx, "DELETE FROM user WHERE id = ?", id)
 	if err != nil {
 		return false, err
 	}
