@@ -1,6 +1,6 @@
 -- +migrate Up
 
-CREATE TABLE `users` (
+CREATE TABLE `user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nama` VARCHAR(100) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
@@ -106,6 +106,7 @@ CREATE TABLE `penduduk` (
   `alamat` TEXT DEFAULT NULL,
   `tanggalLahir` VARCHAR(255) DEFAULT NULL,
   `tempatLahir` VARCHAR(255) DEFAULT NULL,
+  `nomor_kk` VARCHAR(255) DEFAULT NULL,
   `jenisKelamin` ENUM('laki-laki','perempuan') NOT NULL,
   `agama` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('kepala keluarga','istri','anak','mertua','cucu','menantu') DEFAULT NULL, -- Typo 'mentantu' diperbaiki
@@ -170,7 +171,8 @@ CREATE TABLE `log_cetak_surat` (
   `id_pelayanan` INT DEFAULT NULL,
   `nama_pemohon` VARCHAR(255) DEFAULT NULL,
   `nik_pemohon` VARCHAR(255) DEFAULT NULL,
-  `data_placeholder` JSON DEFAULT NULL,
+  `file` VARCHAR(255) DEFAULT NULL,
+  `nomor_surat` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('dicetak', 'diresmikan') NOT NULL DEFAULT 'dicetak', 
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

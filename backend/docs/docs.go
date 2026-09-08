@@ -15,6 +15,388 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/aparatur": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aparatur"
+                ],
+                "summary": "Get semua aparatur (urut struktur jabatan)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.AparaturResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload foto via form-data multipart (opsional): field foto, nama, nip, jabatan, telepon. Foto disimpan polos di uploads/aparatur",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aparatur"
+                ],
+                "summary": "Tambah aparatur desa",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Foto aparatur (jpg/png/webp, maks 5MB)",
+                        "name": "foto",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama aparatur",
+                        "name": "nama",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "NIP",
+                        "name": "nip",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Jabatan",
+                        "name": "jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nomor telepon",
+                        "name": "telepon",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AparaturResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/aparatur/nip/{nip}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aparatur"
+                ],
+                "summary": "Get aparatur by NIP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "NIP aparatur",
+                        "name": "nip",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AparaturResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/aparatur/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aparatur"
+                ],
+                "summary": "Get aparatur by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID aparatur",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AparaturResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multipart; foto opsional (jika diupload, foto lama diganti)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aparatur"
+                ],
+                "summary": "Update aparatur",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID aparatur",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Foto aparatur (opsional)",
+                        "name": "foto",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama aparatur",
+                        "name": "nama",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "NIP",
+                        "name": "nip",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Jabatan",
+                        "name": "jabatan",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nomor telepon",
+                        "name": "telepon",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "aparatur"
+                ],
+                "summary": "Hapus aparatur",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID aparatur",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "consumes": [
@@ -172,6 +554,2236 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/berita": {
+            "get": {
+                "description": "Hanya berita dengan status dipublikasi yang dikembalikan (publik)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Get berita terpublikasi",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload foto via form-data multipart (opsional): field foto, judul, isi, tanggalTerbit, penulis, status. Foto disimpan polos di uploads/berita (konten publik)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Tambah berita baru",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Foto berita (jpg/png/webp/gif, maks 5MB)",
+                        "name": "foto",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Judul berita",
+                        "name": "judul",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Isi berita",
+                        "name": "isi",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-09-05",
+                        "description": "Tanggal terbit",
+                        "name": "tanggalTerbit",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Penulis",
+                        "name": "penulis",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "dipublikasi",
+                        "description": "status (draft/dipublikasi)",
+                        "name": "status",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/berita/admin": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Get semua berita (termasuk draft)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/berita/admin/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Get berita by id (termasuk draft)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID berita",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/berita/status/{status}": {
+            "get": {
+                "description": "Status publik hanya dipublikasi; status lain mengembalikan daftar kosong",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Get berita by status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Status berita (dipublikasi)",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/berita/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Get berita by id (hanya terpublikasi)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID berita",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multipart, foto opsional. Jika deleteFoto=true, foto lama dihapus. Jika diupload foto baru, foto lama diganti",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Update berita",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID berita",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Foto berita (opsional)",
+                        "name": "foto",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Judul berita",
+                        "name": "judul",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Isi berita",
+                        "name": "isi",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-09-05",
+                        "description": "Tanggal terbit",
+                        "name": "tanggalTerbit",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Penulis",
+                        "name": "penulis",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "status (draft/dipublikasi)",
+                        "name": "status",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "Hapus foto yang ada",
+                        "name": "deleteFoto",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Hapus berita",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID berita",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/berita/{id}/toggle-status": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "berita"
+                ],
+                "summary": "Toggle status berita (draft \u003c-\u003e dipublikasi)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID berita",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BeritaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dana/apbdes/dana-keluar": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Get semua dana keluar",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.DanaKeluarResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Tambah data dana keluar (pengeluaran APBDes)",
+                "parameters": [
+                    {
+                        "description": "Data dana keluar",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DanaKeluarCreateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DanaKeluarResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dana/apbdes/dana-keluar/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Get dana keluar by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID dana keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DanaKeluarResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Update dana keluar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID dana keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data dana keluar (partial)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DanaKeluarUpdateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Hapus dana keluar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID dana keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dana/apbdes/dana-masuk": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Get semua dana masuk",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.DanaMasukResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Tambah data dana masuk (pemasukan APBDes)",
+                "parameters": [
+                    {
+                        "description": "Data dana masuk",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DanaMasukCreateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DanaMasukResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dana/apbdes/dana-masuk/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Get dana masuk by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID dana masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DanaMasukResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Update dana masuk",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID dana masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data dana masuk (partial)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DanaMasukUpdateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Hapus dana masuk",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID dana masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dana/apbdes/detail/{tahun}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Get detail APBDes per tahun (per bulan)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tahun",
+                        "name": "tahun",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DanaDetailDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dana/apbdes/summary/{tahun}": {
+            "get": {
+                "description": "Mengembalikan [{tipe: Pemasukan, tahun, total}, {tipe: Pengeluaran, tahun, total}]",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dana"
+                ],
+                "summary": "Get ringkasan APBDes per tahun",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tahun",
+                        "name": "tahun",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.DanaSummaryItemDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Get all log cetak surat",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.LogCetakSuratResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat/surat/{kode_unik}/file": {
+            "get": {
+                "produces": [
+                    "application/pdf"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Download surat (PDF) via kode unik (warga)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kode unik surat",
+                        "name": "kode_unik",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat/verifikasi/{kode_unik}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Verifikasi surat via kode unik (publik)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kode unik registrasi surat",
+                        "name": "kode_unik",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.LogCetakSuratVerifikasiDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat/verifikasi/{kode_unik}/qr": {
+            "get": {
+                "description": "Menghasilkan QR PNG berisi URL verifikasi utk kode_unik. Disisipkan saat mencetak surat",
+                "produces": [
+                    "image/png"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "QR verifikasi surat (publik)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kode unik registrasi surat",
+                        "name": "kode_unik",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Get log cetak surat by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID log cetak surat",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.LogCetakSuratResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat/{id}/file": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/pdf"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Download surat (PDF) by id (admin)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID log cetak surat",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/log-cetak-surat/{id}/resmikan": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Resmikan surat (isi nomor surat, status dicetak -\u003e diresmikan)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID log cetak surat",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Nomor surat",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResmikanSuratRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/media": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "media"
+                ],
+                "summary": "Get semua media",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.MediaResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload via form-data multipart: file (wajib), thumbnail (wajib untuk video), nama, tipe (foto/video/dokumen), deskripsi. File disimpan polos di uploads/media (galeri publik)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "media"
+                ],
+                "summary": "Tambah media (foto/video/dokumen)",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File media",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Thumbnail (wajib untuk tipe video)",
+                        "name": "thumbnail",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama media",
+                        "name": "nama",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "foto",
+                        "description": "Tipe (foto/video/dokumen)",
+                        "name": "tipe",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Deskripsi",
+                        "name": "deskripsi",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MediaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/media/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "media"
+                ],
+                "summary": "Get media by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID media",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MediaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multipart; file opsional (jika diupload, file lama diganti). Field nama/tipe/deskripsi jan opsional",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "media"
+                ],
+                "summary": "Update media",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID media",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File media baru (opsional)",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama media",
+                        "name": "nama",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tipe (foto/video/dokumen)",
+                        "name": "tipe",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Deskripsi",
+                        "name": "deskripsi",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "media"
+                ],
+                "summary": "Hapus media",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID media",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pelayanan": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Get all pelayanan",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PelayananResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Tambah pelayanan baru",
+                "parameters": [
+                    {
+                        "description": "Data pelayanan",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PelayananCreateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pelayanan/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Get pelayanan by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pelayanan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PelayananResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Update pelayanan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pelayanan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data pelayanan",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PelayananUpdateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Hapus pelayanan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pelayanan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pelayanan/{id}/surat": {
+            "post": {
+                "description": "Warga mengisi data sesuai template pelayanan. Backend me-render template HTML, konversi ke PDF, simpan terenkripsi, lalu membuat log cetak surat (status dicetak) dgn kode_unik + QR utk verifikasi publik",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log-cetak-surat"
+                ],
+                "summary": "Ajukan surat dari pelayanan (warga)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pelayanan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data surat",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AjukanSuratRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AjukanSuratResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pelayanan/{id}/toggle-status": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Toggle status pelayanan (aktif/nonaktif)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pelayanan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/domain.HttpResponse"
                         }
@@ -711,6 +3323,1049 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pengumuman": {
+            "get": {
+                "description": "Daftar pengumuman untuk publik, diurutkan tanggalMulai terbaru",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengumuman"
+                ],
+                "summary": "Get semua pengumuman",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PengumumanResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengumuman"
+                ],
+                "summary": "Tambah pengumuman baru",
+                "parameters": [
+                    {
+                        "description": "Data pengumuman",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PengumumanCreateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PengumumanResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pengumuman/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengumuman"
+                ],
+                "summary": "Get pengumuman by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pengumuman",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PengumumanResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengumuman"
+                ],
+                "summary": "Update pengumuman",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pengumuman",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data pengumuman (isi sesuai yang ingin diubah)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PengumumanUpdateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengumuman"
+                ],
+                "summary": "Hapus pengumuman",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pengumuman",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-keluar": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-keluar"
+                ],
+                "summary": "Get all surat keluar",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.SuratKeluarResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload file arsip via form-data multipart: field file, nomorSurat, penerima, perihal, tanggalKirim, id_log_cetak. File dienkripsi menjadi .pdf.enc",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-keluar"
+                ],
+                "summary": "Tambah surat keluar baru",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File arsip surat (PDF)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "005/DIS/IX/2026",
+                        "description": "Nomor surat",
+                        "name": "nomorSurat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Dinas Pendidikan\"",
+                        "description": "Penerima surat",
+                        "name": "penerima",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Perihal",
+                        "name": "perihal",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-09-03",
+                        "description": "Tanggal kirim",
+                        "name": "tanggalKirim",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID log cetak",
+                        "name": "id_log_cetak",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-keluar/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-keluar"
+                ],
+                "summary": "Get surat keluar by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SuratKeluarResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multipart, file opsional. Jika deleteFile=true, file lama dihapus. Jika diupload file baru, file lama diganti",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-keluar"
+                ],
+                "summary": "Update surat keluar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File arsip surat (opsional)",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "005/DIS/IX/2026",
+                        "description": "Nomor surat",
+                        "name": "nomorSurat",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Dinas Pendidikan\"",
+                        "description": "Penerima surat",
+                        "name": "penerima",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Perihal",
+                        "name": "perihal",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-09-03",
+                        "description": "Tanggal kirim",
+                        "name": "tanggalKirim",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID log cetak",
+                        "name": "id_log_cetak",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "Hapus file yang ada",
+                        "name": "deleteFile",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-keluar"
+                ],
+                "summary": "Hapus surat keluar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-keluar/{id}/file": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "surat-keluar"
+                ],
+                "summary": "Download file arsip surat keluar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat keluar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-masuk": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-masuk"
+                ],
+                "summary": "Get all surat masuk",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.SuratMasukResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload file arsip via form-data multipart: field file, nomorSurat, pengirim, perihal, tanggalTerima. File dienkripsi menjadi .pdf.enc",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-masuk"
+                ],
+                "summary": "Tambah surat masuk baru",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File arsip surat (PDF)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "005/DIS/IX/2026",
+                        "description": "Nomor surat",
+                        "name": "nomorSurat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Dinas Pendidikan\"",
+                        "description": "Pengirim surat",
+                        "name": "pengirim",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Perihal",
+                        "name": "perihal",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-09-03",
+                        "description": "Tanggal terima",
+                        "name": "tanggalTerima",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-masuk/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-masuk"
+                ],
+                "summary": "Get surat masuk by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SuratMasukResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multipart, file opsional. Jika deleteFile=true, file lama dihapus. Jika diupload file baru, file lama diganti",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-masuk"
+                ],
+                "summary": "Update surat masuk",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File arsip surat (opsional)",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "005/DIS/IX/2026",
+                        "description": "Nomor surat",
+                        "name": "nomorSurat",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Dinas Pendidikan\"",
+                        "description": "Pengirim surat",
+                        "name": "pengirim",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Perihal",
+                        "name": "perihal",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-09-03",
+                        "description": "Tanggal terima",
+                        "name": "tanggalTerima",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "Hapus file yang ada",
+                        "name": "deleteFile",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-masuk"
+                ],
+                "summary": "Hapus surat masuk",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-masuk/{id}/file": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "surat-masuk"
+                ],
+                "summary": "Download file arsip surat masuk",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID surat masuk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
                         }
                     },
                     "400": {
@@ -1500,6 +5155,429 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AjukanSuratRequestDTO": {
+            "type": "object",
+            "required": [
+                "nama_pemohon",
+                "nik_pemohon"
+            ],
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "nama_pemohon": {
+                    "type": "string",
+                    "example": "Rasya"
+                },
+                "nik_pemohon": {
+                    "type": "string",
+                    "example": "7371010101010001"
+                }
+            }
+        },
+        "dto.AjukanSuratResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "file_url": {
+                    "type": "string",
+                    "example": "/api/v1/log-cetak-surat/surat/A1B2C3D4E5/file"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "kode_unik": {
+                    "type": "string",
+                    "example": "A1B2C3D4E5"
+                },
+                "nama_pemohon": {
+                    "type": "string",
+                    "example": "Rasya"
+                },
+                "qr_url": {
+                    "type": "string",
+                    "example": "/api/v1/log-cetak-surat/verifikasi/A1B2C3D4E5/qr"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "dicetak"
+                }
+            }
+        },
+        "dto.AparaturResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "foto": {
+                    "type": "string",
+                    "example": "aparatur/123_kades.jpg"
+                },
+                "has_foto": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "jabatan": {
+                    "type": "string",
+                    "example": "Kepala Desa"
+                },
+                "nama": {
+                    "type": "string",
+                    "example": "Bapak Kepala Desa"
+                },
+                "nip": {
+                    "type": "string",
+                    "example": "196001011985031001"
+                },
+                "telepon": {
+                    "type": "string",
+                    "example": "081234567890"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.BeritaResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "foto": {
+                    "type": "string",
+                    "example": "berita/123_foto.jpg"
+                },
+                "has_foto": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isi": {
+                    "type": "string",
+                    "example": "Warga desa bergotong royong membersihkan lingkungan."
+                },
+                "judul": {
+                    "type": "string",
+                    "example": "Kegiatan Gotong Royong"
+                },
+                "penulis": {
+                    "type": "string",
+                    "example": "Admin Desa"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "dipublikasi"
+                },
+                "tanggal_terbit": {
+                    "type": "string",
+                    "example": "2026-09-05T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DanaBulananDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "total": {
+                    "type": "number",
+                    "example": 12500000.5
+                }
+            }
+        },
+        "dto.DanaDetailDTO": {
+            "type": "object",
+            "properties": {
+                "pendapatan": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DanaBulananDTO"
+                    }
+                },
+                "pengeluaran": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DanaBulananDTO"
+                    }
+                }
+            }
+        },
+        "dto.DanaKeluarCreateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "jumlah": {
+                    "type": "number",
+                    "example": 8000000
+                },
+                "kategori": {
+                    "type": "string",
+                    "example": "Belanja Operasional"
+                },
+                "keterangan": {
+                    "type": "string",
+                    "example": "ATK kantor desa"
+                },
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                }
+            }
+        },
+        "dto.DanaKeluarResponseDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "jumlah": {
+                    "type": "number",
+                    "example": 8000000
+                },
+                "kategori": {
+                    "type": "string",
+                    "example": "Belanja Operasional"
+                },
+                "keterangan": {
+                    "type": "string",
+                    "example": "ATK kantor desa"
+                },
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DanaKeluarUpdateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "jumlah": {
+                    "type": "number",
+                    "example": 8000000
+                },
+                "kategori": {
+                    "type": "string",
+                    "example": "Belanja Operasional"
+                },
+                "keterangan": {
+                    "type": "string",
+                    "example": "ATK kantor desa"
+                },
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                }
+            }
+        },
+        "dto.DanaMasukCreateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "jumlah": {
+                    "type": "number",
+                    "example": 12500000.5
+                },
+                "keterangan": {
+                    "type": "string",
+                    "example": "DD Tahap III"
+                },
+                "sumber": {
+                    "type": "string",
+                    "example": "Dana Desa"
+                },
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                }
+            }
+        },
+        "dto.DanaMasukResponseDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "jumlah": {
+                    "type": "number",
+                    "example": 12500000.5
+                },
+                "keterangan": {
+                    "type": "string",
+                    "example": "DD Tahap III"
+                },
+                "sumber": {
+                    "type": "string",
+                    "example": "Dana Desa"
+                },
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DanaMasukUpdateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "bulan": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "jumlah": {
+                    "type": "number",
+                    "example": 12500000.5
+                },
+                "keterangan": {
+                    "type": "string",
+                    "example": "DD Tahap III"
+                },
+                "sumber": {
+                    "type": "string",
+                    "example": "Dana Desa"
+                },
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                }
+            }
+        },
+        "dto.DanaSummaryItemDTO": {
+            "type": "object",
+            "properties": {
+                "tahun": {
+                    "type": "integer",
+                    "example": 2026
+                },
+                "tipe": {
+                    "type": "string",
+                    "example": "Pemasukan"
+                },
+                "total": {
+                    "type": "number",
+                    "example": 12500000.5
+                }
+            }
+        },
+        "dto.LogCetakSuratResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string",
+                    "example": "surat/1725377400_A1B2C3D4E5.pdf.enc"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id_pelayanan": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id_template": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "kode_unik": {
+                    "type": "string",
+                    "example": "A1B2C3D4E5"
+                },
+                "nama_pemohon": {
+                    "type": "string",
+                    "example": "Rasya"
+                },
+                "nik_pemohon": {
+                    "type": "string",
+                    "example": "7371010101010001"
+                },
+                "nomor_surat": {
+                    "type": "string",
+                    "example": "470/001/SK/2026"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "dicetak"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LogCetakSuratVerifikasiDTO": {
+            "type": "object",
+            "properties": {
+                "dicetak_pada": {
+                    "type": "string"
+                },
+                "kode_unik": {
+                    "type": "string",
+                    "example": "A1B2C3D4E5"
+                },
+                "nama_pemohon": {
+                    "type": "string",
+                    "example": "Rasya"
+                },
+                "nomor_surat": {
+                    "type": "string",
+                    "example": "470/001/SK/2026"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "diresmikan"
+                }
+            }
+        },
         "dto.LoginRequestDTO": {
             "type": "object",
             "required": [
@@ -1533,6 +5611,117 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MediaResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deskripsi": {
+                    "type": "string",
+                    "example": "Kegiatan gotong royong warga desa."
+                },
+                "file": {
+                    "type": "string",
+                    "example": "media/123_gotong.jpg"
+                },
+                "has_thumb": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nama": {
+                    "type": "string",
+                    "example": "Gotong Royong Desa"
+                },
+                "thumbnail": {
+                    "type": "string",
+                    "example": "media/123_thumb.jpg"
+                },
+                "tipe": {
+                    "type": "string",
+                    "example": "foto"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PelayananCreateRequestDTO": {
+            "type": "object",
+            "required": [
+                "deskripsi",
+                "nama_layanan"
+            ],
+            "properties": {
+                "deskripsi": {
+                    "type": "string",
+                    "example": "Layanan pembuatan surat keterangan domisili"
+                },
+                "id_surat_template": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nama_layanan": {
+                    "type": "string",
+                    "example": "Surat Keterangan Domisili"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "aktif"
+                }
+            }
+        },
+        "dto.PelayananResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deskripsi": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id_surat_template": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nama_layanan": {
+                    "type": "string",
+                    "example": "Surat Keterangan Domisili"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "aktif"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PelayananUpdateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "deskripsi": {
+                    "type": "string",
+                    "example": "Deskripsi baru"
+                },
+                "id_surat_template": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nama_layanan": {
+                    "type": "string",
+                    "example": "Surat Keterangan Domisili"
+                }
+            }
+        },
         "dto.PendudukRequestDTO": {
             "type": "object",
             "required": [
@@ -1563,6 +5752,10 @@ const docTemplate = `{
                 "nik": {
                     "type": "string",
                     "example": "7371015001820001"
+                },
+                "nomor_kk": {
+                    "type": "string",
+                    "example": "7301011001230002"
                 },
                 "status": {
                     "type": "string",
@@ -1612,6 +5805,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "7371015001820001"
                 },
+                "nomor_kk": {
+                    "type": "string",
+                    "example": "7301011001230002"
+                },
                 "status": {
                     "type": "string",
                     "example": "kepala keluarga"
@@ -1652,6 +5849,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "7371015001820002"
                 },
+                "nomor_kk": {
+                    "type": "string",
+                    "example": "7301011001230002"
+                },
                 "status": {
                     "type": "string",
                     "example": "kepala keluarga"
@@ -1663,6 +5864,79 @@ const docTemplate = `{
                 "tempat_lahir": {
                     "type": "string",
                     "example": "Palu"
+                }
+            }
+        },
+        "dto.PengumumanCreateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "isi": {
+                    "type": "string",
+                    "example": "Listrik akan padam pada hari Selasa pukul 09.00 WITA."
+                },
+                "judul": {
+                    "type": "string",
+                    "example": "Informasi Pemadaman Listrik"
+                },
+                "tanggal_mulai": {
+                    "type": "string",
+                    "example": "2026-09-05"
+                },
+                "tanggal_selesai": {
+                    "type": "string",
+                    "example": "2026-09-12"
+                }
+            }
+        },
+        "dto.PengumumanResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isi": {
+                    "type": "string",
+                    "example": "Listrik akan padam pada hari Selasa pukul 09.00 WITA."
+                },
+                "judul": {
+                    "type": "string",
+                    "example": "Informasi Pemadaman Listrik"
+                },
+                "tanggal_mulai": {
+                    "type": "string",
+                    "example": "2026-09-05T00:00:00Z"
+                },
+                "tanggal_selesai": {
+                    "type": "string",
+                    "example": "2026-09-12T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PengumumanUpdateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "isi": {
+                    "type": "string",
+                    "example": "Listrik akan padam pada hari Selasa pukul 09.00 WITA."
+                },
+                "judul": {
+                    "type": "string",
+                    "example": "Informasi Pemadaman Listrik"
+                },
+                "tanggal_mulai": {
+                    "type": "string",
+                    "example": "2026-09-05"
+                },
+                "tanggal_selesai": {
+                    "type": "string",
+                    "example": "2026-09-12"
                 }
             }
         },
@@ -1716,12 +5990,100 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ResmikanSuratRequestDTO": {
+            "type": "object",
+            "required": [
+                "nomor_surat"
+            ],
+            "properties": {
+                "nomor_surat": {
+                    "type": "string",
+                    "example": "470/001/SK/2026"
+                }
+            }
+        },
         "dto.StatCountDTO": {
             "type": "object",
             "properties": {
                 "total": {
                     "type": "integer",
                     "example": 150
+                }
+            }
+        },
+        "dto.SuratKeluarResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string",
+                    "example": "surat/123_undangan.pdf.enc"
+                },
+                "has_file": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id_log_cetak": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nomorSurat": {
+                    "type": "string",
+                    "example": "005/DIS/IX/2026"
+                },
+                "penerima": {
+                    "type": "string",
+                    "example": "Dinas Pendidikan"
+                },
+                "perihal": {
+                    "type": "string"
+                },
+                "tanggalKirim": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SuratMasukResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string",
+                    "example": "surat/123_undangan.pdf.enc"
+                },
+                "has_file": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nomorSurat": {
+                    "type": "string",
+                    "example": "005/DIS/IX/2026"
+                },
+                "pengirim": {
+                    "type": "string",
+                    "example": "Dinas Pendidikan"
+                },
+                "perihal": {
+                    "type": "string"
+                },
+                "tanggalTerima": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },

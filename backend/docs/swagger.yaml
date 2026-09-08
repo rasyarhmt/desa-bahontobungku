@@ -27,6 +27,308 @@ definitions:
     - nama
     - password
     type: object
+  dto.AjukanSuratRequestDTO:
+    properties:
+      data:
+        additionalProperties: {}
+        type: object
+      nama_pemohon:
+        example: Rasya
+        type: string
+      nik_pemohon:
+        example: "7371010101010001"
+        type: string
+    required:
+    - nama_pemohon
+    - nik_pemohon
+    type: object
+  dto.AjukanSuratResponseDTO:
+    properties:
+      created_at:
+        type: string
+      file_url:
+        example: /api/v1/log-cetak-surat/surat/A1B2C3D4E5/file
+        type: string
+      id:
+        example: 1
+        type: integer
+      kode_unik:
+        example: A1B2C3D4E5
+        type: string
+      nama_pemohon:
+        example: Rasya
+        type: string
+      qr_url:
+        example: /api/v1/log-cetak-surat/verifikasi/A1B2C3D4E5/qr
+        type: string
+      status:
+        example: dicetak
+        type: string
+    type: object
+  dto.AparaturResponseDTO:
+    properties:
+      created_at:
+        type: string
+      foto:
+        example: aparatur/123_kades.jpg
+        type: string
+      has_foto:
+        example: true
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      jabatan:
+        example: Kepala Desa
+        type: string
+      nama:
+        example: Bapak Kepala Desa
+        type: string
+      nip:
+        example: "196001011985031001"
+        type: string
+      telepon:
+        example: "081234567890"
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.BeritaResponseDTO:
+    properties:
+      created_at:
+        type: string
+      foto:
+        example: berita/123_foto.jpg
+        type: string
+      has_foto:
+        example: true
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      isi:
+        example: Warga desa bergotong royong membersihkan lingkungan.
+        type: string
+      judul:
+        example: Kegiatan Gotong Royong
+        type: string
+      penulis:
+        example: Admin Desa
+        type: string
+      status:
+        example: dipublikasi
+        type: string
+      tanggal_terbit:
+        example: "2026-09-05T00:00:00Z"
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.DanaBulananDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      total:
+        example: 1.25000005e+07
+        type: number
+    type: object
+  dto.DanaDetailDTO:
+    properties:
+      pendapatan:
+        items:
+          $ref: '#/definitions/dto.DanaBulananDTO'
+        type: array
+      pengeluaran:
+        items:
+          $ref: '#/definitions/dto.DanaBulananDTO'
+        type: array
+    type: object
+  dto.DanaKeluarCreateRequestDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      jumlah:
+        example: 8000000
+        type: number
+      kategori:
+        example: Belanja Operasional
+        type: string
+      keterangan:
+        example: ATK kantor desa
+        type: string
+      tahun:
+        example: 2026
+        type: integer
+    type: object
+  dto.DanaKeluarResponseDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      jumlah:
+        example: 8000000
+        type: number
+      kategori:
+        example: Belanja Operasional
+        type: string
+      keterangan:
+        example: ATK kantor desa
+        type: string
+      tahun:
+        example: 2026
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.DanaKeluarUpdateRequestDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      jumlah:
+        example: 8000000
+        type: number
+      kategori:
+        example: Belanja Operasional
+        type: string
+      keterangan:
+        example: ATK kantor desa
+        type: string
+      tahun:
+        example: 2026
+        type: integer
+    type: object
+  dto.DanaMasukCreateRequestDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      jumlah:
+        example: 1.25000005e+07
+        type: number
+      keterangan:
+        example: DD Tahap III
+        type: string
+      sumber:
+        example: Dana Desa
+        type: string
+      tahun:
+        example: 2026
+        type: integer
+    type: object
+  dto.DanaMasukResponseDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      jumlah:
+        example: 1.25000005e+07
+        type: number
+      keterangan:
+        example: DD Tahap III
+        type: string
+      sumber:
+        example: Dana Desa
+        type: string
+      tahun:
+        example: 2026
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.DanaMasukUpdateRequestDTO:
+    properties:
+      bulan:
+        example: 9
+        type: integer
+      jumlah:
+        example: 1.25000005e+07
+        type: number
+      keterangan:
+        example: DD Tahap III
+        type: string
+      sumber:
+        example: Dana Desa
+        type: string
+      tahun:
+        example: 2026
+        type: integer
+    type: object
+  dto.DanaSummaryItemDTO:
+    properties:
+      tahun:
+        example: 2026
+        type: integer
+      tipe:
+        example: Pemasukan
+        type: string
+      total:
+        example: 1.25000005e+07
+        type: number
+    type: object
+  dto.LogCetakSuratResponseDTO:
+    properties:
+      created_at:
+        type: string
+      file:
+        example: surat/1725377400_A1B2C3D4E5.pdf.enc
+        type: string
+      id:
+        example: 1
+        type: integer
+      id_pelayanan:
+        example: 1
+        type: integer
+      id_template:
+        example: 1
+        type: integer
+      kode_unik:
+        example: A1B2C3D4E5
+        type: string
+      nama_pemohon:
+        example: Rasya
+        type: string
+      nik_pemohon:
+        example: "7371010101010001"
+        type: string
+      nomor_surat:
+        example: 470/001/SK/2026
+        type: string
+      status:
+        example: dicetak
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.LogCetakSuratVerifikasiDTO:
+    properties:
+      dicetak_pada:
+        type: string
+      kode_unik:
+        example: A1B2C3D4E5
+        type: string
+      nama_pemohon:
+        example: Rasya
+        type: string
+      nomor_surat:
+        example: 470/001/SK/2026
+        type: string
+      status:
+        example: diresmikan
+        type: string
+    type: object
   dto.LoginRequestDTO:
     properties:
       email:
@@ -50,6 +352,85 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserResponseDTO'
     type: object
+  dto.MediaResponseDTO:
+    properties:
+      created_at:
+        type: string
+      deskripsi:
+        example: Kegiatan gotong royong warga desa.
+        type: string
+      file:
+        example: media/123_gotong.jpg
+        type: string
+      has_thumb:
+        example: false
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      nama:
+        example: Gotong Royong Desa
+        type: string
+      thumbnail:
+        example: media/123_thumb.jpg
+        type: string
+      tipe:
+        example: foto
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.PelayananCreateRequestDTO:
+    properties:
+      deskripsi:
+        example: Layanan pembuatan surat keterangan domisili
+        type: string
+      id_surat_template:
+        example: 1
+        type: integer
+      nama_layanan:
+        example: Surat Keterangan Domisili
+        type: string
+      status:
+        example: aktif
+        type: string
+    required:
+    - deskripsi
+    - nama_layanan
+    type: object
+  dto.PelayananResponseDTO:
+    properties:
+      created_at:
+        type: string
+      deskripsi:
+        type: string
+      id:
+        example: 1
+        type: integer
+      id_surat_template:
+        example: 1
+        type: integer
+      nama_layanan:
+        example: Surat Keterangan Domisili
+        type: string
+      status:
+        example: aktif
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.PelayananUpdateRequestDTO:
+    properties:
+      deskripsi:
+        example: Deskripsi baru
+        type: string
+      id_surat_template:
+        example: 1
+        type: integer
+      nama_layanan:
+        example: Surat Keterangan Domisili
+        type: string
+    type: object
   dto.PendudukRequestDTO:
     properties:
       agama:
@@ -68,6 +449,9 @@ definitions:
         type: string
       nik:
         example: "7371015001820001"
+        type: string
+      nomor_kk:
+        example: "7301011001230002"
         type: string
       status:
         example: kepala keluarga
@@ -108,6 +492,9 @@ definitions:
       nik:
         example: "7371015001820001"
         type: string
+      nomor_kk:
+        example: "7301011001230002"
+        type: string
       status:
         example: kepala keluarga
         type: string
@@ -137,6 +524,9 @@ definitions:
       new_nik:
         example: "7371015001820002"
         type: string
+      nomor_kk:
+        example: "7301011001230002"
+        type: string
       status:
         example: kepala keluarga
         type: string
@@ -145,6 +535,58 @@ definitions:
         type: string
       tempat_lahir:
         example: Palu
+        type: string
+    type: object
+  dto.PengumumanCreateRequestDTO:
+    properties:
+      isi:
+        example: Listrik akan padam pada hari Selasa pukul 09.00 WITA.
+        type: string
+      judul:
+        example: Informasi Pemadaman Listrik
+        type: string
+      tanggal_mulai:
+        example: "2026-09-05"
+        type: string
+      tanggal_selesai:
+        example: "2026-09-12"
+        type: string
+    type: object
+  dto.PengumumanResponseDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      isi:
+        example: Listrik akan padam pada hari Selasa pukul 09.00 WITA.
+        type: string
+      judul:
+        example: Informasi Pemadaman Listrik
+        type: string
+      tanggal_mulai:
+        example: "2026-09-05T00:00:00Z"
+        type: string
+      tanggal_selesai:
+        example: "2026-09-12T00:00:00Z"
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.PengumumanUpdateRequestDTO:
+    properties:
+      isi:
+        example: Listrik akan padam pada hari Selasa pukul 09.00 WITA.
+        type: string
+      judul:
+        example: Informasi Pemadaman Listrik
+        type: string
+      tanggal_mulai:
+        example: "2026-09-05"
+        type: string
+      tanggal_selesai:
+        example: "2026-09-12"
         type: string
     type: object
   dto.RefreshTokenRequestDTO:
@@ -181,11 +623,72 @@ definitions:
     required:
     - email
     type: object
+  dto.ResmikanSuratRequestDTO:
+    properties:
+      nomor_surat:
+        example: 470/001/SK/2026
+        type: string
+    required:
+    - nomor_surat
+    type: object
   dto.StatCountDTO:
     properties:
       total:
         example: 150
         type: integer
+    type: object
+  dto.SuratKeluarResponseDTO:
+    properties:
+      created_at:
+        type: string
+      file:
+        example: surat/123_undangan.pdf.enc
+        type: string
+      has_file:
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      id_log_cetak:
+        example: 1
+        type: integer
+      nomorSurat:
+        example: 005/DIS/IX/2026
+        type: string
+      penerima:
+        example: Dinas Pendidikan
+        type: string
+      perihal:
+        type: string
+      tanggalKirim:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.SuratMasukResponseDTO:
+    properties:
+      created_at:
+        type: string
+      file:
+        example: surat/123_undangan.pdf.enc
+        type: string
+      has_file:
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      nomorSurat:
+        example: 005/DIS/IX/2026
+        type: string
+      pengirim:
+        example: Dinas Pendidikan
+        type: string
+      perihal:
+        type: string
+      tanggalTerima:
+        type: string
+      updated_at:
+        type: string
     type: object
   dto.SuratTemplateResponseDTO:
     properties:
@@ -261,6 +764,241 @@ info:
   title: Desa Bahontobungku API
   version: "1.0"
 paths:
+  /aparatur:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AparaturResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get semua aparatur (urut struktur jabatan)
+      tags:
+      - aparatur
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload foto via form-data multipart (opsional): field foto, nama,
+        nip, jabatan, telepon. Foto disimpan polos di uploads/aparatur'
+      parameters:
+      - description: Foto aparatur (jpg/png/webp, maks 5MB)
+        in: formData
+        name: foto
+        type: file
+      - description: Nama aparatur
+        in: formData
+        name: nama
+        required: true
+        type: string
+      - description: NIP
+        in: formData
+        name: nip
+        type: string
+      - description: Jabatan
+        in: formData
+        name: jabatan
+        required: true
+        type: string
+      - description: Nomor telepon
+        in: formData
+        name: telepon
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AparaturResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah aparatur desa
+      tags:
+      - aparatur
+  /aparatur/{id}:
+    delete:
+      parameters:
+      - description: ID aparatur
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus aparatur
+      tags:
+      - aparatur
+    get:
+      parameters:
+      - description: ID aparatur
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AparaturResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get aparatur by id
+      tags:
+      - aparatur
+    put:
+      consumes:
+      - multipart/form-data
+      description: Upload multipart; foto opsional (jika diupload, foto lama diganti)
+      parameters:
+      - description: ID aparatur
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Foto aparatur (opsional)
+        in: formData
+        name: foto
+        type: file
+      - description: Nama aparatur
+        in: formData
+        name: nama
+        type: string
+      - description: NIP
+        in: formData
+        name: nip
+        type: string
+      - description: Jabatan
+        in: formData
+        name: jabatan
+        type: string
+      - description: Nomor telepon
+        in: formData
+        name: telepon
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update aparatur
+      tags:
+      - aparatur
+  /aparatur/nip/{nip}:
+    get:
+      parameters:
+      - description: NIP aparatur
+        in: path
+        name: nip
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AparaturResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get aparatur by NIP
+      tags:
+      - aparatur
   /auth/login:
     post:
       consumes:
@@ -360,6 +1098,1385 @@ paths:
       summary: Refresh access token
       tags:
       - auth
+  /berita:
+    get:
+      description: Hanya berita dengan status dipublikasi yang dikembalikan (publik)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.BeritaResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get berita terpublikasi
+      tags:
+      - berita
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload foto via form-data multipart (opsional): field foto, judul,
+        isi, tanggalTerbit, penulis, status. Foto disimpan polos di uploads/berita
+        (konten publik)'
+      parameters:
+      - description: Foto berita (jpg/png/webp/gif, maks 5MB)
+        in: formData
+        name: foto
+        type: file
+      - description: Judul berita
+        in: formData
+        name: judul
+        required: true
+        type: string
+      - description: Isi berita
+        in: formData
+        name: isi
+        required: true
+        type: string
+      - description: Tanggal terbit
+        example: "2026-09-05"
+        in: formData
+        name: tanggalTerbit
+        required: true
+        type: string
+      - description: Penulis
+        in: formData
+        name: penulis
+        required: true
+        type: string
+      - description: status (draft/dipublikasi)
+        example: dipublikasi
+        in: formData
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BeritaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah berita baru
+      tags:
+      - berita
+  /berita/{id}:
+    delete:
+      parameters:
+      - description: ID berita
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus berita
+      tags:
+      - berita
+    get:
+      parameters:
+      - description: ID berita
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BeritaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get berita by id (hanya terpublikasi)
+      tags:
+      - berita
+    put:
+      consumes:
+      - multipart/form-data
+      description: Upload multipart, foto opsional. Jika deleteFoto=true, foto lama
+        dihapus. Jika diupload foto baru, foto lama diganti
+      parameters:
+      - description: ID berita
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Foto berita (opsional)
+        in: formData
+        name: foto
+        type: file
+      - description: Judul berita
+        in: formData
+        name: judul
+        type: string
+      - description: Isi berita
+        in: formData
+        name: isi
+        type: string
+      - description: Tanggal terbit
+        example: "2026-09-05"
+        in: formData
+        name: tanggalTerbit
+        type: string
+      - description: Penulis
+        in: formData
+        name: penulis
+        type: string
+      - description: status (draft/dipublikasi)
+        in: formData
+        name: status
+        type: string
+      - description: Hapus foto yang ada
+        example: false
+        in: formData
+        name: deleteFoto
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update berita
+      tags:
+      - berita
+  /berita/{id}/toggle-status:
+    put:
+      parameters:
+      - description: ID berita
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BeritaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Toggle status berita (draft <-> dipublikasi)
+      tags:
+      - berita
+  /berita/admin:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.BeritaResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get semua berita (termasuk draft)
+      tags:
+      - berita
+  /berita/admin/{id}:
+    get:
+      parameters:
+      - description: ID berita
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BeritaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get berita by id (termasuk draft)
+      tags:
+      - berita
+  /berita/status/{status}:
+    get:
+      description: Status publik hanya dipublikasi; status lain mengembalikan daftar
+        kosong
+      parameters:
+      - description: Status berita (dipublikasi)
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.BeritaResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get berita by status
+      tags:
+      - berita
+  /dana/apbdes/dana-keluar:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.DanaKeluarResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get semua dana keluar
+      tags:
+      - dana
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data dana keluar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DanaKeluarCreateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DanaKeluarResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah data dana keluar (pengeluaran APBDes)
+      tags:
+      - dana
+  /dana/apbdes/dana-keluar/{id}:
+    delete:
+      parameters:
+      - description: ID dana keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus dana keluar
+      tags:
+      - dana
+    get:
+      parameters:
+      - description: ID dana keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DanaKeluarResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get dana keluar by id
+      tags:
+      - dana
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID dana keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data dana keluar (partial)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DanaKeluarUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update dana keluar
+      tags:
+      - dana
+  /dana/apbdes/dana-masuk:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.DanaMasukResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get semua dana masuk
+      tags:
+      - dana
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data dana masuk
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DanaMasukCreateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DanaMasukResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah data dana masuk (pemasukan APBDes)
+      tags:
+      - dana
+  /dana/apbdes/dana-masuk/{id}:
+    delete:
+      parameters:
+      - description: ID dana masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus dana masuk
+      tags:
+      - dana
+    get:
+      parameters:
+      - description: ID dana masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DanaMasukResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get dana masuk by id
+      tags:
+      - dana
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID dana masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data dana masuk (partial)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DanaMasukUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update dana masuk
+      tags:
+      - dana
+  /dana/apbdes/detail/{tahun}:
+    get:
+      parameters:
+      - description: Tahun
+        in: path
+        name: tahun
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DanaDetailDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get detail APBDes per tahun (per bulan)
+      tags:
+      - dana
+  /dana/apbdes/summary/{tahun}:
+    get:
+      description: 'Mengembalikan [{tipe: Pemasukan, tahun, total}, {tipe: Pengeluaran,
+        tahun, total}]'
+      parameters:
+      - description: Tahun
+        in: path
+        name: tahun
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.DanaSummaryItemDTO'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get ringkasan APBDes per tahun
+      tags:
+      - dana
+  /log-cetak-surat:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.LogCetakSuratResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all log cetak surat
+      tags:
+      - log-cetak-surat
+  /log-cetak-surat/{id}:
+    get:
+      parameters:
+      - description: ID log cetak surat
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LogCetakSuratResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get log cetak surat by id
+      tags:
+      - log-cetak-surat
+  /log-cetak-surat/{id}/file:
+    get:
+      parameters:
+      - description: ID log cetak surat
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Download surat (PDF) by id (admin)
+      tags:
+      - log-cetak-surat
+  /log-cetak-surat/{id}/resmikan:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID log cetak surat
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Nomor surat
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResmikanSuratRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Resmikan surat (isi nomor surat, status dicetak -> diresmikan)
+      tags:
+      - log-cetak-surat
+  /log-cetak-surat/surat/{kode_unik}/file:
+    get:
+      parameters:
+      - description: Kode unik surat
+        in: path
+        name: kode_unik
+        required: true
+        type: string
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Download surat (PDF) via kode unik (warga)
+      tags:
+      - log-cetak-surat
+  /log-cetak-surat/verifikasi/{kode_unik}:
+    get:
+      parameters:
+      - description: Kode unik registrasi surat
+        in: path
+        name: kode_unik
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LogCetakSuratVerifikasiDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Verifikasi surat via kode unik (publik)
+      tags:
+      - log-cetak-surat
+  /log-cetak-surat/verifikasi/{kode_unik}/qr:
+    get:
+      description: Menghasilkan QR PNG berisi URL verifikasi utk kode_unik. Disisipkan
+        saat mencetak surat
+      parameters:
+      - description: Kode unik registrasi surat
+        in: path
+        name: kode_unik
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: QR verifikasi surat (publik)
+      tags:
+      - log-cetak-surat
+  /media:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.MediaResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get semua media
+      tags:
+      - media
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload via form-data multipart: file (wajib), thumbnail (wajib
+        untuk video), nama, tipe (foto/video/dokumen), deskripsi. File disimpan polos
+        di uploads/media (galeri publik)'
+      parameters:
+      - description: File media
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Thumbnail (wajib untuk tipe video)
+        in: formData
+        name: thumbnail
+        type: file
+      - description: Nama media
+        in: formData
+        name: nama
+        required: true
+        type: string
+      - description: Tipe (foto/video/dokumen)
+        example: foto
+        in: formData
+        name: tipe
+        required: true
+        type: string
+      - description: Deskripsi
+        in: formData
+        name: deskripsi
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MediaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah media (foto/video/dokumen)
+      tags:
+      - media
+  /media/{id}:
+    delete:
+      parameters:
+      - description: ID media
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus media
+      tags:
+      - media
+    get:
+      parameters:
+      - description: ID media
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MediaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get media by id
+      tags:
+      - media
+    put:
+      consumes:
+      - multipart/form-data
+      description: Upload multipart; file opsional (jika diupload, file lama diganti).
+        Field nama/tipe/deskripsi jan opsional
+      parameters:
+      - description: ID media
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: File media baru (opsional)
+        in: formData
+        name: file
+        type: file
+      - description: Nama media
+        in: formData
+        name: nama
+        type: string
+      - description: Tipe (foto/video/dokumen)
+        in: formData
+        name: tipe
+        type: string
+      - description: Deskripsi
+        in: formData
+        name: deskripsi
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update media
+      tags:
+      - media
+  /pelayanan:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PelayananResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get all pelayanan
+      tags:
+      - pelayanan
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data pelayanan
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PelayananCreateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah pelayanan baru
+      tags:
+      - pelayanan
+  /pelayanan/{id}:
+    delete:
+      parameters:
+      - description: ID pelayanan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus pelayanan
+      tags:
+      - pelayanan
+    get:
+      parameters:
+      - description: ID pelayanan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PelayananResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get pelayanan by id
+      tags:
+      - pelayanan
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID pelayanan
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data pelayanan
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PelayananUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update pelayanan
+      tags:
+      - pelayanan
+  /pelayanan/{id}/surat:
+    post:
+      consumes:
+      - application/json
+      description: Warga mengisi data sesuai template pelayanan. Backend me-render
+        template HTML, konversi ke PDF, simpan terenkripsi, lalu membuat log cetak
+        surat (status dicetak) dgn kode_unik + QR utk verifikasi publik
+      parameters:
+      - description: ID pelayanan
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data surat
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AjukanSuratRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AjukanSuratResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Ajukan surat dari pelayanan (warga)
+      tags:
+      - log-cetak-surat
+  /pelayanan/{id}/toggle-status:
+    put:
+      parameters:
+      - description: ID pelayanan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Toggle status pelayanan (aktif/nonaktif)
+      tags:
+      - pelayanan
   /penduduk:
     get:
       produces:
@@ -687,6 +2804,664 @@ paths:
       summary: Update data penduduk
       tags:
       - penduduk
+  /pengumuman:
+    get:
+      description: Daftar pengumuman untuk publik, diurutkan tanggalMulai terbaru
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PengumumanResponseDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get semua pengumuman
+      tags:
+      - pengumuman
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data pengumuman
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PengumumanCreateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PengumumanResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah pengumuman baru
+      tags:
+      - pengumuman
+  /pengumuman/{id}:
+    delete:
+      parameters:
+      - description: ID pengumuman
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus pengumuman
+      tags:
+      - pengumuman
+    get:
+      parameters:
+      - description: ID pengumuman
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PengumumanResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get pengumuman by id
+      tags:
+      - pengumuman
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID pengumuman
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data pengumuman (isi sesuai yang ingin diubah)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PengumumanUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update pengumuman
+      tags:
+      - pengumuman
+  /surat-keluar:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SuratKeluarResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all surat keluar
+      tags:
+      - surat-keluar
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload file arsip via form-data multipart: field file, nomorSurat,
+        penerima, perihal, tanggalKirim, id_log_cetak. File dienkripsi menjadi .pdf.enc'
+      parameters:
+      - description: File arsip surat (PDF)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Nomor surat
+        example: 005/DIS/IX/2026
+        in: formData
+        name: nomorSurat
+        required: true
+        type: string
+      - description: Penerima surat
+        example: '"Dinas Pendidikan"'
+        in: formData
+        name: penerima
+        required: true
+        type: string
+      - description: Perihal
+        in: formData
+        name: perihal
+        type: string
+      - description: Tanggal kirim
+        example: "2026-09-03"
+        in: formData
+        name: tanggalKirim
+        required: true
+        type: string
+      - description: ID log cetak
+        in: formData
+        name: id_log_cetak
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah surat keluar baru
+      tags:
+      - surat-keluar
+  /surat-keluar/{id}:
+    delete:
+      parameters:
+      - description: ID surat keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus surat keluar
+      tags:
+      - surat-keluar
+    get:
+      parameters:
+      - description: ID surat keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SuratKeluarResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get surat keluar by id
+      tags:
+      - surat-keluar
+    put:
+      consumes:
+      - multipart/form-data
+      description: Upload multipart, file opsional. Jika deleteFile=true, file lama
+        dihapus. Jika diupload file baru, file lama diganti
+      parameters:
+      - description: ID surat keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: File arsip surat (opsional)
+        in: formData
+        name: file
+        type: file
+      - description: Nomor surat
+        example: 005/DIS/IX/2026
+        in: formData
+        name: nomorSurat
+        type: string
+      - description: Penerima surat
+        example: '"Dinas Pendidikan"'
+        in: formData
+        name: penerima
+        type: string
+      - description: Perihal
+        in: formData
+        name: perihal
+        type: string
+      - description: Tanggal kirim
+        example: "2026-09-03"
+        in: formData
+        name: tanggalKirim
+        type: string
+      - description: ID log cetak
+        in: formData
+        name: id_log_cetak
+        type: integer
+      - description: Hapus file yang ada
+        example: false
+        in: formData
+        name: deleteFile
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update surat keluar
+      tags:
+      - surat-keluar
+  /surat-keluar/{id}/file:
+    get:
+      parameters:
+      - description: ID surat keluar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Download file arsip surat keluar
+      tags:
+      - surat-keluar
+  /surat-masuk:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SuratMasukResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all surat masuk
+      tags:
+      - surat-masuk
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload file arsip via form-data multipart: field file, nomorSurat,
+        pengirim, perihal, tanggalTerima. File dienkripsi menjadi .pdf.enc'
+      parameters:
+      - description: File arsip surat (PDF)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Nomor surat
+        example: 005/DIS/IX/2026
+        in: formData
+        name: nomorSurat
+        required: true
+        type: string
+      - description: Pengirim surat
+        example: '"Dinas Pendidikan"'
+        in: formData
+        name: pengirim
+        required: true
+        type: string
+      - description: Perihal
+        in: formData
+        name: perihal
+        type: string
+      - description: Tanggal terima
+        example: "2026-09-03"
+        in: formData
+        name: tanggalTerima
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah surat masuk baru
+      tags:
+      - surat-masuk
+  /surat-masuk/{id}:
+    delete:
+      parameters:
+      - description: ID surat masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus surat masuk
+      tags:
+      - surat-masuk
+    get:
+      parameters:
+      - description: ID surat masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SuratMasukResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get surat masuk by id
+      tags:
+      - surat-masuk
+    put:
+      consumes:
+      - multipart/form-data
+      description: Upload multipart, file opsional. Jika deleteFile=true, file lama
+        dihapus. Jika diupload file baru, file lama diganti
+      parameters:
+      - description: ID surat masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: File arsip surat (opsional)
+        in: formData
+        name: file
+        type: file
+      - description: Nomor surat
+        example: 005/DIS/IX/2026
+        in: formData
+        name: nomorSurat
+        type: string
+      - description: Pengirim surat
+        example: '"Dinas Pendidikan"'
+        in: formData
+        name: pengirim
+        type: string
+      - description: Perihal
+        in: formData
+        name: perihal
+        type: string
+      - description: Tanggal terima
+        example: "2026-09-03"
+        in: formData
+        name: tanggalTerima
+        type: string
+      - description: Hapus file yang ada
+        example: false
+        in: formData
+        name: deleteFile
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update surat masuk
+      tags:
+      - surat-masuk
+  /surat-masuk/{id}/file:
+    get:
+      parameters:
+      - description: ID surat masuk
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Download file arsip surat masuk
+      tags:
+      - surat-masuk
   /surat-template:
     get:
       produces:
