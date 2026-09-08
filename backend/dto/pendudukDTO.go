@@ -7,6 +7,7 @@ type (
 		Alamat           string `json:"alamat" example:"Jl. Sudirman No. 10"`
 		TanggalLahir     string `json:"tanggal_lahir" example:"15-08-1990"`
 		TempatLahir      string `json:"tempat_lahir" example:"Palu"`
+		NomorKK          string `json:"nomor_kk" example:"7301011001230002"`
 		JenisKelamin     string `json:"jenis_kelamin" binding:"required" example:"laki-laki"`
 		Agama            string `json:"agama" example:"Islam"`
 		Status           string `json:"status" example:"kepala keluarga"`
@@ -20,6 +21,7 @@ type (
 		Alamat           *string `json:"alamat" example:"Jl. Gatot Subroto No. 5"`
 		TanggalLahir     *string `json:"tanggal_lahir" example:"15-08-1990"`
 		TempatLahir      *string `json:"tempat_lahir" example:"Palu"`
+		NomorKK          *string `json:"nomor_kk" example:"7301011001230002"`
 		JenisKelamin     *string `json:"jenis_kelamin" example:"laki-laki"`
 		Agama            *string `json:"agama" example:"Islam"`
 		Status           *string `json:"status" example:"kepala keluarga"`
@@ -33,6 +35,7 @@ type (
 		Alamat             string `json:"alamat" example:"Jl. Sudirman No. 10"`
 		TanggalLahir       string `json:"tanggal_lahir" example:"15-08-1990"`
 		TempatLahir        string `json:"tempat_lahir" example:"Palu"`
+		NomorKK            string `json:"nomor_kk" example:"7301011001230002"`
 		JenisKelamin       string `json:"jenis_kelamin" example:"laki-laki"`
 		Agama              string `json:"agama" example:"Islam"`
 		Status             string `json:"status" example:"kepala keluarga"`

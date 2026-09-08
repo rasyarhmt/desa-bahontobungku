@@ -28,6 +28,7 @@ type Penduduk struct {
 	Alamat           string
 	TanggalLahir     string
 	TempatLahir      string
+	NoKK             string
 	JenisKelamin     string
 	Agama            string
 	Status           string

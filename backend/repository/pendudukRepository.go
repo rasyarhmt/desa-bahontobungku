@@ -18,7 +18,7 @@ func NewPendudukRepository(db *sql.DB) domain.PendudukRepository {
 
 const pendudukSelect = `
 	SELECT p.id, p.nik_hash, p.nik, p.nama, p.alamat, p.tanggalLahir, p.tempatLahir,
-		p.jenisKelamin, p.agama, p.status, p.id_kepalakeluarga, p.created_at, p.updated_at,
+		p.nomor_kk, p.jenisKelamin, p.agama, p.status, p.id_kepalakeluarga, p.created_at, p.updated_at,
 		kk.nama AS kk_nama
 		FROM penduduk p
 		LEFT JOIN penduduk kk ON kk.id = p.id_kepalakeluarga`
@@ -29,12 +29,12 @@ type rowScanner interface {
 
 func scanPenduduk(row rowScanner) (*domain.Penduduk, error) {
 	var p domain.Penduduk
-	var alamat, tanggalLahir, tempatLahir, agama, status, kkNama sql.NullString
+	var alamat, tanggalLahir, tempatLahir, nomorKK, agama, status, kkNama sql.NullString
 	var kkID sql.NullInt64
 
 	dest := []interface{}{
 		&p.ID, &p.NIKHash, &p.NIK, &p.Nama, &alamat, &tanggalLahir, &tempatLahir,
-		&p.JenisKelamin, &agama, &status, &kkID, &p.CreatedAt, &p.UpdatedAt, &kkNama,
+		&nomorKK, &p.JenisKelamin, &agama, &status, &kkID, &p.CreatedAt, &p.UpdatedAt, &kkNama,
 	}
 	if err := row.Scan(dest...); err != nil {
 		return nil, err
@@ -48,6 +48,9 @@ func scanPenduduk(row rowScanner) (*domain.Penduduk, error) {
 	}
 	if tempatLahir.Valid {
 		p.TempatLahir = tempatLahir.String
+	}
+	if nomorKK.Valid {
+		p.NoKK = nomorKK.String
 	}
 	if agama.Valid {
 		p.Agama = agama.String
@@ -67,9 +70,9 @@ func scanPenduduk(row rowScanner) (*domain.Penduduk, error) {
 
 func (r *pendudukRepository) Create(ctx context.Context, p *domain.Penduduk) error {
 	_, err := r.db.ExecContext(ctx,
-		`INSERT INTO penduduk (nik_hash, nik, nama, alamat, tanggalLahir, tempatLahir, jenisKelamin, agama, status, id_kepalakeluarga)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		p.NIKHash, p.NIK, p.Nama, p.Alamat, p.TanggalLahir, p.TempatLahir,
+		`INSERT INTO penduduk (nik_hash, nik, nama, alamat, tanggalLahir, tempatLahir, nomor_kk, jenisKelamin, agama, status, id_kepalakeluarga)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		p.NIKHash, p.NIK, p.Nama, p.Alamat, p.TanggalLahir, p.TempatLahir, p.NoKK,
 		p.JenisKelamin, p.Agama, p.Status, p.IDKepalakeluarga)
 	return err
 }
@@ -163,10 +166,10 @@ func (r *pendudukRepository) GetStatsRows(ctx context.Context) ([]domain.StatsPe
 func (r *pendudukRepository) Update(ctx context.Context, id int, p *domain.Penduduk) error {
 	_, err := r.db.ExecContext(ctx,
 		`UPDATE penduduk
-		 SET nik_hash = ?, nik = ?, nama = ?, alamat = ?, tanggalLahir = ?, tempatLahir = ?,
+		 SET nik_hash = ?, nik = ?, nama = ?, alamat = ?, tanggalLahir = ?, tempatLahir = ?, nomor_kk = ?,
 		     jenisKelamin = ?, agama = ?, status = ?, id_kepalakeluarga = ?
 		 WHERE id = ?`,
-		p.NIKHash, p.NIK, p.Nama, p.Alamat, p.TanggalLahir, p.TempatLahir,
+		p.NIKHash, p.NIK, p.Nama, p.Alamat, p.TanggalLahir, p.TempatLahir, p.NoKK,
 		p.JenisKelamin, p.Agama, p.Status, p.IDKepalakeluarga, id)
 	return err
 }

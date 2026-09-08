@@ -14,6 +14,7 @@ import (
 )
 
 var nikPattern = regexp.MustCompile(`^[0-9]{16}$`)
+var noKKPattern = regexp.MustCompile(`^[0-9]{16}$`)
 
 var validStatuses = map[string]bool{
 	domain.StatusKepalaKeluarga: true,
@@ -54,6 +55,17 @@ func validateNIK(nik string) error {
 	return nil
 }
 
+func validateNoKK(noKK string) error {
+	noKK = strings.TrimSpace(noKK)
+	if noKK == "" {
+		return nil
+	}
+	if !noKKPattern.MatchString(noKK) {
+		return errors.New("nomor KK harus 16 digit angka")
+	}
+	return nil
+}
+
 type pendudukUsecase struct {
 	pendudukRepo domain.PendudukRepository
 }
@@ -73,6 +85,9 @@ func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO
 		return err
 	}
 	if err := validateStatus(req.Status); err != nil {
+		return err
+	}
+	if err := validateNoKK(req.NomorKK); err != nil {
 		return err
 	}
 
@@ -97,6 +112,7 @@ func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO
 		Alamat:           req.Alamat,
 		TanggalLahir:     req.TanggalLahir,
 		TempatLahir:      req.TempatLahir,
+		NoKK:             strings.TrimSpace(req.NomorKK),
 		JenisKelamin:     req.JenisKelamin,
 		Agama:            req.Agama,
 		Status:           req.Status,
@@ -218,6 +234,13 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 	if req.TempatLahir != nil {
 		tempatLahir = *req.TempatLahir
 	}
+	noKK := current.NoKK
+	if req.NomorKK != nil {
+		if err := validateNoKK(*req.NomorKK); err != nil {
+			return err
+		}
+		noKK = strings.TrimSpace(*req.NomorKK)
+	}
 	agama := current.Agama
 	if req.Agama != nil {
 		agama = *req.Agama
@@ -230,6 +253,7 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 		Alamat:           alamat,
 		TanggalLahir:     tanggalLahir,
 		TempatLahir:      tempatLahir,
+		NoKK:             noKK,
 		JenisKelamin:     jenisKelamin,
 		Agama:            agama,
 		Status:           newStatus,
@@ -407,6 +431,11 @@ func (u *pendudukUsecase) encrypt(p *domain.Penduduk) (*domain.Penduduk, error) 
 			return nil, err
 		}
 	}
+	if p.NoKK != "" {
+		if p.NoKK, err = utils.EncryptString(p.NoKK, key); err != nil {
+			return nil, err
+		}
+	}
 	if p.Alamat != "" {
 		if p.Alamat, err = utils.EncryptString(p.Alamat, key); err != nil {
 			return nil, err
@@ -426,6 +455,7 @@ func (u *pendudukUsecase) decrypt(p *domain.Penduduk) *domain.Penduduk {
 	res.NIK, _ = utils.DecryptString(p.NIK, key)
 	res.Nama, _ = utils.DecryptString(p.Nama, key)
 	res.Alamat, _ = utils.DecryptString(p.Alamat, key)
+	res.NoKK, _ = utils.DecryptString(p.NoKK, key)
 
 	if p.KKNama != "" {
 		res.KKNama, _ = utils.DecryptString(p.KKNama, key)
@@ -442,6 +472,7 @@ func pendudukToDTO(p *domain.Penduduk) *dto.PendudukResponseDTO {
 		Alamat:             p.Alamat,
 		TanggalLahir:       p.TanggalLahir,
 		TempatLahir:        p.TempatLahir,
+		NomorKK:            p.NoKK,
 		JenisKelamin:       p.JenisKelamin,
 		Agama:              p.Agama,
 		Status:             p.Status,
