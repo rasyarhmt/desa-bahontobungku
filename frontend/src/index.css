@@ -1,10 +1,92 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE dan Edge lama */
-  scrollbar-width: none; /* Firefox */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.968 0.006 220);
+  --foreground: oklch(0.21 0.02 225);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.02 225);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.02 225);
+  --primary: oklch(0.55 0.1 207);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.93 0.02 220);
+  --secondary-foreground: oklch(0.3 0.03 220);
+  --muted: oklch(0.95 0.01 220);
+  --muted-foreground: oklch(0.5 0.025 225);
+  --accent: oklch(0.93 0.045 196);
+  --accent-foreground: oklch(0.35 0.06 202);
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success-bg: oklch(0.96 0.05 160);
+  --success-fg: oklch(0.38 0.12 160);
+  --success-border: oklch(0.88 0.07 160);
+  --warning-bg: oklch(0.97 0.06 95);
+  --warning-fg: oklch(0.45 0.12 80);
+  --warning-border: oklch(0.9 0.08 95);
+  --border: oklch(0.9 0.015 220);
+  --input: oklch(0.9 0.015 220);
+  --ring: oklch(0.6 0.1 205);
+  --chart-1: oklch(0.55 0.1 207);
+  --chart-2: oklch(0.65 0.1 175);
+  --chart-3: oklch(0.72 0.11 90);
+  --chart-4: oklch(0.55 0.2 30);
+  --chart-5: oklch(0.62 0.14 250);
 }
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ===== Utilitas warisan ===== */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-modalFadeIn {
+  animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge modern */
+  display: none;
 }
