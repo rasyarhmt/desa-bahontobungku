@@ -21,16 +21,18 @@ func health(c *gin.Context) {
 
 func RegisterRoutes(application app.App) http.Handler {
 	router := gin.Default()
+	router.Use(middlewares.RequestTimer())
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     config.AppConfig.AllowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "ngrok-skip-browser-warning"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 
 	v1 := router.Group("/api/v1")
+	v1.Use(middlewares.CSP())
 
 	// PUBLIC ROUTES,[]
 	v1.GET("/health", health)
@@ -40,11 +42,7 @@ func RegisterRoutes(application app.App) http.Handler {
 		auth.POST("/login", application.AuthHandler.Login)
 		auth.POST("/refresh", application.AuthHandler.RefreshToken)
 		auth.POST("/reset-password", application.UserHandler.ResetPassword)
-
-		auth.Use(middlewares.AuthMiddleware())
-		{
-			auth.POST("/logout", application.AuthHandler.Logout)
-		}
+		auth.POST("/logout", application.AuthHandler.Logout)
 	}
 
 	user := v1.Group("/user")
@@ -87,15 +85,29 @@ func RegisterRoutes(application app.App) http.Handler {
 		penduduk.GET("/kepala-keluarga", application.PendudukHandler.GetKepalaKeluarga)
 	}
 
+	statusKeluarga := v1.Group("/status-keluarga")
+	statusKeluarga.Use(middlewares.AuthMiddleware())
+	{
+		statusKeluarga.POST("/", application.StatusKeluargaHandler.Create)
+		statusKeluarga.GET("/", application.StatusKeluargaHandler.GetAll)
+		statusKeluarga.GET("/:id", application.StatusKeluargaHandler.GetByID)
+		statusKeluarga.PUT("/:id", application.StatusKeluargaHandler.Update)
+		statusKeluarga.DELETE("/:id", application.StatusKeluargaHandler.Delete)
+		statusKeluarga.PUT("/:id/toggle-active", application.StatusKeluargaHandler.ToggleActive)
+	}
+
 	suratTemplate := v1.Group("/surat-template")
 	suratTemplate.Use(middlewares.AuthMiddleware())
 	{
 		suratTemplate.POST("/", application.SuratTemplateHandler.Create)
 		suratTemplate.GET("/", application.SuratTemplateHandler.GetAll)
 		suratTemplate.GET("/:id", application.SuratTemplateHandler.GetByID)
+		suratTemplate.GET("/:id/preview", application.SuratTemplateHandler.Preview)
 		suratTemplate.PUT("/:id", application.SuratTemplateHandler.Update)
 		suratTemplate.DELETE("/:id", application.SuratTemplateHandler.Delete)
 		suratTemplate.PUT("/:id/toggle-status", application.SuratTemplateHandler.ToggleStatus)
+		suratTemplate.GET("/:id/fields", application.SuratTemplateHandler.GetFields)
+		suratTemplate.PUT("/:id/fields", application.SuratTemplateHandler.UpdateFields)
 	}
 
 	pelayanan := v1.Group("/pelayanan")
@@ -214,10 +226,15 @@ func RegisterRoutes(application app.App) http.Handler {
 		aparatur.DELETE("/:id", middlewares.AuthMiddleware(), application.AparaturHandler.Delete)
 	}
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.Static("/uploads/berita", "./uploads/berita")
-	router.Static("/uploads/media", "./uploads/media")
-	router.Static("/uploads/aparatur", "./uploads/aparatur")
+	router.GET("/swagger/*any", middlewares.CSP(), ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	uploads := router.Group("/uploads")
+	uploads.Use(middlewares.UploadSecurityHeaders())
+	{
+		uploads.Static("/berita", "./uploads/berita")
+		uploads.Static("/media", "./uploads/media")
+		uploads.Static("/aparatur", "./uploads/aparatur")
+	}
 
 	return router
 }
