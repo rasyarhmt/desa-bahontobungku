@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
-	"github.com/rasyarhmt/desa-bahontobungku/dto"
 )
 
 type danaRepository struct {
@@ -95,17 +94,7 @@ func (r *danaRepository) GetAllMasuk(ctx context.Context) ([]domain.DanaMasuk, e
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.DanaMasuk, 0)
-	for rows.Next() {
-		d, err := scanDanaMasuk(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *d)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanDanaMasuk)
 }
 
 func (r *danaRepository) GetAllKeluar(ctx context.Context) ([]domain.DanaKeluar, error) {
@@ -113,41 +102,15 @@ func (r *danaRepository) GetAllKeluar(ctx context.Context) ([]domain.DanaKeluar,
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.DanaKeluar, 0)
-	for rows.Next() {
-		d, err := scanDanaKeluar(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *d)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanDanaKeluar)
 }
 
 func (r *danaRepository) GetMasukByID(ctx context.Context, id int) (*domain.DanaMasuk, error) {
-	row := r.db.QueryRowContext(ctx, danaMasukSelect+" WHERE id = ?", id)
-	d, err := scanDanaMasuk(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return d, nil
+	return scanOne(r.db.QueryRowContext(ctx, danaMasukSelect+" WHERE id = ?", id), scanDanaMasuk)
 }
 
 func (r *danaRepository) GetKeluarByID(ctx context.Context, id int) (*domain.DanaKeluar, error) {
-	row := r.db.QueryRowContext(ctx, danaKeluarSelect+" WHERE id = ?", id)
-	d, err := scanDanaKeluar(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return d, nil
+	return scanOne(r.db.QueryRowContext(ctx, danaKeluarSelect+" WHERE id = ?", id), scanDanaKeluar)
 }
 
 func (r *danaRepository) UpdateMasuk(ctx context.Context, id int, d *domain.DanaMasuk) error {
@@ -169,32 +132,16 @@ func (r *danaRepository) UpdateKeluar(ctx context.Context, id int, d *domain.Dan
 }
 
 func (r *danaRepository) DeleteMasuk(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM danamasuk WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM danamasuk WHERE id = ?", id))
 }
 
 func (r *danaRepository) DeleteKeluar(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM danakeluar WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM danakeluar WHERE id = ?", id))
 }
 
-func (r *danaRepository) GetSummaryByYear(ctx context.Context, tahun int) (*dto.DanaSummaryItemDTO, *dto.DanaSummaryItemDTO, error) {
-	var pemasukan dto.DanaSummaryItemDTO
-	var pengeluaran dto.DanaSummaryItemDTO
+func (r *danaRepository) GetSummaryByYear(ctx context.Context, tahun int) (*domain.DanaSummaryItem, *domain.DanaSummaryItem, error) {
+	var pemasukan domain.DanaSummaryItem
+	var pengeluaran domain.DanaSummaryItem
 
 	pemasukanTipe := "Pemasukan"
 	pengeluaranTipe := "Pengeluaran"
@@ -220,10 +167,10 @@ func (r *danaRepository) GetSummaryByYear(ctx context.Context, tahun int) (*dto.
 	return &pemasukan, &pengeluaran, nil
 }
 
-func (r *danaRepository) GetDetailByYear(ctx context.Context, tahun int) (*dto.DanaDetailDTO, error) {
-	detail := &dto.DanaDetailDTO{
-		Pendapatan:  make([]dto.DanaBulananDTO, 0),
-		Pengeluaran: make([]dto.DanaBulananDTO, 0),
+func (r *danaRepository) GetDetailByYear(ctx context.Context, tahun int) (*domain.DanaDetail, error) {
+	detail := &domain.DanaDetail{
+		Pendapatan:  make([]domain.DanaBulanan, 0),
+		Pengeluaran: make([]domain.DanaBulanan, 0),
 	}
 
 	rows, err := r.db.QueryContext(ctx,
@@ -233,7 +180,7 @@ func (r *danaRepository) GetDetailByYear(ctx context.Context, tahun int) (*dto.D
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var d dto.DanaBulananDTO
+		var d domain.DanaBulanan
 		if err := rows.Scan(&d.Bulan, &d.Total); err != nil {
 			return nil, err
 		}
@@ -250,7 +197,7 @@ func (r *danaRepository) GetDetailByYear(ctx context.Context, tahun int) (*dto.D
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var d dto.DanaBulananDTO
+		var d domain.DanaBulanan
 		if err := rows.Scan(&d.Bulan, &d.Total); err != nil {
 			return nil, err
 		}

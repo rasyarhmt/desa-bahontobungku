@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"time"
 
@@ -24,22 +23,33 @@ type beritaUsecase struct {
 	beritaRepo domain.BeritaRepository
 }
 
-func NewBeritaUsecase(beritaRepo domain.BeritaRepository) domain.BeritaUsecase {
+func NewBeritaUsecase(beritaRepo domain.BeritaRepository) BeritaUsecase {
 	return &beritaUsecase{beritaRepo: beritaRepo}
 }
 
-func (u *beritaUsecase) Create(ctx context.Context, req dto.BeritaCreateRequestDTO) (*dto.BeritaResponseDTO, error) {
+func (u *beritaUsecase) Create(ctx context.Context, req dto.BeritaCreateRequestDTO, foto *UploadedFile) (*dto.BeritaResponseDTO, error) {
+	fotoPath, err := storeBeritaPhoto(foto)
+	if err != nil {
+		return nil, err
+	}
+	committed := false
+	defer func() {
+		if !committed && fotoPath != "" {
+			_ = utils.DeleteBeritaImage(fotoPath)
+		}
+	}()
+
 	if strings.TrimSpace(req.Judul) == "" {
-		return nil, errors.New("judul wajib diisi")
+		return nil, domain.NewValidation("judul wajib diisi")
 	}
 	if strings.TrimSpace(req.Isi) == "" {
-		return nil, errors.New("isi wajib diisi")
+		return nil, domain.NewValidation("isi wajib diisi")
 	}
 	if strings.TrimSpace(req.Penulis) == "" {
-		return nil, errors.New("penulis wajib diisi")
+		return nil, domain.NewValidation("penulis wajib diisi")
 	}
 	if strings.TrimSpace(req.TanggalTerbit) == "" {
-		return nil, errors.New("tanggalTerbit wajib diisi")
+		return nil, domain.NewValidation("tanggalTerbit wajib diisi")
 	}
 	tanggal, err := parseBeritaTanggal(req.TanggalTerbit)
 	if err != nil {
@@ -51,11 +61,11 @@ func (u *beritaUsecase) Create(ctx context.Context, req dto.BeritaCreateRequestD
 		status = domain.BeritaStatusDraft
 	}
 	if !validBeritaStatus[status] {
-		return nil, errors.New("status tidak valid")
+		return nil, domain.NewValidation("status tidak valid")
 	}
 
 	b := &domain.Berita{
-		Foto:          strings.TrimSpace(req.Foto),
+		Foto:          fotoPath,
 		Judul:         strings.TrimSpace(req.Judul),
 		Isi:           req.Isi,
 		TanggalTerbit: tanggal,
@@ -66,6 +76,7 @@ func (u *beritaUsecase) Create(ctx context.Context, req dto.BeritaCreateRequestD
 	if err := u.beritaRepo.Create(ctx, b); err != nil {
 		return nil, err
 	}
+	committed = true
 	return beritaToDTO(b), nil
 }
 
@@ -100,43 +111,54 @@ func (u *beritaUsecase) GetByStatus(ctx context.Context, status string) ([]dto.B
 
 func (u *beritaUsecase) GetByID(ctx context.Context, id int) (*dto.BeritaResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	b, err := u.beritaRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if b == nil || b.Status != domain.BeritaStatusDipublikasi {
-		return nil, errors.New("berita tidak ditemukan")
+		return nil, domain.NewNotFound("berita tidak ditemukan")
 	}
 	return beritaToDTO(b), nil
 }
 
 func (u *beritaUsecase) GetByIDAdmin(ctx context.Context, id int) (*dto.BeritaResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	b, err := u.beritaRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if b == nil {
-		return nil, errors.New("berita tidak ditemukan")
+		return nil, domain.NewNotFound("berita tidak ditemukan")
 	}
 	return beritaToDTO(b), nil
 }
 
-func (u *beritaUsecase) Update(ctx context.Context, id int, req dto.BeritaUpdateRequestDTO) error {
+func (u *beritaUsecase) Update(ctx context.Context, id int, req dto.BeritaUpdateRequestDTO, foto *UploadedFile) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
+
+	newFoto, err := storeBeritaPhoto(foto)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed && newFoto != "" {
+			_ = utils.DeleteBeritaImage(newFoto)
+		}
+	}()
 
 	existing, err := u.beritaRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if existing == nil {
-		return errors.New("berita tidak ditemukan")
+		return domain.NewNotFound("berita tidak ditemukan")
 	}
 
 	b := &domain.Berita{
@@ -151,19 +173,19 @@ func (u *beritaUsecase) Update(ctx context.Context, id int, req dto.BeritaUpdate
 
 	if req.Judul != nil {
 		if strings.TrimSpace(*req.Judul) == "" {
-			return errors.New("judul tidak boleh kosong")
+			return domain.NewValidation("judul tidak boleh kosong")
 		}
 		b.Judul = strings.TrimSpace(*req.Judul)
 	}
 	if req.Isi != nil {
 		if strings.TrimSpace(*req.Isi) == "" {
-			return errors.New("isi tidak boleh kosong")
+			return domain.NewValidation("isi tidak boleh kosong")
 		}
 		b.Isi = *req.Isi
 	}
 	if req.Penulis != nil {
 		if strings.TrimSpace(*req.Penulis) == "" {
-			return errors.New("penulis tidak boleh kosong")
+			return domain.NewValidation("penulis tidak boleh kosong")
 		}
 		b.Penulis = strings.TrimSpace(*req.Penulis)
 	}
@@ -177,7 +199,7 @@ func (u *beritaUsecase) Update(ctx context.Context, id int, req dto.BeritaUpdate
 	if req.Status != nil {
 		status := strings.ToLower(strings.TrimSpace(*req.Status))
 		if !validBeritaStatus[status] {
-			return errors.New("status tidak valid")
+			return domain.NewValidation("status tidak valid")
 		}
 		b.Status = status
 	}
@@ -187,17 +209,15 @@ func (u *beritaUsecase) Update(ctx context.Context, id int, req dto.BeritaUpdate
 	if req.DeleteFoto && existing.Foto != "" {
 		b.Foto = ""
 	}
-	if req.Foto != nil && strings.TrimSpace(*req.Foto) != "" {
-		b.Foto = strings.TrimSpace(*req.Foto)
+	if newFoto != "" {
+		b.Foto = newFoto
 		newFotoUsed = existing.Foto != "" && existing.Foto != b.Foto
 	}
 
 	if err := u.beritaRepo.Update(ctx, id, b); err != nil {
-		if newFotoUsed {
-			_ = utils.DeleteBeritaImage(b.Foto)
-		}
 		return err
 	}
+	committed = true
 
 	if newFotoUsed {
 		if err := utils.DeleteBeritaImage(existing.Foto); err != nil {
@@ -215,14 +235,14 @@ func (u *beritaUsecase) Update(ctx context.Context, id int, req dto.BeritaUpdate
 
 func (u *beritaUsecase) ToggleStatus(ctx context.Context, id int) (*dto.BeritaResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	b, err := u.beritaRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if b == nil {
-		return nil, errors.New("berita tidak ditemukan")
+		return nil, domain.NewNotFound("berita tidak ditemukan")
 	}
 
 	if b.Status == domain.BeritaStatusDipublikasi {
@@ -239,7 +259,7 @@ func (u *beritaUsecase) ToggleStatus(ctx context.Context, id int) (*dto.BeritaRe
 
 func (u *beritaUsecase) Delete(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 
 	existing, err := u.beritaRepo.GetByID(ctx, id)
@@ -247,7 +267,7 @@ func (u *beritaUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if existing == nil {
-		return errors.New("berita tidak ditemukan")
+		return domain.NewNotFound("berita tidak ditemukan")
 	}
 
 	deleted, err := u.beritaRepo.Delete(ctx, id)
@@ -255,7 +275,7 @@ func (u *beritaUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if !deleted {
-		return errors.New("berita tidak ditemukan")
+		return domain.NewNotFound("berita tidak ditemukan")
 	}
 
 	if existing.Foto != "" {
@@ -282,9 +302,5 @@ func beritaToDTO(b *domain.Berita) *dto.BeritaResponseDTO {
 }
 
 func beritaToDTOList(list []domain.Berita) []dto.BeritaResponseDTO {
-	result := make([]dto.BeritaResponseDTO, 0, len(list))
-	for i := range list {
-		result = append(result, *beritaToDTO(&list[i]))
-	}
-	return result
+	return mapToDTOList(list, beritaToDTO)
 }

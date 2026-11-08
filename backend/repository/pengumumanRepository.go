@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 )
@@ -56,29 +55,11 @@ func (r *pengumumanRepository) GetAll(ctx context.Context) ([]domain.Pengumuman,
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.Pengumuman, 0)
-	for rows.Next() {
-		p, err := scanPengumuman(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *p)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanPengumuman)
 }
 
 func (r *pengumumanRepository) GetByID(ctx context.Context, id int) (*domain.Pengumuman, error) {
-	row := r.db.QueryRowContext(ctx, pengumumanSelect+" WHERE id = ?", id)
-	p, err := scanPengumuman(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return p, nil
+	return scanOne(r.db.QueryRowContext(ctx, pengumumanSelect+" WHERE id = ?", id), scanPengumuman)
 }
 
 func (r *pengumumanRepository) Update(ctx context.Context, id int, p *domain.Pengumuman) error {
@@ -91,13 +72,5 @@ func (r *pengumumanRepository) Update(ctx context.Context, id int, p *domain.Pen
 }
 
 func (r *pengumumanRepository) Delete(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM pengumuman WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM pengumuman WHERE id = ?", id))
 }

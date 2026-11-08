@@ -2,21 +2,19 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rasyarhmt/desa-bahontobungku/domain"
 	"github.com/rasyarhmt/desa-bahontobungku/dto"
 	"github.com/rasyarhmt/desa-bahontobungku/helpers"
+	"github.com/rasyarhmt/desa-bahontobungku/usecase"
 	"github.com/sirupsen/logrus"
 )
 
 type pelayananHandler struct {
-	pelayananUsecase domain.PelayananUsecase
+	pelayananUsecase usecase.PelayananUsecase
 }
 
-func NewPelayananHandler(pelayananUsecase domain.PelayananUsecase) domain.PelayananHandler {
+func NewPelayananHandler(pelayananUsecase usecase.PelayananUsecase) PelayananHandler {
 	return &pelayananHandler{pelayananUsecase: pelayananUsecase}
 }
 
@@ -27,14 +25,14 @@ func NewPelayananHandler(pelayananUsecase domain.PelayananUsecase) domain.Pelaya
 // @Produce      json
 // @Security     BearerAuth
 // @Param        body   body      dto.PelayananCreateRequestDTO  true  "Data pelayanan"
-// @Success      201    {object}  domain.HttpResponse
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      401    {object}  domain.HttpResponse
+// @Success      201    {object}  helpers.HttpResponse
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      401    {object}  helpers.HttpResponse
 // @Router       /pelayanan [post]
 func (h *pelayananHandler) Create(c *gin.Context) {
 	var req dto.PelayananCreateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Format data pelayanan tidak valid: " + err.Error(),
 		})
@@ -43,14 +41,11 @@ func (h *pelayananHandler) Create(c *gin.Context) {
 
 	if err := h.pelayananUsecase.Create(c.Request.Context(), req); err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.Create: failed")
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusCreated,
 		Message: "Pelayanan berhasil ditambahkan",
 	})
@@ -60,21 +55,21 @@ func (h *pelayananHandler) Create(c *gin.Context) {
 // @Summary      Get all pelayanan
 // @Tags         pelayanan
 // @Produce      json
-// @Success      200  {object}  domain.HttpResponse{data=[]dto.PelayananResponseDTO}
-// @Failure      500  {object}  domain.HttpResponse
+// @Success      200  {object}  helpers.HttpResponse{data=[]dto.PelayananResponseDTO}
+// @Failure      500  {object}  helpers.HttpResponse
 // @Router       /pelayanan [get]
 func (h *pelayananHandler) GetAll(c *gin.Context) {
 	list, err := h.pelayananUsecase.GetAll(c.Request.Context())
 	if err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.GetAll: failed")
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusInternalServerError,
 			Message: "Gagal mengambil daftar pelayanan",
 		})
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Daftar pelayanan berhasil diambil",
 		Data:    list,
@@ -86,35 +81,24 @@ func (h *pelayananHandler) GetAll(c *gin.Context) {
 // @Tags         pelayanan
 // @Produce      json
 // @Param        id     path      integer  true  "ID pelayanan"
-// @Success      200    {object}  domain.HttpResponse{data=dto.PelayananResponseDTO}
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse{data=dto.PelayananResponseDTO}
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /pelayanan/{id} [get]
 func (h *pelayananHandler) GetByID(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID pelayanan tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID pelayanan tidak valid")
+	if !ok {
 		return
 	}
 
 	p, err := h.pelayananUsecase.GetByID(c.Request.Context(), id)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.GetByID: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Pelayanan berhasil diambil",
 		Data:    p,
@@ -127,35 +111,24 @@ func (h *pelayananHandler) GetByID(c *gin.Context) {
 // @Tags         pelayanan
 // @Produce      json
 // @Param        id   path  int  true  "ID pelayanan"
-// @Success      200  {object}  domain.HttpResponse
-// @Failure      400  {object}  domain.HttpResponse
-// @Failure      404  {object}  domain.HttpResponse
+// @Success      200  {object}  helpers.HttpResponse
+// @Failure      400  {object}  helpers.HttpResponse
+// @Failure      404  {object}  helpers.HttpResponse
 // @Router       /pelayanan/{id}/surat/fields [get]
 func (h *pelayananHandler) GetTemplateFields(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID pelayanan tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID pelayanan tidak valid")
+	if !ok {
 		return
 	}
 
 	fields, err := h.pelayananUsecase.GetTemplateFields(c.Request.Context(), id)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.GetTemplateFields: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Field template berhasil diambil",
 		Data:    fields,
@@ -170,24 +143,20 @@ func (h *pelayananHandler) GetTemplateFields(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id     path      integer  true  "ID pelayanan"
 // @Param        body   body      dto.PelayananUpdateRequestDTO  true  "Data pelayanan"
-// @Success      200    {object}  domain.HttpResponse
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      401    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      401    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /pelayanan/{id} [put]
 func (h *pelayananHandler) Update(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID pelayanan tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID pelayanan tidak valid")
+	if !ok {
 		return
 	}
 
 	var req dto.PelayananUpdateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Format data pelayanan tidak valid: " + err.Error(),
 		})
@@ -196,18 +165,11 @@ func (h *pelayananHandler) Update(c *gin.Context) {
 
 	if err := h.pelayananUsecase.Update(c.Request.Context(), id, req); err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.Update: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Pelayanan berhasil diperbarui",
 	})
@@ -219,35 +181,24 @@ func (h *pelayananHandler) Update(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id     path      integer  true  "ID pelayanan"
-// @Success      200    {object}  domain.HttpResponse
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      401    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      401    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /pelayanan/{id} [delete]
 func (h *pelayananHandler) Delete(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID pelayanan tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID pelayanan tidak valid")
+	if !ok {
 		return
 	}
 
 	if err := h.pelayananUsecase.Delete(c.Request.Context(), id); err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.Delete: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Pelayanan berhasil dihapus",
 	})
@@ -259,35 +210,24 @@ func (h *pelayananHandler) Delete(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id     path      integer  true  "ID pelayanan"
-// @Success      200    {object}  domain.HttpResponse
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      401    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      401    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /pelayanan/{id}/toggle-status [put]
 func (h *pelayananHandler) ToggleStatus(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID pelayanan tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID pelayanan tidak valid")
+	if !ok {
 		return
 	}
 
 	if err := h.pelayananUsecase.ToggleStatus(c.Request.Context(), id); err != nil {
 		logrus.WithError(err).Error("handler.Pelayanan.ToggleStatus: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Status pelayanan berhasil diubah",
 	})

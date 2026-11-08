@@ -4,17 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rasyarhmt/desa-bahontobungku/domain"
 	"github.com/rasyarhmt/desa-bahontobungku/dto"
 	"github.com/rasyarhmt/desa-bahontobungku/helpers"
+	"github.com/rasyarhmt/desa-bahontobungku/usecase"
 	"github.com/sirupsen/logrus"
 )
 
 type authHandler struct {
-	authUsecase domain.AuthUsecase
+	authUsecase usecase.AuthUsecase
 }
 
-func NewAuthHandler(authUsecase domain.AuthUsecase) domain.AuthHandler {
+func NewAuthHandler(authUsecase usecase.AuthUsecase) AuthHandler {
 	return &authHandler{authUsecase: authUsecase}
 }
 
@@ -24,14 +24,14 @@ func NewAuthHandler(authUsecase domain.AuthUsecase) domain.AuthHandler {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      dto.LoginRequestDTO  true  "Login credentials"
-// @Success      200      {object}  domain.HttpResponse{data=dto.LoginResponseDTO}
-// @Failure      400      {object}  domain.HttpResponse
-// @Failure      401      {object}  domain.HttpResponse
+// @Success      200      {object}  helpers.HttpResponse{data=dto.LoginResponseDTO}
+// @Failure      400      {object}  helpers.HttpResponse
+// @Failure      401      {object}  helpers.HttpResponse
 // @Router       /auth/login [post]
 func (h *authHandler) Login(c *gin.Context) {
 	var req dto.LoginRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Email dan password wajib diisi",
 		})
@@ -41,14 +41,11 @@ func (h *authHandler) Login(c *gin.Context) {
 	res, err := h.authUsecase.Login(c.Request.Context(), req, c.Request.UserAgent(), c.ClientIP())
 	if err != nil {
 		logrus.WithError(err).Warn("handler.Auth.Login: unauthorized")
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusUnauthorized,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Login berhasil",
 		Data:    res,
@@ -61,14 +58,14 @@ func (h *authHandler) Login(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      dto.RefreshTokenRequestDTO  true  "Refresh token"
-// @Success      200      {object}  domain.HttpResponse{data=dto.RefreshTokenResponseDTO}
-// @Failure      400      {object}  domain.HttpResponse
-// @Failure      401      {object}  domain.HttpResponse
+// @Success      200      {object}  helpers.HttpResponse{data=dto.RefreshTokenResponseDTO}
+// @Failure      400      {object}  helpers.HttpResponse
+// @Failure      401      {object}  helpers.HttpResponse
 // @Router       /auth/refresh [post]
 func (h *authHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Refresh token wajib diisi",
 		})
@@ -78,14 +75,11 @@ func (h *authHandler) RefreshToken(c *gin.Context) {
 	res, err := h.authUsecase.RefreshToken(c.Request.Context(), req, c.Request.UserAgent(), c.ClientIP())
 	if err != nil {
 		logrus.WithError(err).Warn("handler.Auth.RefreshToken: unauthorized")
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusUnauthorized,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Token berhasil diperbarui",
 		Data:    res,
@@ -99,14 +93,14 @@ func (h *authHandler) RefreshToken(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        request  body      dto.RefreshTokenRequestDTO  true  "Refresh token"
-// @Success      200      {object}  domain.HttpResponse
-// @Failure      400      {object}  domain.HttpResponse
-// @Failure      401      {object}  domain.HttpResponse
+// @Success      200      {object}  helpers.HttpResponse
+// @Failure      400      {object}  helpers.HttpResponse
+// @Failure      401      {object}  helpers.HttpResponse
 // @Router       /auth/logout [post]
 func (h *authHandler) Logout(c *gin.Context) {
 	var req dto.RefreshTokenRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Refresh token wajib diisi",
 		})
@@ -115,14 +109,11 @@ func (h *authHandler) Logout(c *gin.Context) {
 
 	if err := h.authUsecase.Logout(c.Request.Context(), req.RefreshToken); err != nil {
 		logrus.WithError(err).Error("handler.Auth.Logout: failed")
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Berhasil logout",
 	})

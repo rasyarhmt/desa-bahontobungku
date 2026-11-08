@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -19,20 +18,20 @@ type authUsecase struct {
 	userRepo domain.UserRepository
 }
 
-func NewAuthUsecase(authRepo domain.AuthRepository, userRepo domain.UserRepository) domain.AuthUsecase {
+func NewAuthUsecase(authRepo domain.AuthRepository, userRepo domain.UserRepository) AuthUsecase {
 	return &authUsecase{authRepo: authRepo, userRepo: userRepo}
 }
 
 func (u *authUsecase) Login(ctx context.Context, req dto.LoginRequestDTO, userAgent, ipAddress string) (*dto.LoginResponseDTO, error) {
 	user, err := u.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 	if user == nil {
-		return nil, errors.New("email tidak ditemukan")
+		return nil, domain.NewUnauthorized("email atau password salah")
 	}
 	if !utils.ComparePassword(user.Password, req.Password) {
-		return nil, errors.New("password salah")
+		return nil, domain.NewUnauthorized("password salah")
 	}
 
 	now := time.Now()
@@ -40,11 +39,11 @@ func (u *authUsecase) Login(ctx context.Context, req dto.LoginRequestDTO, userAg
 
 	accessToken, err := utils.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 	refreshToken, err := u.createRefreshToken(ctx, user.ID, userAgent, ipAddress)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 
 	fmt.Println("ini di hit fungsi login")
@@ -67,34 +66,34 @@ func (u *authUsecase) RefreshToken(ctx context.Context, req dto.RefreshTokenRequ
 
 	rt, err := u.authRepo.GetRefreshTokenByHash(ctx, tokenHash)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 	if rt == nil || rt.IsRevoked {
-		return nil, errors.New("refresh token tidak valid")
+		return nil, domain.NewUnauthorized("refresh token tidak valid")
 	}
 	if time.Now().After(rt.ExpiredAt) {
-		return nil, errors.New("refresh token telah kedaluwarsa")
+		return nil, domain.NewUnauthorized("refresh token telah kedaluwarsa")
 	}
 
 	user, err := u.userRepo.GetUserByID(ctx, rt.UserID)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 	if user == nil {
-		return nil, errors.New("user tidak ditemukan")
+		return nil, domain.NewUnauthorized("user tidak ditemukan")
 	}
 
 	if err := u.authRepo.RevokeRefreshToken(ctx, tokenHash); err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 
 	accessToken, err := utils.GenerateAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 	newRefreshToken, err := u.createRefreshToken(ctx, user.ID, userAgent, ipAddress)
 	if err != nil {
-		return nil, err
+		return nil, domain.NewUnauthorized(err.Error())
 	}
 
 	return &dto.RefreshTokenResponseDTO{
@@ -105,7 +104,7 @@ func (u *authUsecase) RefreshToken(ctx context.Context, req dto.RefreshTokenRequ
 
 func (u *authUsecase) Logout(ctx context.Context, refreshToken string) error {
 	if refreshToken == "" {
-		return errors.New("refresh token wajib diisi")
+		return domain.NewValidation("refresh token wajib diisi")
 	}
 	return u.authRepo.RevokeRefreshToken(ctx, utils.HashToken(refreshToken))
 }

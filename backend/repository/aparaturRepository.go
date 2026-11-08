@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 )
@@ -67,41 +66,15 @@ func (r *aparaturRepository) GetAll(ctx context.Context) ([]domain.Aparatur, err
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.Aparatur, 0)
-	for rows.Next() {
-		a, err := scanAparatur(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *a)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanAparatur)
 }
 
 func (r *aparaturRepository) GetByID(ctx context.Context, id int) (*domain.Aparatur, error) {
-	row := r.db.QueryRowContext(ctx, aparaturSelect+" WHERE id = ?", id)
-	a, err := scanAparatur(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return a, nil
+	return scanOne(r.db.QueryRowContext(ctx, aparaturSelect+" WHERE id = ?", id), scanAparatur)
 }
 
 func (r *aparaturRepository) GetByNIP(ctx context.Context, nip string) (*domain.Aparatur, error) {
-	row := r.db.QueryRowContext(ctx, aparaturSelect+" WHERE nip = ?", nip)
-	a, err := scanAparatur(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return a, nil
+	return scanOne(r.db.QueryRowContext(ctx, aparaturSelect+" WHERE nip = ?", nip), scanAparatur)
 }
 
 func (r *aparaturRepository) Update(ctx context.Context, id int, a *domain.Aparatur) error {
@@ -114,13 +87,5 @@ func (r *aparaturRepository) Update(ctx context.Context, id int, a *domain.Apara
 }
 
 func (r *aparaturRepository) Delete(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM aparatur WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM aparatur WHERE id = ?", id))
 }

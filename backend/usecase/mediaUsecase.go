@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
@@ -20,42 +19,58 @@ type mediaUsecase struct {
 	mediaRepo domain.MediaRepository
 }
 
-func NewMediaUsecase(mediaRepo domain.MediaRepository) domain.MediaUsecase {
+func NewMediaUsecase(mediaRepo domain.MediaRepository) MediaUsecase {
 	return &mediaUsecase{mediaRepo: mediaRepo}
 }
 
-func (u *mediaUsecase) Create(ctx context.Context, req dto.MediaCreateRequestDTO) (*dto.MediaResponseDTO, error) {
+func (u *mediaUsecase) Create(ctx context.Context, req dto.MediaCreateRequestDTO, file, thumbnail *UploadedFile) (*dto.MediaResponseDTO, error) {
 	nama := strings.TrimSpace(req.Nama)
 	deskripsi := strings.TrimSpace(req.Deskripsi)
 	tipe := strings.ToLower(strings.TrimSpace(req.Tipe))
 
+	if _, ok := mediaAllowedTypes[tipe]; !ok {
+		return nil, domain.NewValidation("Tipe media tidak valid (foto/video/dokumen)")
+	}
+	if file == nil {
+		return nil, domain.NewValidation("File media wajib diunggah")
+	}
+
+	filePath, err := storeMediaFile(file, tipe)
+	if err != nil {
+		return nil, err
+	}
+	committed := false
+	var thumbPath string
+	defer func() {
+		if !committed {
+			_ = utils.DeleteMediaFile(filePath)
+			if thumbPath != "" {
+				_ = utils.DeleteMediaFile(thumbPath)
+			}
+		}
+	}()
+
+	thumbPath, err = storeMediaThumbnail(thumbnail)
+	if err != nil {
+		return nil, err
+	}
+
 	if nama == "" {
-		return nil, errors.New("nama wajib diisi")
-	}
-	if deskripsi == "" {
-		return nil, errors.New("deskripsi wajib diisi")
-	}
-	if !validMediaTipe[tipe] {
-		return nil, errors.New("tipe media tidak valid (foto/video/dokumen)")
-	}
-	if strings.TrimSpace(req.File) == "" {
-		return nil, errors.New("file wajib diunggah")
-	}
-	if tipe == domain.MediaTipeVideo && strings.TrimSpace(req.Thumbnail) == "" {
-		return nil, errors.New("thumbnail wajib diisi untuk tipe video")
+		return nil, domain.NewValidation("nama wajib diisi")
 	}
 
 	m := &domain.Media{
 		Nama:      nama,
 		Tipe:      tipe,
-		File:      strings.TrimSpace(req.File),
+		File:      filePath,
 		Deskripsi: deskripsi,
-		Thumbnail: strings.TrimSpace(req.Thumbnail),
+		Thumbnail: thumbPath,
 	}
 
 	if err := u.mediaRepo.Create(ctx, m); err != nil {
 		return nil, err
 	}
+	committed = true
 	return mediaToDTO(m), nil
 }
 
@@ -69,29 +84,40 @@ func (u *mediaUsecase) GetAll(ctx context.Context) ([]dto.MediaResponseDTO, erro
 
 func (u *mediaUsecase) GetByID(ctx context.Context, id int) (*dto.MediaResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	m, err := u.mediaRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if m == nil {
-		return nil, errors.New("media tidak ditemukan")
+		return nil, domain.NewNotFound("media tidak ditemukan")
 	}
 	return mediaToDTO(m), nil
 }
 
-func (u *mediaUsecase) Update(ctx context.Context, id int, req dto.MediaUpdateRequestDTO) error {
+func (u *mediaUsecase) Update(ctx context.Context, id int, req dto.MediaUpdateRequestDTO, file *UploadedFile) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
+
+	newFile, err := storeMediaFileUpdate(file)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed && newFile != "" {
+			_ = utils.DeleteMediaFile(newFile)
+		}
+	}()
 
 	existing, err := u.mediaRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if existing == nil {
-		return errors.New("media tidak ditemukan")
+		return domain.NewNotFound("media tidak ditemukan")
 	}
 
 	m := &domain.Media{
@@ -105,21 +131,18 @@ func (u *mediaUsecase) Update(ctx context.Context, id int, req dto.MediaUpdateRe
 
 	if req.Nama != nil {
 		if strings.TrimSpace(*req.Nama) == "" {
-			return errors.New("nama tidak boleh kosong")
+			return domain.NewValidation("nama tidak boleh kosong")
 		}
 		m.Nama = strings.TrimSpace(*req.Nama)
 	}
 	if req.Tipe != nil {
 		tipe := strings.ToLower(strings.TrimSpace(*req.Tipe))
 		if !validMediaTipe[tipe] {
-			return errors.New("tipe media tidak valid (foto/video/dokumen)")
+			return domain.NewValidation("tipe media tidak valid (foto/video/dokumen)")
 		}
 		m.Tipe = tipe
 	}
 	if req.Deskripsi != nil {
-		if strings.TrimSpace(*req.Deskripsi) == "" {
-			return errors.New("deskripsi tidak boleh kosong")
-		}
 		m.Deskripsi = strings.TrimSpace(*req.Deskripsi)
 	}
 	if req.Thumbnail != nil {
@@ -128,21 +151,15 @@ func (u *mediaUsecase) Update(ctx context.Context, id int, req dto.MediaUpdateRe
 
 	// Ganti file utama bila diunggah file baru
 	newFileUsed := false
-	if req.File != nil && strings.TrimSpace(*req.File) != "" {
-		m.File = strings.TrimSpace(*req.File)
+	if newFile != "" {
+		m.File = newFile
 		newFileUsed = existing.File != "" && existing.File != m.File
 	}
 
-	if m.Tipe == domain.MediaTipeVideo && m.Thumbnail == "" {
-		return errors.New("thumbnail wajib diisi untuk tipe video")
-	}
-
 	if err := u.mediaRepo.Update(ctx, id, m); err != nil {
-		if newFileUsed {
-			_ = utils.DeleteMediaFile(m.File)
-		}
 		return err
 	}
+	committed = true
 
 	if newFileUsed {
 		if err := utils.DeleteMediaFile(existing.File); err != nil {
@@ -154,21 +171,21 @@ func (u *mediaUsecase) Update(ctx context.Context, id int, req dto.MediaUpdateRe
 
 func (u *mediaUsecase) Delete(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 	existing, err := u.mediaRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if existing == nil {
-		return errors.New("media tidak ditemukan")
+		return domain.NewNotFound("media tidak ditemukan")
 	}
 	deleted, err := u.mediaRepo.Delete(ctx, id)
 	if err != nil {
 		return err
 	}
 	if !deleted {
-		return errors.New("media tidak ditemukan")
+		return domain.NewNotFound("media tidak ditemukan")
 	}
 	if existing.File != "" {
 		if err := utils.DeleteMediaFile(existing.File); err != nil {
@@ -196,9 +213,5 @@ func mediaToDTO(m *domain.Media) *dto.MediaResponseDTO {
 }
 
 func mediaToDTOList(list []domain.Media) []dto.MediaResponseDTO {
-	result := make([]dto.MediaResponseDTO, 0, len(list))
-	for i := range list {
-		result = append(result, *mediaToDTO(&list[i]))
-	}
-	return result
+	return mapToDTOList(list, mediaToDTO)
 }

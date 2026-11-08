@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 )
@@ -20,11 +19,7 @@ const suratMasukSelect = `
 	SELECT id, nomorSurat, pengirim, perihal, tanggalTerima, file, created_at, updated_at
 		FROM suratmasuk`
 
-type suratMasukScanner interface {
-	Scan(dest ...interface{}) error
-}
-
-func scanSuratMasuk(row suratMasukScanner) (*domain.SuratMasuk, error) {
+func scanSuratMasuk(row rowScanner) (*domain.SuratMasuk, error) {
 	var s domain.SuratMasuk
 	var perihal sql.NullString
 
@@ -44,18 +39,10 @@ func scanSuratMasuk(row suratMasukScanner) (*domain.SuratMasuk, error) {
 }
 
 func (r *suratMasukRepository) Create(ctx context.Context, s *domain.SuratMasuk) (int, error) {
-	result, err := r.db.ExecContext(ctx,
+	return execReturningID(r.db.ExecContext(ctx,
 		`INSERT INTO suratmasuk (nomorSurat, pengirim, perihal, tanggalTerima, file)
 		 VALUES (?, ?, ?, ?, ?)`,
-		s.NomorSurat, s.Pengirim, s.Perihal, s.TanggalTerima, s.File)
-	if err != nil {
-		return 0, err
-	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return int(id), nil
+		s.NomorSurat, s.Pengirim, s.Perihal, s.TanggalTerima, s.File))
 }
 
 func (r *suratMasukRepository) GetAll(ctx context.Context) ([]domain.SuratMasuk, error) {
@@ -63,41 +50,15 @@ func (r *suratMasukRepository) GetAll(ctx context.Context) ([]domain.SuratMasuk,
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.SuratMasuk, 0)
-	for rows.Next() {
-		s, err := scanSuratMasuk(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *s)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanSuratMasuk)
 }
 
 func (r *suratMasukRepository) GetByID(ctx context.Context, id int) (*domain.SuratMasuk, error) {
-	row := r.db.QueryRowContext(ctx, suratMasukSelect+" WHERE id = ?", id)
-	s, err := scanSuratMasuk(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return s, nil
+	return scanOne(r.db.QueryRowContext(ctx, suratMasukSelect+" WHERE id = ?", id), scanSuratMasuk)
 }
 
 func (r *suratMasukRepository) GetByNomorSurat(ctx context.Context, nomor string) (*domain.SuratMasuk, error) {
-	row := r.db.QueryRowContext(ctx, suratMasukSelect+" WHERE nomorSurat = ?", nomor)
-	s, err := scanSuratMasuk(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return s, nil
+	return scanOne(r.db.QueryRowContext(ctx, suratMasukSelect+" WHERE nomorSurat = ?", nomor), scanSuratMasuk)
 }
 
 func (r *suratMasukRepository) Update(ctx context.Context, id int, s *domain.SuratMasuk) error {
@@ -110,13 +71,5 @@ func (r *suratMasukRepository) Update(ctx context.Context, id int, s *domain.Sur
 }
 
 func (r *suratMasukRepository) Delete(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM suratmasuk WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM suratmasuk WHERE id = ?", id))
 }

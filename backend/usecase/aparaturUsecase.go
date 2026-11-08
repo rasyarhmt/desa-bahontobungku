@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
@@ -14,18 +13,29 @@ type aparaturUsecase struct {
 	aparaturRepo domain.AparaturRepository
 }
 
-func NewAparaturUsecase(aparaturRepo domain.AparaturRepository) domain.AparaturUsecase {
+func NewAparaturUsecase(aparaturRepo domain.AparaturRepository) AparaturUsecase {
 	return &aparaturUsecase{aparaturRepo: aparaturRepo}
 }
 
-func (u *aparaturUsecase) Create(ctx context.Context, req dto.AparaturCreateRequestDTO) (*dto.AparaturResponseDTO, error) {
+func (u *aparaturUsecase) Create(ctx context.Context, req dto.AparaturCreateRequestDTO, foto *UploadedFile) (*dto.AparaturResponseDTO, error) {
+	fotoPath, err := storeAparaturPhoto(foto)
+	if err != nil {
+		return nil, err
+	}
+	committed := false
+	defer func() {
+		if !committed && fotoPath != "" {
+			_ = utils.DeleteAparaturPhoto(fotoPath)
+		}
+	}()
+
 	nama := strings.TrimSpace(req.Nama)
 	jabatan := strings.TrimSpace(req.Jabatan)
 	if nama == "" {
-		return nil, errors.New("nama wajib diisi")
+		return nil, domain.NewValidation("nama wajib diisi")
 	}
 	if jabatan == "" {
-		return nil, errors.New("jabatan wajib diisi")
+		return nil, domain.NewValidation("jabatan wajib diisi")
 	}
 
 	nip := strings.TrimSpace(req.Nip)
@@ -35,7 +45,7 @@ func (u *aparaturUsecase) Create(ctx context.Context, req dto.AparaturCreateRequ
 			return nil, err
 		}
 		if existing != nil {
-			return nil, errors.New("NIP aparatur sudah terdaftar")
+			return nil, domain.NewValidation("NIP aparatur sudah terdaftar")
 		}
 	}
 
@@ -44,12 +54,13 @@ func (u *aparaturUsecase) Create(ctx context.Context, req dto.AparaturCreateRequ
 		Nip:     nip,
 		Jabatan: jabatan,
 		Telepon: strings.TrimSpace(req.Telepon),
-		Foto:    strings.TrimSpace(req.Foto),
+		Foto:    fotoPath,
 	}
 
 	if err := u.aparaturRepo.Create(ctx, a); err != nil {
 		return nil, err
 	}
+	committed = true
 	return aparaturToDTO(a), nil
 }
 
@@ -63,14 +74,14 @@ func (u *aparaturUsecase) GetAll(ctx context.Context) ([]dto.AparaturResponseDTO
 
 func (u *aparaturUsecase) GetByID(ctx context.Context, id int) (*dto.AparaturResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	a, err := u.aparaturRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if a == nil {
-		return nil, errors.New("aparatur tidak ditemukan")
+		return nil, domain.NewNotFound("aparatur tidak ditemukan")
 	}
 	return aparaturToDTO(a), nil
 }
@@ -78,29 +89,40 @@ func (u *aparaturUsecase) GetByID(ctx context.Context, id int) (*dto.AparaturRes
 func (u *aparaturUsecase) GetByNIP(ctx context.Context, nip string) (*dto.AparaturResponseDTO, error) {
 	nip = strings.TrimSpace(nip)
 	if nip == "" {
-		return nil, errors.New("NIP wajib diisi")
+		return nil, domain.NewValidation("NIP wajib diisi")
 	}
 	a, err := u.aparaturRepo.GetByNIP(ctx, nip)
 	if err != nil {
 		return nil, err
 	}
 	if a == nil {
-		return nil, errors.New("aparatur tidak ditemukan")
+		return nil, domain.NewNotFound("aparatur tidak ditemukan")
 	}
 	return aparaturToDTO(a), nil
 }
 
-func (u *aparaturUsecase) Update(ctx context.Context, id int, req dto.AparaturUpdateRequestDTO) error {
+func (u *aparaturUsecase) Update(ctx context.Context, id int, req dto.AparaturUpdateRequestDTO, foto *UploadedFile) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
+
+	newFoto, err := storeAparaturPhoto(foto)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed && newFoto != "" {
+			_ = utils.DeleteAparaturPhoto(newFoto)
+		}
+	}()
 
 	existing, err := u.aparaturRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if existing == nil {
-		return errors.New("aparatur tidak ditemukan")
+		return domain.NewNotFound("aparatur tidak ditemukan")
 	}
 
 	a := &domain.Aparatur{
@@ -114,13 +136,13 @@ func (u *aparaturUsecase) Update(ctx context.Context, id int, req dto.AparaturUp
 
 	if req.Nama != nil {
 		if strings.TrimSpace(*req.Nama) == "" {
-			return errors.New("nama tidak boleh kosong")
+			return domain.NewValidation("nama tidak boleh kosong")
 		}
 		a.Nama = strings.TrimSpace(*req.Nama)
 	}
 	if req.Jabatan != nil {
 		if strings.TrimSpace(*req.Jabatan) == "" {
-			return errors.New("jabatan tidak boleh kosong")
+			return domain.NewValidation("jabatan tidak boleh kosong")
 		}
 		a.Jabatan = strings.TrimSpace(*req.Jabatan)
 	}
@@ -133,7 +155,7 @@ func (u *aparaturUsecase) Update(ctx context.Context, id int, req dto.AparaturUp
 			return err
 		}
 		if dup != nil {
-			return errors.New("NIP aparatur sudah terdaftar")
+			return domain.NewValidation("NIP aparatur sudah terdaftar")
 		}
 	}
 	if req.Telepon != nil {
@@ -141,17 +163,15 @@ func (u *aparaturUsecase) Update(ctx context.Context, id int, req dto.AparaturUp
 	}
 
 	newFotoUsed := false
-	if req.Foto != nil && strings.TrimSpace(*req.Foto) != "" {
-		a.Foto = strings.TrimSpace(*req.Foto)
+	if newFoto != "" {
+		a.Foto = newFoto
 		newFotoUsed = existing.Foto != "" && existing.Foto != a.Foto
 	}
 
 	if err := u.aparaturRepo.Update(ctx, id, a); err != nil {
-		if newFotoUsed {
-			_ = utils.DeleteAparaturPhoto(a.Foto)
-		}
 		return err
 	}
+	committed = true
 
 	if newFotoUsed {
 		if err := utils.DeleteAparaturPhoto(existing.Foto); err != nil {
@@ -163,21 +183,21 @@ func (u *aparaturUsecase) Update(ctx context.Context, id int, req dto.AparaturUp
 
 func (u *aparaturUsecase) Delete(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 	existing, err := u.aparaturRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if existing == nil {
-		return errors.New("aparatur tidak ditemukan")
+		return domain.NewNotFound("aparatur tidak ditemukan")
 	}
 	deleted, err := u.aparaturRepo.Delete(ctx, id)
 	if err != nil {
 		return err
 	}
 	if !deleted {
-		return errors.New("aparatur tidak ditemukan")
+		return domain.NewNotFound("aparatur tidak ditemukan")
 	}
 	if existing.Foto != "" {
 		if err := utils.DeleteAparaturPhoto(existing.Foto); err != nil {
@@ -202,9 +222,5 @@ func aparaturToDTO(a *domain.Aparatur) *dto.AparaturResponseDTO {
 }
 
 func aparaturToDTOList(list []domain.Aparatur) []dto.AparaturResponseDTO {
-	result := make([]dto.AparaturResponseDTO, 0, len(list))
-	for i := range list {
-		result = append(result, *aparaturToDTO(&list[i]))
-	}
-	return result
+	return mapToDTOList(list, aparaturToDTO)
 }

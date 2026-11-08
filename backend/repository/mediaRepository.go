@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 )
@@ -52,29 +51,11 @@ func (r *mediaRepository) GetAll(ctx context.Context) ([]domain.Media, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.Media, 0)
-	for rows.Next() {
-		m, err := scanMedia(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *m)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanMedia)
 }
 
 func (r *mediaRepository) GetByID(ctx context.Context, id int) (*domain.Media, error) {
-	row := r.db.QueryRowContext(ctx, mediaSelect+" WHERE id = ?", id)
-	m, err := scanMedia(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return m, nil
+	return scanOne(r.db.QueryRowContext(ctx, mediaSelect+" WHERE id = ?", id), scanMedia)
 }
 
 func (r *mediaRepository) Update(ctx context.Context, id int, m *domain.Media) error {
@@ -87,13 +68,5 @@ func (r *mediaRepository) Update(ctx context.Context, id int, m *domain.Media) e
 }
 
 func (r *mediaRepository) Delete(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM media WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM media WHERE id = ?", id))
 }

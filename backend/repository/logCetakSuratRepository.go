@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 )
@@ -25,11 +24,7 @@ const logCetakSuratSelect = `
 		LEFT JOIN surat_template t ON t.id = l.id_template
 		LEFT JOIN pelayanan p ON p.id = l.id_pelayanan`
 
-type logCetakSuratScanner interface {
-	Scan(dest ...interface{}) error
-}
-
-func scanLogCetakSurat(row logCetakSuratScanner) (*domain.LogCetakSurat, error) {
+func scanLogCetakSurat(row rowScanner) (*domain.LogCetakSurat, error) {
 	var l domain.LogCetakSurat
 	var idTemplate sql.NullInt64
 	var idPelayanan sql.NullInt64
@@ -69,60 +64,26 @@ func scanLogCetakSurat(row logCetakSuratScanner) (*domain.LogCetakSurat, error) 
 }
 
 func (r *logCetakSuratRepository) Create(ctx context.Context, l *domain.LogCetakSurat) (int, error) {
-	result, err := r.db.ExecContext(ctx,
+	return execReturningID(r.db.ExecContext(ctx,
 		`INSERT INTO log_cetak_surat (kode_unik, id_template, id_pelayanan, nama_pemohon, nik_pemohon, file, status)
 		 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		l.KodeUnik, l.IDTemplate, l.IDPelayanan, l.NamaPemohon, l.NikPemohon, l.File, l.Status)
-	if err != nil {
-		return 0, err
-	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return int(id), nil
+		l.KodeUnik, l.IDTemplate, l.IDPelayanan, l.NamaPemohon, l.NikPemohon, l.File, l.Status))
 }
 
 func (r *logCetakSuratRepository) GetAll(ctx context.Context) ([]domain.LogCetakSurat, error) {
-	rows, err := r.db.QueryContext(ctx, logCetakSuratSelect+" ORDER BY id DESC")
+	rows, err := r.db.QueryContext(ctx, logCetakSuratSelect+" ORDER BY l.id DESC")
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.LogCetakSurat, 0)
-	for rows.Next() {
-		l, err := scanLogCetakSurat(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *l)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanLogCetakSurat)
 }
 
 func (r *logCetakSuratRepository) GetByID(ctx context.Context, id int) (*domain.LogCetakSurat, error) {
-	row := r.db.QueryRowContext(ctx, logCetakSuratSelect+" WHERE l.id = ?", id)
-	l, err := scanLogCetakSurat(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return l, nil
+	return scanOne(r.db.QueryRowContext(ctx, logCetakSuratSelect+" WHERE l.id = ?", id), scanLogCetakSurat)
 }
 
 func (r *logCetakSuratRepository) GetByKodeUnik(ctx context.Context, kode string) (*domain.LogCetakSurat, error) {
-	row := r.db.QueryRowContext(ctx, logCetakSuratSelect+" WHERE l.kode_unik = ?", kode)
-	l, err := scanLogCetakSurat(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return l, nil
+	return scanOne(r.db.QueryRowContext(ctx, logCetakSuratSelect+" WHERE l.kode_unik = ?", kode), scanLogCetakSurat)
 }
 
 func (r *logCetakSuratRepository) SetDiresmikan(ctx context.Context, id int, nomorSurat *string) error {

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -16,33 +17,14 @@ import (
 var nikPattern = regexp.MustCompile(`^[0-9]{16}$`)
 var noKKPattern = regexp.MustCompile(`^[0-9]{16}$`)
 
-var validStatuses = map[string]bool{
-	domain.StatusKepalaKeluarga: true,
-	domain.StatusIstri:          true,
-	domain.StatusAnak:           true,
-	domain.StatusMertua:         true,
-	domain.StatusCucu:           true,
-	domain.StatusMenantu:        true,
-}
-
 var validJenisKelamin = map[string]bool{
 	domain.JenisKelaminLaki:      true,
 	domain.JenisKelaminPerempuan: true,
 }
 
-func validateStatus(status string) error {
-	if status == "" {
-		return nil
-	}
-	if !validStatuses[status] {
-		return errors.New("status tidak valid")
-	}
-	return nil
-}
-
 func validateJenisKelamin(jenisKelamin string) error {
 	if !validJenisKelamin[jenisKelamin] {
-		return errors.New("jenis kelamin tidak valid")
+		return domain.NewValidation("jenis kelamin tidak valid")
 	}
 	return nil
 }
@@ -50,7 +32,7 @@ func validateJenisKelamin(jenisKelamin string) error {
 func validateNIK(nik string) error {
 	nik = strings.TrimSpace(nik)
 	if !nikPattern.MatchString(nik) {
-		return errors.New("NIK harus 16 digit angka")
+		return domain.NewValidation("NIK harus 16 digit angka")
 	}
 	return nil
 }
@@ -61,17 +43,46 @@ func validateNoKK(noKK string) error {
 		return nil
 	}
 	if !noKKPattern.MatchString(noKK) {
-		return errors.New("nomor KK harus 16 digit angka")
+		return domain.NewValidation("nomor KK harus 16 digit angka")
+	}
+	return nil
+}
+
+func (u *pendudukUsecase) kepalaKeluargaStatusID(ctx context.Context) (int, error) {
+	s, err := u.statusKeluargaRepo.GetByNama(ctx, domain.NamaStatusKepalaKeluarga)
+	if err != nil {
+		return 0, err
+	}
+	if s == nil {
+		return 0, domain.NewValidation("status \"" + domain.NamaStatusKepalaKeluarga + "\" belum tersedia, jalankan seeder status keluarga")
+	}
+	return s.ID, nil
+}
+
+func (u *pendudukUsecase) validateStatusKeluarga(ctx context.Context, statusID *int) error {
+	if statusID == nil {
+		return domain.NewValidation("status keluarga wajib dipilih")
+	}
+	s, err := u.statusKeluargaRepo.GetByID(ctx, *statusID)
+	if err != nil {
+		return err
+	}
+	if s == nil {
+		return domain.NewNotFound("status keluarga tidak ditemukan")
 	}
 	return nil
 }
 
 type pendudukUsecase struct {
-	pendudukRepo domain.PendudukRepository
+	pendudukRepo       domain.PendudukRepository
+	statusKeluargaRepo domain.StatusKeluargaRepository
 }
 
-func NewPendudukUsecase(pendudukRepo domain.PendudukRepository) domain.PendudukUsecase {
-	return &pendudukUsecase{pendudukRepo: pendudukRepo}
+func NewPendudukUsecase(pendudukRepo domain.PendudukRepository, statusKeluargaRepo domain.StatusKeluargaRepository) PendudukUsecase {
+	return &pendudukUsecase{
+		pendudukRepo:       pendudukRepo,
+		statusKeluargaRepo: statusKeluargaRepo,
+	}
 }
 
 func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO) error {
@@ -79,12 +90,12 @@ func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO
 		return err
 	}
 	if strings.TrimSpace(req.Nama) == "" {
-		return errors.New("nama wajib diisi")
+		return domain.NewValidation("nama wajib diisi")
 	}
 	if err := validateJenisKelamin(req.JenisKelamin); err != nil {
 		return err
 	}
-	if err := validateStatus(req.Status); err != nil {
+	if err := u.validateStatusKeluarga(ctx, req.IDStatusKeluarga); err != nil {
 		return err
 	}
 	if err := validateNoKK(req.NomorKK); err != nil {
@@ -98,10 +109,10 @@ func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO
 		return err
 	}
 	if existing != nil {
-		return errors.New("NIK sudah terdaftar")
+		return domain.NewValidation("NIK sudah terdaftar")
 	}
 
-	if err := u.validateFamily(ctx, req.Status, req.IDKepalakeluarga, 0); err != nil {
+	if err := u.validateFamily(ctx, req.IDStatusKeluarga, req.IDKepalakeluarga, 0); err != nil {
 		return err
 	}
 
@@ -115,7 +126,7 @@ func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO
 		NoKK:             strings.TrimSpace(req.NomorKK),
 		JenisKelamin:     req.JenisKelamin,
 		Agama:            req.Agama,
-		Status:           req.Status,
+		IDStatusKeluarga: req.IDStatusKeluarga,
 		IDKepalakeluarga: req.IDKepalakeluarga,
 	}
 
@@ -136,10 +147,14 @@ func (u *pendudukUsecase) GetByNIK(ctx context.Context, nik string) (*dto.Pendud
 		return nil, err
 	}
 	if p == nil {
-		return nil, errors.New("penduduk tidak ditemukan")
+		return nil, domain.NewNotFound("penduduk tidak ditemukan")
 	}
 
-	return pendudukToDTO(u.decrypt(p)), nil
+	decrypted, err := u.decrypt(p)
+	if err != nil {
+		return nil, err
+	}
+	return pendudukToDTO(decrypted), nil
 }
 
 func (u *pendudukUsecase) GetAll(ctx context.Context) ([]dto.PendudukResponseDTO, error) {
@@ -147,20 +162,24 @@ func (u *pendudukUsecase) GetAll(ctx context.Context) ([]dto.PendudukResponseDTO
 	if err != nil {
 		return nil, err
 	}
-	return u.toDTOList(list), nil
+	return u.toDTOList(list)
 }
 
 func (u *pendudukUsecase) GetKepalaKeluarga(ctx context.Context) ([]dto.PendudukResponseDTO, error) {
-	list, err := u.pendudukRepo.GetKepalaKeluarga(ctx)
+	statusID, err := u.kepalaKeluargaStatusID(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return u.toDTOList(list), nil
+	list, err := u.pendudukRepo.GetKepalaKeluargaByStatusID(ctx, statusID)
+	if err != nil {
+		return nil, err
+	}
+	return u.toDTOList(list)
 }
 
 func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequestDTO) error {
 	if strings.TrimSpace(req.NIK) == "" {
-		return errors.New("NIK wajib diisi")
+		return domain.NewValidation("NIK wajib diisi")
 	}
 
 	existing, err := u.pendudukRepo.GetByNIKHash(ctx, utils.HashHex(strings.TrimSpace(req.NIK)))
@@ -168,10 +187,13 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 		return err
 	}
 	if existing == nil {
-		return errors.New("penduduk tidak ditemukan")
+		return domain.NewNotFound("penduduk tidak ditemukan")
 	}
 
-	current := u.decrypt(existing)
+	current, err := u.decrypt(existing)
+	if err != nil {
+		return err
+	}
 
 	newNIK := current.NIK
 	if req.NewNIK != nil {
@@ -182,16 +204,21 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 		if dup, err := u.pendudukRepo.GetByNIKHash(ctx, utils.HashHex(newNIK)); err != nil {
 			return err
 		} else if dup != nil && dup.ID != existing.ID {
-			return errors.New("NIK baru sudah terdaftar")
+			return domain.NewValidation("NIK baru sudah terdaftar")
 		}
 	}
 
-	newStatus := current.Status
-	if req.Status != nil {
-		if err := validateStatus(*req.Status); err != nil {
+	statusID := current.IDStatusKeluarga
+	if req.IDStatusKeluarga != nil {
+		if err := u.validateStatusKeluarga(ctx, req.IDStatusKeluarga); err != nil {
 			return err
 		}
-		newStatus = *req.Status
+		statusID = req.IDStatusKeluarga
+	}
+
+	kkStatusID, err := u.kepalaKeluargaStatusID(ctx)
+	if err != nil {
+		return err
 	}
 
 	jenisKelamin := current.JenisKelamin
@@ -204,13 +231,13 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 
 	var kkID *int
 	switch {
-	case newStatus == domain.StatusKepalaKeluarga:
+	case statusID != nil && *statusID == kkStatusID:
 		kkID = nil
-	case req.Status != nil || req.IDKepalakeluarga != nil:
+	case req.IDStatusKeluarga != nil || req.IDKepalakeluarga != nil:
 		if req.IDKepalakeluarga == nil {
-			return errors.New("anggota keluarga wajib memiliki kepala keluarga")
+			return domain.NewValidation("anggota keluarga wajib memiliki kepala keluarga")
 		}
-		if err := u.validateFamily(ctx, newStatus, req.IDKepalakeluarga, existing.ID); err != nil {
+		if err := u.validateFamily(ctx, statusID, req.IDKepalakeluarga, existing.ID); err != nil {
 			return err
 		}
 		kkID = req.IDKepalakeluarga
@@ -256,7 +283,7 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 		NoKK:             noKK,
 		JenisKelamin:     jenisKelamin,
 		Agama:            agama,
-		Status:           newStatus,
+		IDStatusKeluarga: statusID,
 		IDKepalakeluarga: kkID,
 	}
 
@@ -279,16 +306,20 @@ func (u *pendudukUsecase) Delete(ctx context.Context, nik string) error {
 		return err
 	}
 	if p == nil {
-		return errors.New("penduduk tidak ditemukan")
+		return domain.NewNotFound("penduduk tidak ditemukan")
 	}
 
-	if p.Status == domain.StatusKepalaKeluarga {
+	kkStatusID, err := u.kepalaKeluargaStatusID(ctx)
+	if err != nil {
+		return err
+	}
+	if p.IDStatusKeluarga != nil && *p.IDStatusKeluarga == kkStatusID {
 		deps, err := u.pendudukRepo.CountDependents(ctx, p.ID)
 		if err != nil {
 			return err
 		}
 		if deps > 0 {
-			return errors.New("tidak dapat menghapus kepala keluarga yang masih memiliki anggota")
+			return domain.NewValidation("tidak dapat menghapus kepala keluarga yang masih memiliki anggota")
 		}
 	}
 
@@ -297,26 +328,29 @@ func (u *pendudukUsecase) Delete(ctx context.Context, nik string) error {
 		return err
 	}
 	if !deleted {
-		return errors.New("penduduk tidak ditemukan")
+		return domain.NewNotFound("penduduk tidak ditemukan")
 	}
 	return nil
 }
 
-func (u *pendudukUsecase) validateFamily(ctx context.Context, status string, kkID *int, selfID int) error {
-	if status == domain.StatusKepalaKeluarga {
+func (u *pendudukUsecase) validateFamily(ctx context.Context, statusID *int, kkID *int, selfID int) error {
+	kkStatusID, err := u.kepalaKeluargaStatusID(ctx)
+	if err != nil {
+		return err
+	}
+
+	if statusID != nil && *statusID == kkStatusID {
 		if kkID != nil {
-			return errors.New("kepala keluarga tidak boleh memiliki id kepala keluarga")
+			return domain.NewValidation("kepala keluarga tidak boleh memiliki id kepala keluarga")
 		}
 		return nil
 	}
-	if status == "" {
-		return nil
-	}
+
 	if kkID == nil {
-		return errors.New("anggota keluarga wajib memiliki kepala keluarga")
+		return domain.NewValidation("anggota keluarga wajib memiliki kepala keluarga")
 	}
 	if selfID != 0 && *kkID == selfID {
-		return errors.New("tidak dapat menjadikan diri sendiri sebagai kepala keluarga")
+		return domain.NewValidation("tidak dapat menjadikan diri sendiri sebagai kepala keluarga")
 	}
 
 	kk, err := u.pendudukRepo.GetByID(ctx, *kkID)
@@ -324,10 +358,10 @@ func (u *pendudukUsecase) validateFamily(ctx context.Context, status string, kkI
 		return err
 	}
 	if kk == nil {
-		return errors.New("kepala keluarga tidak ditemukan")
+		return domain.NewNotFound("kepala keluarga tidak ditemukan")
 	}
-	if kk.Status != domain.StatusKepalaKeluarga {
-		return errors.New("id kepala keluarga harus merupakan kepala keluarga")
+	if kk.IDStatusKeluarga == nil || *kk.IDStatusKeluarga != kkStatusID {
+		return domain.NewValidation("id kepala keluarga harus merupakan kepala keluarga")
 	}
 	return nil
 }
@@ -337,7 +371,11 @@ func (u *pendudukUsecase) CountTotal(ctx context.Context) (int, error) {
 }
 
 func (u *pendudukUsecase) CountKepalaKeluarga(ctx context.Context) (int, error) {
-	return u.pendudukRepo.CountByStatus(ctx, domain.StatusKepalaKeluarga)
+	statusID, err := u.kepalaKeluargaStatusID(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return u.pendudukRepo.CountByStatusID(ctx, statusID)
 }
 
 func (u *pendudukUsecase) CountLakiLaki(ctx context.Context) (int, error) {
@@ -405,13 +443,16 @@ func (u *pendudukUsecase) GetUmurStats(ctx context.Context) ([]dto.UmurStatsDTO,
 	return result, nil
 }
 
-func (u *pendudukUsecase) toDTOList(list []domain.Penduduk) []dto.PendudukResponseDTO {
+func (u *pendudukUsecase) toDTOList(list []domain.Penduduk) ([]dto.PendudukResponseDTO, error) {
 	result := make([]dto.PendudukResponseDTO, 0, len(list))
 	for i := range list {
-		p := u.decrypt(&list[i])
+		p, err := u.decrypt(&list[i])
+		if err != nil {
+			return nil, err
+		}
 		result = append(result, *pendudukToDTO(p))
 	}
-	return result
+	return result, nil
 }
 
 func (u *pendudukUsecase) encrypt(p *domain.Penduduk) (*domain.Penduduk, error) {
@@ -445,23 +486,34 @@ func (u *pendudukUsecase) encrypt(p *domain.Penduduk) (*domain.Penduduk, error) 
 	return p, nil
 }
 
-func (u *pendudukUsecase) decrypt(p *domain.Penduduk) *domain.Penduduk {
+func (u *pendudukUsecase) decrypt(p *domain.Penduduk) (*domain.Penduduk, error) {
 	if p == nil {
-		return nil
+		return nil, nil
 	}
 	key := utils.GetMasterKEK()
 
 	res := *p
-	res.NIK, _ = utils.DecryptString(p.NIK, key)
-	res.Nama, _ = utils.DecryptString(p.Nama, key)
-	res.Alamat, _ = utils.DecryptString(p.Alamat, key)
-	res.NoKK, _ = utils.DecryptString(p.NoKK, key)
+	var err error
 
+	if res.NIK, err = utils.DecryptString(p.NIK, key); err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("nik: %w", err))
+	}
+	if res.Nama, err = utils.DecryptString(p.Nama, key); err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("nama: %w", err))
+	}
+	if res.Alamat, err = utils.DecryptString(p.Alamat, key); err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("alamat: %w", err))
+	}
+	if res.NoKK, err = utils.DecryptString(p.NoKK, key); err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("nomor_kk: %w", err))
+	}
 	if p.KKNama != "" {
-		res.KKNama, _ = utils.DecryptString(p.KKNama, key)
+		if res.KKNama, err = utils.DecryptString(p.KKNama, key); err != nil {
+			return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("nama_kepala_keluarga: %w", err))
+		}
 	}
 
-	return &res
+	return &res, nil
 }
 
 func pendudukToDTO(p *domain.Penduduk) *dto.PendudukResponseDTO {
@@ -475,7 +527,8 @@ func pendudukToDTO(p *domain.Penduduk) *dto.PendudukResponseDTO {
 		NomorKK:            p.NoKK,
 		JenisKelamin:       p.JenisKelamin,
 		Agama:              p.Agama,
-		Status:             p.Status,
+		IDStatusKeluarga:   p.IDStatusKeluarga,
+		StatusNama:         p.StatusNama,
 		IDKepalakeluarga:   p.IDKepalakeluarga,
 		NamaKepalakeluarga: p.KKNama,
 	}
@@ -506,7 +559,7 @@ func parseTanggalLahir(value string) (time.Time, error) {
 			return t, nil
 		}
 	}
-	return time.Time{}, errors.New("format tanggal lahir tidak valid")
+	return time.Time{}, domain.NewValidation("format tanggal lahir tidak valid")
 }
 
 func umurGroup(tanggal time.Time, now time.Time) string {

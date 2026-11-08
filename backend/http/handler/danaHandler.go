@@ -6,17 +6,17 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rasyarhmt/desa-bahontobungku/domain"
 	"github.com/rasyarhmt/desa-bahontobungku/dto"
 	"github.com/rasyarhmt/desa-bahontobungku/helpers"
+	"github.com/rasyarhmt/desa-bahontobungku/usecase"
 	"github.com/sirupsen/logrus"
 )
 
 type danaHandler struct {
-	danaUsecase domain.DanaUsecase
+	danaUsecase usecase.DanaUsecase
 }
 
-func NewDanaHandler(danaUsecase domain.DanaUsecase) domain.DanaHandler {
+func NewDanaHandler(danaUsecase usecase.DanaUsecase) DanaHandler {
 	return &danaHandler{danaUsecase: danaUsecase}
 }
 
@@ -27,14 +27,14 @@ func NewDanaHandler(danaUsecase domain.DanaUsecase) domain.DanaHandler {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        body  body      dto.DanaMasukCreateRequestDTO  true  "Data dana masuk"
-// @Success      201   {object}  domain.HttpResponse{data=dto.DanaMasukResponseDTO}
-// @Failure      400   {object}  domain.HttpResponse
-// @Failure      401   {object}  domain.HttpResponse
+// @Success      201   {object}  helpers.HttpResponse{data=dto.DanaMasukResponseDTO}
+// @Failure      400   {object}  helpers.HttpResponse
+// @Failure      401   {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-masuk [post]
 func (h *danaHandler) CreateMasuk(c *gin.Context) {
 	var req dto.DanaMasukCreateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Format JSON tidak valid",
 		})
@@ -44,14 +44,11 @@ func (h *danaHandler) CreateMasuk(c *gin.Context) {
 	result, err := h.danaUsecase.CreateMasuk(c.Request.Context(), req)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.CreateMasuk: failed")
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusCreated,
 		Message: "Dana masuk berhasil ditambahkan",
 		Data:    result,
@@ -65,14 +62,14 @@ func (h *danaHandler) CreateMasuk(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        body  body      dto.DanaKeluarCreateRequestDTO  true  "Data dana keluar"
-// @Success      201   {object}  domain.HttpResponse{data=dto.DanaKeluarResponseDTO}
-// @Failure      400   {object}  domain.HttpResponse
-// @Failure      401   {object}  domain.HttpResponse
+// @Success      201   {object}  helpers.HttpResponse{data=dto.DanaKeluarResponseDTO}
+// @Failure      400   {object}  helpers.HttpResponse
+// @Failure      401   {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-keluar [post]
 func (h *danaHandler) CreateKeluar(c *gin.Context) {
 	var req dto.DanaKeluarCreateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Format JSON tidak valid",
 		})
@@ -82,14 +79,11 @@ func (h *danaHandler) CreateKeluar(c *gin.Context) {
 	result, err := h.danaUsecase.CreateKeluar(c.Request.Context(), req)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.CreateKeluar: failed")
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusCreated,
 		Message: "Dana keluar berhasil ditambahkan",
 		Data:    result,
@@ -100,21 +94,21 @@ func (h *danaHandler) CreateKeluar(c *gin.Context) {
 // @Summary      Get semua dana masuk
 // @Tags         dana
 // @Produce      json
-// @Success      200  {object}  domain.HttpResponse{data=[]dto.DanaMasukResponseDTO}
-// @Failure      500  {object}  domain.HttpResponse
+// @Success      200  {object}  helpers.HttpResponse{data=[]dto.DanaMasukResponseDTO}
+// @Failure      500  {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-masuk [get]
 func (h *danaHandler) GetAllMasuk(c *gin.Context) {
 	list, err := h.danaUsecase.GetAllMasuk(c.Request.Context())
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.GetAllMasuk: failed")
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusInternalServerError,
 			Message: "Gagal mengambil data dana masuk",
 		})
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Daftar dana masuk berhasil diambil",
 		Data:    list,
@@ -125,21 +119,21 @@ func (h *danaHandler) GetAllMasuk(c *gin.Context) {
 // @Summary      Get semua dana keluar
 // @Tags         dana
 // @Produce      json
-// @Success      200  {object}  domain.HttpResponse{data=[]dto.DanaKeluarResponseDTO}
-// @Failure      500  {object}  domain.HttpResponse
+// @Success      200  {object}  helpers.HttpResponse{data=[]dto.DanaKeluarResponseDTO}
+// @Failure      500  {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-keluar [get]
 func (h *danaHandler) GetAllKeluar(c *gin.Context) {
 	list, err := h.danaUsecase.GetAllKeluar(c.Request.Context())
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.GetAllKeluar: failed")
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusInternalServerError,
 			Message: "Gagal mengambil data dana keluar",
 		})
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Daftar dana keluar berhasil diambil",
 		Data:    list,
@@ -151,35 +145,24 @@ func (h *danaHandler) GetAllKeluar(c *gin.Context) {
 // @Tags         dana
 // @Produce      json
 // @Param        id     path      integer  true  "ID dana masuk"
-// @Success      200    {object}  domain.HttpResponse{data=dto.DanaMasukResponseDTO}
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse{data=dto.DanaMasukResponseDTO}
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-masuk/{id} [get]
 func (h *danaHandler) GetMasukByID(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID dana masuk tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID dana masuk tidak valid")
+	if !ok {
 		return
 	}
 
 	d, err := h.danaUsecase.GetMasukByID(c.Request.Context(), id)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.GetMasukByID: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Dana masuk berhasil diambil",
 		Data:    d,
@@ -191,35 +174,24 @@ func (h *danaHandler) GetMasukByID(c *gin.Context) {
 // @Tags         dana
 // @Produce      json
 // @Param        id     path      integer  true  "ID dana keluar"
-// @Success      200    {object}  domain.HttpResponse{data=dto.DanaKeluarResponseDTO}
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse{data=dto.DanaKeluarResponseDTO}
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-keluar/{id} [get]
 func (h *danaHandler) GetKeluarByID(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID dana keluar tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID dana keluar tidak valid")
+	if !ok {
 		return
 	}
 
 	d, err := h.danaUsecase.GetKeluarByID(c.Request.Context(), id)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.GetKeluarByID: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Dana keluar berhasil diambil",
 		Data:    d,
@@ -232,14 +204,14 @@ func (h *danaHandler) GetKeluarByID(c *gin.Context) {
 // @Tags         dana
 // @Produce      json
 // @Param        tahun  path      integer  true  "Tahun"
-// @Success      200    {object}  domain.HttpResponse{data=[]dto.DanaSummaryItemDTO}
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      500    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse{data=[]dto.DanaSummaryItemDTO}
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      500    {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/summary/{tahun} [get]
 func (h *danaHandler) GetSummary(c *gin.Context) {
 	tahun, errParse := strconv.Atoi(strings.TrimSpace(c.Param("tahun")))
 	if errParse != nil || tahun <= 0 {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Tahun tidak valid",
 		})
@@ -249,14 +221,14 @@ func (h *danaHandler) GetSummary(c *gin.Context) {
 	list, err := h.danaUsecase.GetSummary(c.Request.Context(), tahun)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.GetSummary: failed")
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusInternalServerError,
 			Message: "Gagal mengambil ringkasan APBDes",
 		})
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Ringkasan APBDes berhasil diambil",
 		Data:    list,
@@ -268,14 +240,14 @@ func (h *danaHandler) GetSummary(c *gin.Context) {
 // @Tags         dana
 // @Produce      json
 // @Param        tahun  path      integer  true  "Tahun"
-// @Success      200    {object}  domain.HttpResponse{data=dto.DanaDetailDTO}
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      500    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse{data=dto.DanaDetailDTO}
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      500    {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/detail/{tahun} [get]
 func (h *danaHandler) GetDetail(c *gin.Context) {
 	tahun, errParse := strconv.Atoi(strings.TrimSpace(c.Param("tahun")))
 	if errParse != nil || tahun <= 0 {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Tahun tidak valid",
 		})
@@ -285,14 +257,14 @@ func (h *danaHandler) GetDetail(c *gin.Context) {
 	detail, err := h.danaUsecase.GetDetail(c.Request.Context(), tahun)
 	if err != nil {
 		logrus.WithError(err).Error("handler.Dana.GetDetail: failed")
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusInternalServerError,
 			Message: "Gagal mengambil detail APBDes",
 		})
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Detail APBDes berhasil diambil",
 		Data:    detail,
@@ -307,24 +279,20 @@ func (h *danaHandler) GetDetail(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id    path      integer  true  "ID dana masuk"
 // @Param        body  body      dto.DanaMasukUpdateRequestDTO  true  "Data dana masuk (partial)"
-// @Success      200   {object}  domain.HttpResponse
-// @Failure      400   {object}  domain.HttpResponse
-// @Failure      401   {object}  domain.HttpResponse
-// @Failure      404   {object}  domain.HttpResponse
+// @Success      200   {object}  helpers.HttpResponse
+// @Failure      400   {object}  helpers.HttpResponse
+// @Failure      401   {object}  helpers.HttpResponse
+// @Failure      404   {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-masuk/{id} [put]
 func (h *danaHandler) UpdateMasuk(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID dana masuk tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID dana masuk tidak valid")
+	if !ok {
 		return
 	}
 
 	var req dto.DanaMasukUpdateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Format JSON tidak valid",
 		})
@@ -333,18 +301,11 @@ func (h *danaHandler) UpdateMasuk(c *gin.Context) {
 
 	if err := h.danaUsecase.UpdateMasuk(c.Request.Context(), id, req); err != nil {
 		logrus.WithError(err).Error("handler.Dana.UpdateMasuk: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Dana masuk berhasil diperbarui",
 	})
@@ -358,24 +319,20 @@ func (h *danaHandler) UpdateMasuk(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id    path      integer  true  "ID dana keluar"
 // @Param        body  body      dto.DanaKeluarUpdateRequestDTO  true  "Data dana keluar (partial)"
-// @Success      200   {object}  domain.HttpResponse
-// @Failure      400   {object}  domain.HttpResponse
-// @Failure      401   {object}  domain.HttpResponse
-// @Failure      404   {object}  domain.HttpResponse
+// @Success      200   {object}  helpers.HttpResponse
+// @Failure      400   {object}  helpers.HttpResponse
+// @Failure      401   {object}  helpers.HttpResponse
+// @Failure      404   {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-keluar/{id} [put]
 func (h *danaHandler) UpdateKeluar(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID dana keluar tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID dana keluar tidak valid")
+	if !ok {
 		return
 	}
 
 	var req dto.DanaKeluarUpdateRequestDTO
 	if err := helpers.DecodeJSON(c, &req); err != nil {
-		helpers.Response(c, domain.HttpResponse{
+		helpers.Response(c, helpers.HttpResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Format JSON tidak valid",
 		})
@@ -384,18 +341,11 @@ func (h *danaHandler) UpdateKeluar(c *gin.Context) {
 
 	if err := h.danaUsecase.UpdateKeluar(c.Request.Context(), id, req); err != nil {
 		logrus.WithError(err).Error("handler.Dana.UpdateKeluar: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Dana keluar berhasil diperbarui",
 	})
@@ -407,35 +357,24 @@ func (h *danaHandler) UpdateKeluar(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id     path      integer  true  "ID dana masuk"
-// @Success      200    {object}  domain.HttpResponse
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      401    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      401    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-masuk/{id} [delete]
 func (h *danaHandler) DeleteMasuk(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID dana masuk tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID dana masuk tidak valid")
+	if !ok {
 		return
 	}
 
 	if err := h.danaUsecase.DeleteMasuk(c.Request.Context(), id); err != nil {
 		logrus.WithError(err).Error("handler.Dana.DeleteMasuk: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Dana masuk berhasil dihapus",
 	})
@@ -447,35 +386,24 @@ func (h *danaHandler) DeleteMasuk(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id     path      integer  true  "ID dana keluar"
-// @Success      200    {object}  domain.HttpResponse
-// @Failure      400    {object}  domain.HttpResponse
-// @Failure      401    {object}  domain.HttpResponse
-// @Failure      404    {object}  domain.HttpResponse
+// @Success      200    {object}  helpers.HttpResponse
+// @Failure      400    {object}  helpers.HttpResponse
+// @Failure      401    {object}  helpers.HttpResponse
+// @Failure      404    {object}  helpers.HttpResponse
 // @Router       /dana/apbdes/dana-keluar/{id} [delete]
 func (h *danaHandler) DeleteKeluar(c *gin.Context) {
-	id, errParse := strconv.Atoi(strings.TrimSpace(c.Param("id")))
-	if errParse != nil || id <= 0 {
-		helpers.Response(c, domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "ID dana keluar tidak valid",
-		})
+	id, ok := parseIDParam(c, "ID dana keluar tidak valid")
+	if !ok {
 		return
 	}
 
 	if err := h.danaUsecase.DeleteKeluar(c.Request.Context(), id); err != nil {
 		logrus.WithError(err).Error("handler.Dana.DeleteKeluar: failed")
-		code := http.StatusBadRequest
-		if strings.Contains(err.Error(), "tidak ditemukan") {
-			code = http.StatusNotFound
-		}
-		helpers.Response(c, domain.HttpResponse{
-			Code:    code,
-			Message: err.Error(),
-		})
+		helpers.RespondError(c, err)
 		return
 	}
 
-	helpers.Response(c, domain.HttpResponse{
+	helpers.Response(c, helpers.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Dana keluar berhasil dihapus",
 	})

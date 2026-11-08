@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"time"
 
@@ -18,7 +17,7 @@ type pengumumanUsecase struct {
 	pengumumanRepo domain.PengumumanRepository
 }
 
-func NewPengumumanUsecase(pengumumanRepo domain.PengumumanRepository) domain.PengumumanUsecase {
+func NewPengumumanUsecase(pengumumanRepo domain.PengumumanRepository) PengumumanUsecase {
 	return &pengumumanUsecase{pengumumanRepo: pengumumanRepo}
 }
 
@@ -29,10 +28,10 @@ func (u *pengumumanUsecase) Create(ctx context.Context, req dto.PengumumanCreate
 	tanggalSelesai := strings.TrimSpace(req.TanggalSelesai)
 
 	if judul == "" {
-		return nil, errors.New("judul wajib diisi")
+		return nil, domain.NewValidation("judul wajib diisi")
 	}
 	if isi == "" {
-		return nil, errors.New("isi wajib diisi")
+		return nil, domain.NewValidation("isi wajib diisi")
 	}
 	mulai, err := parsePengumumanTanggal(tanggalMulai)
 	if err != nil {
@@ -43,7 +42,7 @@ func (u *pengumumanUsecase) Create(ctx context.Context, req dto.PengumumanCreate
 		return nil, err
 	}
 	if selesai.Before(mulai) {
-		return nil, errors.New("tanggal selesai harus setelah atau sama dengan tanggal mulai")
+		return nil, domain.NewValidation("tanggal selesai harus setelah atau sama dengan tanggal mulai")
 	}
 
 	p := &domain.Pengumuman{
@@ -69,21 +68,21 @@ func (u *pengumumanUsecase) GetAll(ctx context.Context) ([]dto.PengumumanRespons
 
 func (u *pengumumanUsecase) GetByID(ctx context.Context, id int) (*dto.PengumumanResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	p, err := u.pengumumanRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if p == nil {
-		return nil, errors.New("pengumuman tidak ditemukan")
+		return nil, domain.NewNotFound("pengumuman tidak ditemukan")
 	}
 	return pengumumanToDTO(p), nil
 }
 
 func (u *pengumumanUsecase) Update(ctx context.Context, id int, req dto.PengumumanUpdateRequestDTO) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 
 	existing, err := u.pengumumanRepo.GetByID(ctx, id)
@@ -91,7 +90,7 @@ func (u *pengumumanUsecase) Update(ctx context.Context, id int, req dto.Pengumum
 		return err
 	}
 	if existing == nil {
-		return errors.New("pengumuman tidak ditemukan")
+		return domain.NewNotFound("pengumuman tidak ditemukan")
 	}
 
 	p := &domain.Pengumuman{
@@ -104,13 +103,13 @@ func (u *pengumumanUsecase) Update(ctx context.Context, id int, req dto.Pengumum
 
 	if req.Judul != nil {
 		if strings.TrimSpace(*req.Judul) == "" {
-			return errors.New("judul tidak boleh kosong")
+			return domain.NewValidation("judul tidak boleh kosong")
 		}
 		p.Judul = strings.TrimSpace(*req.Judul)
 	}
 	if req.Isi != nil {
 		if strings.TrimSpace(*req.Isi) == "" {
-			return errors.New("isi tidak boleh kosong")
+			return domain.NewValidation("isi tidak boleh kosong")
 		}
 		p.Isi = strings.TrimSpace(*req.Isi)
 	}
@@ -129,7 +128,7 @@ func (u *pengumumanUsecase) Update(ctx context.Context, id int, req dto.Pengumum
 		p.TanggalSelesai = selesai
 	}
 	if p.TanggalSelesai.Before(p.TanggalMulai) {
-		return errors.New("tanggal selesai harus setelah atau sama dengan tanggal mulai")
+		return domain.NewValidation("tanggal selesai harus setelah atau sama dengan tanggal mulai")
 	}
 
 	return u.pengumumanRepo.Update(ctx, id, p)
@@ -137,7 +136,7 @@ func (u *pengumumanUsecase) Update(ctx context.Context, id int, req dto.Pengumum
 
 func (u *pengumumanUsecase) Delete(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 
 	existing, err := u.pengumumanRepo.GetByID(ctx, id)
@@ -145,7 +144,7 @@ func (u *pengumumanUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if existing == nil {
-		return errors.New("pengumuman tidak ditemukan")
+		return domain.NewNotFound("pengumuman tidak ditemukan")
 	}
 
 	deleted, err := u.pengumumanRepo.Delete(ctx, id)
@@ -153,7 +152,7 @@ func (u *pengumumanUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if !deleted {
-		return errors.New("pengumuman tidak ditemukan")
+		return domain.NewNotFound("pengumuman tidak ditemukan")
 	}
 	return nil
 }
@@ -171,9 +170,5 @@ func pengumumanToDTO(p *domain.Pengumuman) *dto.PengumumanResponseDTO {
 }
 
 func pengumumanToDTOList(list []domain.Pengumuman) []dto.PengumumanResponseDTO {
-	result := make([]dto.PengumumanResponseDTO, 0, len(list))
-	for i := range list {
-		result = append(result, *pengumumanToDTO(&list[i]))
-	}
-	return result
+	return mapToDTOList(list, pengumumanToDTO)
 }

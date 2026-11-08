@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 )
@@ -57,17 +56,7 @@ func (r *beritaRepository) GetAll(ctx context.Context) ([]domain.Berita, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.Berita, 0)
-	for rows.Next() {
-		b, err := scanBerita(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *b)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanBerita)
 }
 
 func (r *beritaRepository) GetPublished(ctx context.Context) ([]domain.Berita, error) {
@@ -76,29 +65,11 @@ func (r *beritaRepository) GetPublished(ctx context.Context) ([]domain.Berita, e
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	result := make([]domain.Berita, 0)
-	for rows.Next() {
-		b, err := scanBerita(rows)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, *b)
-	}
-	return result, rows.Err()
+	return scanAll(rows, scanBerita)
 }
 
 func (r *beritaRepository) GetByID(ctx context.Context, id int) (*domain.Berita, error) {
-	row := r.db.QueryRowContext(ctx, beritaSelect+" WHERE id = ?", id)
-	b, err := scanBerita(row)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return b, nil
+	return scanOne(r.db.QueryRowContext(ctx, beritaSelect+" WHERE id = ?", id), scanBerita)
 }
 
 func (r *beritaRepository) Update(ctx context.Context, id int, b *domain.Berita) error {
@@ -111,13 +82,5 @@ func (r *beritaRepository) Update(ctx context.Context, id int, b *domain.Berita)
 }
 
 func (r *beritaRepository) Delete(ctx context.Context, id int) (bool, error) {
-	result, err := r.db.ExecContext(ctx, "DELETE FROM berita WHERE id = ?", id)
-	if err != nil {
-		return false, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	return affected > 0, nil
+	return execAffected(r.db.ExecContext(ctx, "DELETE FROM berita WHERE id = ?", id))
 }

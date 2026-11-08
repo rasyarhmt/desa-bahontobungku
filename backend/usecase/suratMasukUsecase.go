@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
 	"strings"
 	"time"
@@ -17,7 +16,7 @@ const dateLayout = "2006-01-02"
 func parseSuratDate(value string) (time.Time, error) {
 	t, err := time.Parse(dateLayout, strings.TrimSpace(value))
 	if err != nil {
-		return time.Time{}, errors.New("format tanggal tidak valid, gunakan YYYY-MM-DD")
+		return time.Time{}, domain.NewValidation("format tanggal tidak valid, gunakan YYYY-MM-DD")
 	}
 	return t, nil
 }
@@ -26,22 +25,31 @@ type suratMasukUsecase struct {
 	suratRepo domain.SuratMasukRepository
 }
 
-func NewSuratMasukUsecase(suratRepo domain.SuratMasukRepository) domain.SuratMasukUsecase {
+func NewSuratMasukUsecase(suratRepo domain.SuratMasukRepository) SuratMasukUsecase {
 	return &suratMasukUsecase{suratRepo: suratRepo}
 }
 
-func (u *suratMasukUsecase) Create(ctx context.Context, req dto.SuratMasukCreateRequestDTO) error {
+func (u *suratMasukUsecase) Create(ctx context.Context, req dto.SuratMasukCreateRequestDTO, file *UploadedFile) error {
+	relPath, err := storeSuratArchive(file, true)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed && relPath != "" {
+			_ = utils.DeleteArchiveFile(relPath)
+		}
+	}()
+	req.File = relPath
+
 	if strings.TrimSpace(req.NomorSurat) == "" {
-		return errors.New("nomorSurat wajib diisi")
+		return domain.NewValidation("nomorSurat wajib diisi")
 	}
 	if strings.TrimSpace(req.Pengirim) == "" {
-		return errors.New("pengirim wajib diisi")
+		return domain.NewValidation("pengirim wajib diisi")
 	}
 	if strings.TrimSpace(req.TanggalTerima) == "" {
-		return errors.New("tanggalTerima wajib diisi")
-	}
-	if strings.TrimSpace(req.File) == "" {
-		return errors.New("file wajib diupload")
+		return domain.NewValidation("tanggalTerima wajib diisi")
 	}
 	tanggal, err := parseSuratDate(req.TanggalTerima)
 	if err != nil {
@@ -53,7 +61,7 @@ func (u *suratMasukUsecase) Create(ctx context.Context, req dto.SuratMasukCreate
 		return err
 	}
 	if existing != nil {
-		return errors.New("nomor surat sudah digunakan")
+		return domain.NewValidation("nomor surat sudah digunakan")
 	}
 
 	s := &domain.SuratMasuk{
@@ -67,8 +75,11 @@ func (u *suratMasukUsecase) Create(ctx context.Context, req dto.SuratMasukCreate
 		s.Perihal = &v
 	}
 
-	_, err = u.suratRepo.Create(ctx, s)
-	return err
+	if _, err = u.suratRepo.Create(ctx, s); err != nil {
+		return err
+	}
+	committed = true
+	return nil
 }
 
 func (u *suratMasukUsecase) GetAll(ctx context.Context) ([]dto.SuratMasukResponseDTO, error) {
@@ -76,30 +87,40 @@ func (u *suratMasukUsecase) GetAll(ctx context.Context) ([]dto.SuratMasukRespons
 	if err != nil {
 		return nil, err
 	}
-	result := make([]dto.SuratMasukResponseDTO, 0, len(list))
-	for i := range list {
-		result = append(result, *suratMasukToDTO(&list[i]))
-	}
-	return result, nil
+	return mapToDTOList(list, suratMasukToDTO), nil
 }
 
 func (u *suratMasukUsecase) GetByID(ctx context.Context, id int) (*dto.SuratMasukResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	s, err := u.suratRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if s == nil {
-		return nil, errors.New("surat masuk tidak ditemukan")
+		return nil, domain.NewNotFound("surat masuk tidak ditemukan")
 	}
 	return suratMasukToDTO(s), nil
 }
 
-func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMasukUpdateRequestDTO) error {
+func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMasukUpdateRequestDTO, file *UploadedFile) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
+	}
+
+	newFile, err := storeSuratArchive(file, false)
+	if err != nil {
+		return err
+	}
+	committed := false
+	defer func() {
+		if !committed && newFile != "" {
+			_ = utils.DeleteArchiveFile(newFile)
+		}
+	}()
+	if newFile != "" {
+		req.File = &newFile
 	}
 
 	existing, err := u.suratRepo.GetByID(ctx, id)
@@ -107,7 +128,7 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 		return err
 	}
 	if existing == nil {
-		return errors.New("surat masuk tidak ditemukan")
+		return domain.NewNotFound("surat masuk tidak ditemukan")
 	}
 
 	s := &domain.SuratMasuk{
@@ -122,7 +143,7 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 	if req.NomorSurat != nil {
 		nomor := strings.TrimSpace(*req.NomorSurat)
 		if nomor == "" {
-			return errors.New("nomorSurat tidak boleh kosong")
+			return domain.NewValidation("nomorSurat tidak boleh kosong")
 		}
 		if nomor != existing.NomorSurat {
 			dup, err := u.suratRepo.GetByNomorSurat(ctx, nomor)
@@ -130,14 +151,14 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 				return err
 			}
 			if dup != nil {
-				return errors.New("nomor surat sudah digunakan")
+				return domain.NewValidation("nomor surat sudah digunakan")
 			}
 		}
 		s.NomorSurat = nomor
 	}
 	if req.Pengirim != nil {
 		if strings.TrimSpace(*req.Pengirim) == "" {
-			return errors.New("pengirim tidak boleh kosong")
+			return domain.NewValidation("pengirim tidak boleh kosong")
 		}
 		s.Pengirim = strings.TrimSpace(*req.Pengirim)
 	}
@@ -168,11 +189,9 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 	}
 
 	if err := u.suratRepo.Update(ctx, id, s); err != nil {
-		if newFileUsed {
-			_ = utils.DeleteArchiveFile(s.File)
-		}
 		return err
 	}
+	committed = true
 
 	if newFileUsed {
 		if err := utils.DeleteArchiveFile(existing.File); err != nil {
@@ -190,7 +209,7 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 
 func (u *suratMasukUsecase) Delete(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 
 	existing, err := u.suratRepo.GetByID(ctx, id)
@@ -198,7 +217,7 @@ func (u *suratMasukUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if existing == nil {
-		return errors.New("surat masuk tidak ditemukan")
+		return domain.NewNotFound("surat masuk tidak ditemukan")
 	}
 
 	deleted, err := u.suratRepo.Delete(ctx, id)
@@ -206,7 +225,7 @@ func (u *suratMasukUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if !deleted {
-		return errors.New("surat masuk tidak ditemukan")
+		return domain.NewNotFound("surat masuk tidak ditemukan")
 	}
 
 	if existing.File != "" {
@@ -219,17 +238,17 @@ func (u *suratMasukUsecase) Delete(ctx context.Context, id int) error {
 
 func (u *suratMasukUsecase) DownloadFile(ctx context.Context, id int) ([]byte, string, error) {
 	if id <= 0 {
-		return nil, "", errors.New("id wajib diisi")
+		return nil, "", domain.NewValidation("id wajib diisi")
 	}
 	s, err := u.suratRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, "", err
 	}
 	if s == nil {
-		return nil, "", errors.New("surat masuk tidak ditemukan")
+		return nil, "", domain.NewNotFound("surat masuk tidak ditemukan")
 	}
 	if s.File == "" {
-		return nil, "", errors.New("surat masuk tidak memiliki file")
+		return nil, "", domain.NewNotFound("surat masuk tidak memiliki file")
 	}
 	plain, err := utils.DecryptArchiveFile(s.File)
 	if err != nil {

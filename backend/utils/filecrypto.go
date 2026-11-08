@@ -15,7 +15,7 @@ const (
 	BeritaUploadDir   = "uploads/berita"
 	MediaUploadDir    = "uploads/media"
 	AparaturUploadDir = "uploads/aparatur"
-	EncryptedExt      = ".html.enc"
+	EncryptedExt      = ".docx.enc"
 	EncryptedPdfExt   = ".pdf.enc"
 )
 
@@ -30,8 +30,9 @@ func EnsureDir(dir string) error {
 	return nil
 }
 
-// EncryptFileContent mengenkripsi konten file HTML lalu menyimpan sebagai .html.enc
-// relPath yang dikembalikan berupa path relatif (misal templates/SK_DOMISILI.html.enc)
+// EncryptFileContent mengenkripsi konten file template DOCX lalu menyimpan
+// sebagai .docx.enc. relPath yang dikembalikan berupa path relatif
+// (misal templates/SK_DOMISILI.docx.enc)
 func EncryptFileContent(plaintext []byte, fileName string) (string, error) {
 	if strings.TrimSpace(fileName) == "" {
 		return "", errors.New("nama file tidak boleh kosong")
@@ -58,7 +59,7 @@ func EncryptFileContent(plaintext []byte, fileName string) (string, error) {
 	return filepath.Join("templates", encFileName), nil
 }
 
-// DecryptFileContent membaca file .html.enc dan mengembalikan plaintext HTML
+// DecryptFileContent membaca file .docx.enc dan mengembalikan plaintext DOCX
 func DecryptFileContent(relPath string) ([]byte, error) {
 	if relPath == "" {
 		return nil, errors.New("path file tidak boleh kosong")

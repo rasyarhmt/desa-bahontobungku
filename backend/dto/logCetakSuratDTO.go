@@ -42,10 +42,9 @@ type (
 	}
 
 	LogCetakSuratVerifikasiDTO struct {
-		KodeUnik    string    `json:"kode_unik" example:"A1B2C3D4E5"`
 		Status      string    `json:"status" example:"diresmikan"`
 		NomorSurat  *string   `json:"nomor_surat" example:"470/001/SK/2026"`
-		NamaPemohon string    `json:"nama_pemohon" example:"Rasya"`
+		NamaPemohon string    `json:"nama_pemohon" example:"R***a"`
 		DicetakPada time.Time `json:"dicetak_pada"`
 	}
 )

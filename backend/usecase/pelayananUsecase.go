@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
@@ -13,10 +12,19 @@ import (
 type pelayananUsecase struct {
 	pelayananRepo domain.PelayananRepository
 	templateRepo  domain.SuratTemplateRepository
+	fieldRepo     domain.SuratTemplateFieldRepository
 }
 
-func NewPelayananUsecase(pelayananRepo domain.PelayananRepository, templateRepo domain.SuratTemplateRepository) domain.PelayananUsecase {
-	return &pelayananUsecase{pelayananRepo: pelayananRepo, templateRepo: templateRepo}
+func NewPelayananUsecase(
+	pelayananRepo domain.PelayananRepository,
+	templateRepo domain.SuratTemplateRepository,
+	fieldRepo domain.SuratTemplateFieldRepository,
+) PelayananUsecase {
+	return &pelayananUsecase{
+		pelayananRepo: pelayananRepo,
+		templateRepo:  templateRepo,
+		fieldRepo:     fieldRepo,
+	}
 }
 
 var validPelayananStatus = map[string]bool{
@@ -29,39 +37,40 @@ func validatePelayananStatus(status string) error {
 		return nil
 	}
 	if !validPelayananStatus[status] {
-		return errors.New("status tidak valid, gunakan 'aktif' or 'nonaktif'")
+		return domain.NewValidation("status tidak valid, gunakan 'aktif' or 'nonaktif'")
 	}
 	return nil
 }
 
 func (u *pelayananUsecase) validateTemplateExists(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id_surat_template tidak valid")
+		return domain.NewValidation("id_surat_template tidak valid")
 	}
 	t, err := u.templateRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if t == nil {
-		return errors.New("template surat tidak ditemukan")
+		return domain.NewNotFound("template surat tidak ditemukan")
 	}
 	return nil
 }
 
 func (u *pelayananUsecase) Create(ctx context.Context, req dto.PelayananCreateRequestDTO) error {
 	if strings.TrimSpace(req.NamaLayanan) == "" {
-		return errors.New("nama_layanan wajib diisi")
+		return domain.NewValidation("nama_layanan wajib diisi")
 	}
 	if strings.TrimSpace(req.Deskripsi) == "" {
-		return errors.New("deskripsi wajib diisi")
+		return domain.NewValidation("deskripsi wajib diisi")
 	}
 	if err := validatePelayananStatus(req.Status); err != nil {
 		return err
 	}
-	if req.IDSuratTemplate != nil {
-		if err := u.validateTemplateExists(ctx, *req.IDSuratTemplate); err != nil {
-			return err
-		}
+	if req.IDSuratTemplate <= 0 {
+		return domain.NewValidation("template surat wajib dipilih")
+	}
+	if err := u.validateTemplateExists(ctx, req.IDSuratTemplate); err != nil {
+		return err
 	}
 
 	status := strings.TrimSpace(req.Status)
@@ -84,79 +93,68 @@ func (u *pelayananUsecase) GetAll(ctx context.Context) ([]dto.PelayananResponseD
 	if err != nil {
 		return nil, err
 	}
-	result := make([]dto.PelayananResponseDTO, 0, len(list))
-	for i := range list {
-		result = append(result, *pelayananToDTO(&list[i]))
-	}
-	return result, nil
+	return mapToDTOList(list, pelayananToDTO), nil
 }
 
 func (u *pelayananUsecase) GetByID(ctx context.Context, id int) (*dto.PelayananResponseDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
 	p, err := u.pelayananRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if p == nil {
-		return nil, errors.New("pelayanan tidak ditemukan")
+		return nil, domain.NewNotFound("pelayanan tidak ditemukan")
 	}
 	return pelayananToDTO(p), nil
 }
 
 // GetTemplateFields mengekstrak key placeholder {{ key }} dari file template
-// milik pelayanan. Key bawaan (nama_pemohon, nik_pemohon) dikeluarkan karena
-// selalu wajib diisi lewat form warga. Urutan sesuai kemunculan di template.
-func (u *pelayananUsecase) GetTemplateFields(ctx context.Context, id int) ([]string, error) {
+// DOCX milik pelayanan. Key bawaan (nama_pemohon, nik_pemohon) dikeluarkan
+// karena selalu wajib diisi lewat form warga. Urutan sesuai kemunculan.
+func (u *pelayananUsecase) GetTemplateFields(
+	ctx context.Context,
+	id int,
+) ([]dto.TemplateFieldDTO, error) {
 	if id <= 0 {
-		return nil, errors.New("id wajib diisi")
+		return nil, domain.NewValidation("id wajib diisi")
 	}
+
 	p, err := u.pelayananRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	if p == nil {
-		return nil, errors.New("pelayanan tidak ditemukan")
+		return nil, domain.NewNotFound("pelayanan tidak ditemukan")
 	}
-	if p.IDSuratTemplate == nil {
-		return []string{}, nil
+	if p.IDSuratTemplate <= 0 {
+		return []dto.TemplateFieldDTO{}, nil
 	}
-	tpl, err := u.templateRepo.GetByID(ctx, *p.IDSuratTemplate)
+
+	tpl, err := u.templateRepo.GetByID(ctx, p.IDSuratTemplate)
 	if err != nil {
 		return nil, err
 	}
 	if tpl == nil {
-		return nil, errors.New("template surat tidak ditemukan")
+		return nil, domain.NewNotFound("template surat tidak ditemukan")
 	}
 
-	htmlBytes, err := utils.DecryptFileContent(tpl.FileTemplate)
+	templateBytes, err := utils.DecryptFileContent(tpl.FileTemplate)
 	if err != nil {
-		return nil, errors.New("gagal membaca template surat terenkripsi")
+		return nil, domain.NewInternal("Gagal membaca template surat terenkripsi", err)
 	}
 
-	seen := make(map[string]bool)
-	fields := make([]string, 0)
-	for _, m := range placeholderPattern.FindAllStringSubmatch(string(htmlBytes), -1) {
-		if len(m) != 2 {
-			continue
-		}
-		key := strings.TrimSpace(m[1])
-		if key == "" || key == "nama_pemohon" || key == "nik_pemohon" {
-			continue
-		}
-		if seen[key] {
-			continue
-		}
-		seen[key] = true
-		fields = append(fields, key)
+	fields, err := ensureTemplateFields(ctx, tpl.ID, templateBytes, u.fieldRepo)
+	if err != nil {
+		return nil, err
 	}
-	return fields, nil
+	return templateFieldsToDTO(fields), nil
 }
 
 func (u *pelayananUsecase) Update(ctx context.Context, id int, req dto.PelayananUpdateRequestDTO) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 
 	existing, err := u.pelayananRepo.GetByID(ctx, id)
@@ -164,7 +162,7 @@ func (u *pelayananUsecase) Update(ctx context.Context, id int, req dto.Pelayanan
 		return err
 	}
 	if existing == nil {
-		return errors.New("pelayanan tidak ditemukan")
+		return domain.NewNotFound("pelayanan tidak ditemukan")
 	}
 
 	if req.IDSuratTemplate != nil {
@@ -186,7 +184,7 @@ func (u *pelayananUsecase) Update(ctx context.Context, id int, req dto.Pelayanan
 		p.Deskripsi = *req.Deskripsi
 	}
 	if req.IDSuratTemplate != nil {
-		p.IDSuratTemplate = req.IDSuratTemplate
+		p.IDSuratTemplate = *req.IDSuratTemplate
 	}
 
 	return u.pelayananRepo.Update(ctx, id, p)
@@ -194,7 +192,7 @@ func (u *pelayananUsecase) Update(ctx context.Context, id int, req dto.Pelayanan
 
 func (u *pelayananUsecase) Delete(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 
 	deleted, err := u.pelayananRepo.Delete(ctx, id)
@@ -202,21 +200,21 @@ func (u *pelayananUsecase) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if !deleted {
-		return errors.New("pelayanan tidak ditemukan")
+		return domain.NewNotFound("pelayanan tidak ditemukan")
 	}
 	return nil
 }
 
 func (u *pelayananUsecase) ToggleStatus(ctx context.Context, id int) error {
 	if id <= 0 {
-		return errors.New("id wajib diisi")
+		return domain.NewValidation("id wajib diisi")
 	}
 	existing, err := u.pelayananRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if existing == nil {
-		return errors.New("pelayanan tidak ditemukan")
+		return domain.NewNotFound("pelayanan tidak ditemukan")
 	}
 
 	newStatus := domain.PelayananStatusAktif
