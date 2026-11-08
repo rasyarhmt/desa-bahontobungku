@@ -1,15 +1,5 @@
 basePath: /api/v1
 definitions:
-  domain.HttpResponse:
-    properties:
-      code:
-        example: 200
-        type: integer
-      data: {}
-      message:
-        example: Success
-        type: string
-    type: object
   dto.AddUserRequestDTO:
     properties:
       email:
@@ -297,8 +287,14 @@ definitions:
       kode_unik:
         example: A1B2C3D4E5
         type: string
+      nama_layanan:
+        example: Surat Keterangan Domisili
+        type: string
       nama_pemohon:
         example: Rasya
+        type: string
+      nama_template:
+        example: Surat Keterangan Domisili
         type: string
       nik_pemohon:
         example: "7371010101010001"
@@ -316,11 +312,8 @@ definitions:
     properties:
       dicetak_pada:
         type: string
-      kode_unik:
-        example: A1B2C3D4E5
-        type: string
       nama_pemohon:
-        example: Rasya
+        example: R***a
         type: string
       nomor_surat:
         example: 470/001/SK/2026
@@ -441,6 +434,9 @@ definitions:
         type: string
       id_kepalakeluarga:
         type: integer
+      id_status_keluarga:
+        example: 1
+        type: integer
       jenis_kelamin:
         example: laki-laki
         type: string
@@ -452,9 +448,6 @@ definitions:
         type: string
       nomor_kk:
         example: "7301011001230002"
-        type: string
-      status:
-        example: kepala keluarga
         type: string
       tanggal_lahir:
         example: 15-08-1990
@@ -480,6 +473,9 @@ definitions:
         type: integer
       id_kepalakeluarga:
         type: integer
+      id_status_keluarga:
+        example: 1
+        type: integer
       jenis_kelamin:
         example: laki-laki
         type: string
@@ -495,7 +491,7 @@ definitions:
       nomor_kk:
         example: "7301011001230002"
         type: string
-      status:
+      status_nama:
         example: kepala keluarga
         type: string
       tanggal_lahir:
@@ -515,6 +511,9 @@ definitions:
         type: string
       id_kepalakeluarga:
         type: integer
+      id_status_keluarga:
+        example: 1
+        type: integer
       jenis_kelamin:
         example: laki-laki
         type: string
@@ -526,9 +525,6 @@ definitions:
         type: string
       nomor_kk:
         example: "7301011001230002"
-        type: string
-      status:
-        example: kepala keluarga
         type: string
       tanggal_lahir:
         example: 15-08-1990
@@ -637,6 +633,42 @@ definitions:
         example: 150
         type: integer
     type: object
+  dto.StatusKeluargaCreateRequestDTO:
+    properties:
+      is_active:
+        example: true
+        type: boolean
+      nama:
+        example: Keponakan
+        type: string
+    required:
+    - nama
+    type: object
+  dto.StatusKeluargaResponseDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      is_active:
+        example: true
+        type: boolean
+      nama:
+        example: kepala keluarga
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.StatusKeluargaUpdateRequestDTO:
+    properties:
+      is_active:
+        example: false
+        type: boolean
+      nama:
+        example: Keponakan
+        type: string
+    type: object
   dto.SuratKeluarResponseDTO:
     properties:
       created_at:
@@ -714,6 +746,62 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.TemplateFieldDTO:
+    properties:
+      key:
+        example: alamat
+        type: string
+      label:
+        example: Alamat
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      required:
+        example: true
+        type: boolean
+      tipe:
+        example: textarea
+        type: string
+      urutan:
+        example: 1
+        type: integer
+    type: object
+  dto.TemplateFieldUpdateItemDTO:
+    properties:
+      key:
+        example: alamat
+        type: string
+      label:
+        example: Alamat
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      required:
+        type: boolean
+      tipe:
+        example: textarea
+        type: string
+      urutan:
+        example: 1
+        type: integer
+    required:
+    - key
+    - label
+    - tipe
+    type: object
+  dto.TemplateFieldsUpdateRequestDTO:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/dto.TemplateFieldUpdateItemDTO'
+        type: array
+    required:
+    - fields
+    type: object
   dto.TransferSuperadminRequestDTO:
     properties:
       to_id:
@@ -757,6 +845,16 @@ definitions:
         example: superadmin
         type: string
     type: object
+  helpers.HttpResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: Success
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -773,7 +871,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -783,7 +881,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get semua aparatur (urut struktur jabatan)
       tags:
       - aparatur
@@ -822,7 +920,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AparaturResponseDTO'
@@ -830,11 +928,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah aparatur desa
@@ -854,19 +952,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus aparatur
@@ -886,7 +984,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AparaturResponseDTO'
@@ -894,15 +992,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get aparatur by id
@@ -944,19 +1042,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update aparatur
@@ -977,7 +1075,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AparaturResponseDTO'
@@ -985,15 +1083,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get aparatur by NIP
@@ -1017,7 +1115,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.LoginResponseDTO'
@@ -1025,11 +1123,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Login admin
       tags:
       - auth
@@ -1050,15 +1148,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Logout admin
@@ -1082,7 +1180,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RefreshTokenResponseDTO'
@@ -1090,11 +1188,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Refresh access token
       tags:
       - auth
@@ -1108,7 +1206,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1118,7 +1216,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get berita terpublikasi
       tags:
       - berita
@@ -1166,7 +1264,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.BeritaResponseDTO'
@@ -1174,11 +1272,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah berita baru
@@ -1198,19 +1296,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus berita
@@ -1230,7 +1328,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.BeritaResponseDTO'
@@ -1238,11 +1336,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get berita by id (hanya terpublikasi)
       tags:
       - berita
@@ -1293,19 +1391,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update berita
@@ -1326,7 +1424,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.BeritaResponseDTO'
@@ -1334,15 +1432,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Toggle status berita (draft <-> dipublikasi)
@@ -1357,7 +1455,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1367,11 +1465,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get semua berita (termasuk draft)
@@ -1392,7 +1490,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.BeritaResponseDTO'
@@ -1400,15 +1498,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get berita by id (termasuk draft)
@@ -1431,7 +1529,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1441,7 +1539,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get berita by status
       tags:
       - berita
@@ -1454,7 +1552,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1464,7 +1562,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get semua dana keluar
       tags:
       - dana
@@ -1485,7 +1583,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.DanaKeluarResponseDTO'
@@ -1493,11 +1591,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah data dana keluar (pengeluaran APBDes)
@@ -1517,19 +1615,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus dana keluar
@@ -1549,7 +1647,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.DanaKeluarResponseDTO'
@@ -1557,11 +1655,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get dana keluar by id
       tags:
       - dana
@@ -1586,19 +1684,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update dana keluar
@@ -1613,7 +1711,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1623,7 +1721,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get semua dana masuk
       tags:
       - dana
@@ -1644,7 +1742,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.DanaMasukResponseDTO'
@@ -1652,11 +1750,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah data dana masuk (pemasukan APBDes)
@@ -1676,19 +1774,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus dana masuk
@@ -1708,7 +1806,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.DanaMasukResponseDTO'
@@ -1716,11 +1814,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get dana masuk by id
       tags:
       - dana
@@ -1745,19 +1843,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update dana masuk
@@ -1778,7 +1876,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.DanaDetailDTO'
@@ -1786,11 +1884,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get detail APBDes per tahun (per bulan)
       tags:
       - dana
@@ -1811,7 +1909,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1821,11 +1919,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get ringkasan APBDes per tahun
       tags:
       - dana
@@ -1838,7 +1936,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -1848,11 +1946,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all log cetak surat
@@ -1873,7 +1971,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.LogCetakSuratResponseDTO'
@@ -1881,15 +1979,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get log cetak surat by id
@@ -1913,15 +2011,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Download surat (PDF) by id (admin)
@@ -1949,19 +2047,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Resmikan surat (isi nomor surat, status dicetak -> diresmikan)
@@ -1985,11 +2083,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Download surat (PDF) via kode unik (warga)
       tags:
       - log-cetak-surat
@@ -2008,7 +2106,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.LogCetakSuratVerifikasiDTO'
@@ -2016,11 +2114,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Verifikasi surat via kode unik (publik)
       tags:
       - log-cetak-surat
@@ -2044,11 +2142,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: QR verifikasi surat (publik)
       tags:
       - log-cetak-surat
@@ -2061,7 +2159,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2071,7 +2169,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get semua media
       tags:
       - media
@@ -2114,7 +2212,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.MediaResponseDTO'
@@ -2122,11 +2220,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah media (foto/video/dokumen)
@@ -2146,19 +2244,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus media
@@ -2178,7 +2276,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.MediaResponseDTO'
@@ -2186,11 +2284,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get media by id
       tags:
       - media
@@ -2227,19 +2325,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update media
@@ -2254,7 +2352,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2264,7 +2362,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get all pelayanan
       tags:
       - pelayanan
@@ -2284,15 +2382,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah pelayanan baru
@@ -2312,19 +2410,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus pelayanan
@@ -2344,7 +2442,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PelayananResponseDTO'
@@ -2352,11 +2450,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get pelayanan by id
       tags:
       - pelayanan
@@ -2381,19 +2479,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update pelayanan
@@ -2403,9 +2501,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: Warga mengisi data sesuai template pelayanan. Backend me-render
-        template HTML, konversi ke PDF, simpan terenkripsi, lalu membuat log cetak
-        surat (status dicetak) dgn kode_unik + QR utk verifikasi publik
+      description: Warga mengisi data sesuai template pelayanan. Backend mem-binding
+        data ke template DOCX, mengonversi ke PDF via LibreOffice, menyimpan terenkripsi,
+        lalu membuat log cetak surat (status dicetak) dgn kode_unik + QR utk verifikasi
+        publik
       parameters:
       - description: ID pelayanan
         in: path
@@ -2425,7 +2524,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AjukanSuratResponseDTO'
@@ -2433,18 +2532,47 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Ajukan surat dari pelayanan (warga)
       tags:
       - log-cetak-surat
+  /pelayanan/{id}/surat/fields:
+    get:
+      description: Mengembalikan key placeholder {{ key }} pada template milik pelayanan
+        untuk pembuatan form warga. Key nama_pemohon & nik_pemohon dikecualikan (selalu
+        wajib).
+      parameters:
+      - description: ID pelayanan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      summary: Daftar field template surat pelayanan (publik)
+      tags:
+      - pelayanan
   /pelayanan/{id}/toggle-status:
     put:
       parameters:
@@ -2459,19 +2587,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Toggle status pelayanan (aktif/nonaktif)
@@ -2486,7 +2614,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2496,11 +2624,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all penduduk
@@ -2522,15 +2650,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah penduduk baru
@@ -2550,19 +2678,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus penduduk
@@ -2577,7 +2705,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2587,11 +2715,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all kepala keluarga
@@ -2612,7 +2740,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PendudukResponseDTO'
@@ -2620,15 +2748,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Cari penduduk by NIK
@@ -2643,7 +2771,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2653,7 +2781,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Statistik agama
       tags:
       - stats
@@ -2666,7 +2794,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.StatCountDTO'
@@ -2674,7 +2802,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Total kepala keluarga
       tags:
       - stats
@@ -2687,7 +2815,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.StatCountDTO'
@@ -2695,7 +2823,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Total laki-laki
       tags:
       - stats
@@ -2708,7 +2836,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.StatCountDTO'
@@ -2716,7 +2844,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Total perempuan
       tags:
       - stats
@@ -2729,7 +2857,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.StatCountDTO'
@@ -2737,7 +2865,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Total penduduk
       tags:
       - stats
@@ -2750,7 +2878,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2760,7 +2888,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Statistik umur
       tags:
       - stats
@@ -2786,19 +2914,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update data penduduk
@@ -2814,7 +2942,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2824,7 +2952,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get semua pengumuman
       tags:
       - pengumuman
@@ -2845,7 +2973,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PengumumanResponseDTO'
@@ -2853,11 +2981,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah pengumuman baru
@@ -2877,19 +3005,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus pengumuman
@@ -2909,7 +3037,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PengumumanResponseDTO'
@@ -2917,11 +3045,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Get pengumuman by id
       tags:
       - pengumuman
@@ -2946,24 +3074,216 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update pengumuman
       tags:
       - pengumuman
+  /status-keluarga:
+    get:
+      parameters:
+      - description: Sertakan status nonaktif
+        in: query
+        name: include_inactive
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helpers.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.StatusKeluargaResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar status dalam keluarga
+      tags:
+      - status-keluarga
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data status keluarga
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StatusKeluargaCreateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/helpers.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StatusKeluargaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah status dalam keluarga
+      tags:
+      - status-keluarga
+  /status-keluarga/{id}:
+    delete:
+      parameters:
+      - description: ID status keluarga
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus status dalam keluarga
+      tags:
+      - status-keluarga
+    get:
+      parameters:
+      - description: ID status keluarga
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helpers.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.StatusKeluargaResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Detail status dalam keluarga
+      tags:
+      - status-keluarga
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID status keluarga
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StatusKeluargaUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update status dalam keluarga
+      tags:
+      - status-keluarga
+  /status-keluarga/{id}/toggle-active:
+    put:
+      parameters:
+      - description: ID status keluarga
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Aktifkan/nonaktifkan status dalam keluarga
+      tags:
+      - status-keluarga
   /surat-keluar:
     get:
       produces:
@@ -2973,7 +3293,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -2983,11 +3303,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all surat keluar
@@ -3036,15 +3356,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah surat keluar baru
@@ -3064,19 +3384,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus surat keluar
@@ -3096,7 +3416,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.SuratKeluarResponseDTO'
@@ -3104,15 +3424,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get surat keluar by id
@@ -3167,19 +3487,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update surat keluar
@@ -3203,15 +3523,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Download file arsip surat keluar
@@ -3226,7 +3546,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -3236,11 +3556,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all surat masuk
@@ -3285,15 +3605,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah surat masuk baru
@@ -3313,19 +3633,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus surat masuk
@@ -3345,7 +3665,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.SuratMasukResponseDTO'
@@ -3353,15 +3673,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get surat masuk by id
@@ -3412,19 +3732,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update surat masuk
@@ -3448,15 +3768,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Download file arsip surat masuk
@@ -3471,7 +3791,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -3481,11 +3801,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all template surat
@@ -3494,10 +3814,10 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: 'Upload file template HTML (.html) form-data multipart: field file_template,
-        kode, nama_template, deskripsi, status. File dienkripsi menjadi .html.enc'
+      description: 'Upload file template DOCX (.docx) form-data multipart: field file_template,
+        kode, nama_template, deskripsi, status. File dienkripsi menjadi .docx.enc'
       parameters:
-      - description: File template HTML
+      - description: File template DOCX (.docx)
         in: formData
         name: file_template
         required: true
@@ -3529,15 +3849,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah template surat baru
@@ -3557,19 +3877,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus template surat
@@ -3589,7 +3909,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.SuratTemplateResponseDTO'
@@ -3597,15 +3917,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get template surat by id
@@ -3614,7 +3934,7 @@ paths:
     put:
       consumes:
       - multipart/form-data
-      description: Upload multipart, file_template opsional. Jika tidak diupload,
+      description: Upload multipart, file_template (.docx) opsional. Jika tidak diupload,
         file lama dipertahankan
       parameters:
       - description: ID template
@@ -3628,7 +3948,7 @@ paths:
         name: kode
         required: true
         type: string
-      - description: File template HTML (opsional)
+      - description: File template DOCX (.docx, opsional)
         in: formData
         name: file_template
         type: file
@@ -3647,22 +3967,134 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update template surat
+      tags:
+      - surat-template
+  /surat-template/{id}/fields:
+    get:
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helpers.HttpResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.TemplateFieldDTO'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Daftar metadata field template surat
+      tags:
+      - surat-template
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Daftar field
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TemplateFieldsUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Simpan metadata field template surat
+      tags:
+      - surat-template
+  /surat-template/{id}/preview:
+    get:
+      description: Konversi file template DOCX menjadi PDF untuk dilihat admin (placeholder
+        tetap tampil)
+      parameters:
+      - description: ID template
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Preview template surat sebagai PDF
       tags:
       - surat-template
   /surat-template/{id}/toggle-status:
@@ -3679,19 +4111,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Toggle status template (aktif/nonaktif)
@@ -3711,23 +4143,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Hapus admin
@@ -3750,15 +4182,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Tambah admin baru
@@ -3773,7 +4205,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   items:
@@ -3783,11 +4215,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get all admin
@@ -3802,7 +4234,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/domain.HttpResponse'
+            - $ref: '#/definitions/helpers.HttpResponse'
             - properties:
                 data:
                   $ref: '#/definitions/dto.UserResponseDTO'
@@ -3810,11 +4242,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Get current user
@@ -3837,15 +4269,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       summary: Reset password ke default
       tags:
       - user
@@ -3866,19 +4298,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Transfer superadmin
@@ -3901,15 +4333,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/domain.HttpResponse'
+            $ref: '#/definitions/helpers.HttpResponse'
       security:
       - BearerAuth: []
       summary: Update profile

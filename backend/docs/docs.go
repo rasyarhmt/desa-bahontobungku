@@ -30,7 +30,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -49,7 +49,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -111,7 +111,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -127,13 +127,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -168,7 +168,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -184,19 +184,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -231,7 +231,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -247,19 +247,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -324,25 +324,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -373,25 +373,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -426,7 +426,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -442,13 +442,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -486,19 +486,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -533,7 +533,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -549,13 +549,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -577,7 +577,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -596,7 +596,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -668,7 +668,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -684,13 +684,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -716,7 +716,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -735,13 +735,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -776,7 +776,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -792,19 +792,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -835,7 +835,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -854,7 +854,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -884,7 +884,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -900,13 +900,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -985,25 +985,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1034,25 +1034,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1087,7 +1087,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1103,19 +1103,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1136,7 +1136,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1155,7 +1155,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1193,7 +1193,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1209,13 +1209,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1245,7 +1245,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1261,13 +1261,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1310,25 +1310,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1359,25 +1359,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1398,7 +1398,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1417,7 +1417,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1455,7 +1455,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1471,13 +1471,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1507,7 +1507,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1523,13 +1523,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1572,25 +1572,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1621,25 +1621,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1669,7 +1669,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1685,13 +1685,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1722,7 +1722,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1741,13 +1741,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1773,7 +1773,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1792,13 +1792,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1832,13 +1832,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1868,7 +1868,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1884,13 +1884,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1925,13 +1925,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -1966,7 +1966,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1982,19 +1982,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2033,19 +2033,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2090,25 +2090,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2129,7 +2129,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2148,7 +2148,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2213,7 +2213,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2229,13 +2229,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2265,7 +2265,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2281,13 +2281,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2346,25 +2346,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2395,25 +2395,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2434,7 +2434,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2453,7 +2453,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2489,19 +2489,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2531,7 +2531,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2547,13 +2547,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2596,25 +2596,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2645,25 +2645,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2671,7 +2671,7 @@ const docTemplate = `{
         },
         "/pelayanan/{id}/surat": {
             "post": {
-                "description": "Warga mengisi data sesuai template pelayanan. Backend me-render template HTML, konversi ke PDF, simpan terenkripsi, lalu membuat log cetak surat (status dicetak) dgn kode_unik + QR utk verifikasi publik",
+                "description": "Warga mengisi data sesuai template pelayanan. Backend mem-binding data ke template DOCX, mengonversi ke PDF via LibreOffice, menyimpan terenkripsi, lalu membuat log cetak surat (status dicetak) dgn kode_unik + QR utk verifikasi publik",
                 "consumes": [
                     "application/json"
                 ],
@@ -2706,7 +2706,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2722,19 +2722,60 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pelayanan/{id}/surat/fields": {
+            "get": {
+                "description": "Mengembalikan key placeholder {{ key }} pada template milik pelayanan untuk pembuatan form warga. Key nama_pemohon \u0026 nik_pemohon dikecualikan (selalu wajib).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pelayanan"
+                ],
+                "summary": "Daftar field template surat pelayanan (publik)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID pelayanan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2767,25 +2808,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2811,7 +2852,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2830,13 +2871,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2872,19 +2913,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2917,25 +2958,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -2961,7 +3002,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2980,13 +3021,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3021,7 +3062,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3037,19 +3078,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3070,7 +3111,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3089,7 +3130,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3110,7 +3151,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3126,7 +3167,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3147,7 +3188,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3163,7 +3204,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3184,7 +3225,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3200,7 +3241,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3221,7 +3262,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3237,7 +3278,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3258,7 +3299,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3277,7 +3318,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3322,25 +3363,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3362,7 +3403,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3381,7 +3422,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3419,7 +3460,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3435,13 +3476,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3471,7 +3512,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3487,13 +3528,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3536,25 +3577,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3585,25 +3626,344 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/status-keluarga": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status-keluarga"
+                ],
+                "summary": "Daftar status dalam keluarga",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Sertakan status nonaktif",
+                        "name": "include_inactive",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.StatusKeluargaResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status-keluarga"
+                ],
+                "summary": "Tambah status dalam keluarga",
+                "parameters": [
+                    {
+                        "description": "Data status keluarga",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusKeluargaCreateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.StatusKeluargaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/status-keluarga/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status-keluarga"
+                ],
+                "summary": "Detail status dalam keluarga",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID status keluarga",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.StatusKeluargaResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status-keluarga"
+                ],
+                "summary": "Update status dalam keluarga",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID status keluarga",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusKeluargaUpdateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status-keluarga"
+                ],
+                "summary": "Hapus status dalam keluarga",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID status keluarga",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/status-keluarga/{id}/toggle-active": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status-keluarga"
+                ],
+                "summary": "Aktifkan/nonaktifkan status dalam keluarga",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID status keluarga",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3629,7 +3989,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3648,13 +4008,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3725,19 +4085,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3772,7 +4132,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3788,19 +4148,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3881,25 +4241,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3930,25 +4290,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -3987,19 +4347,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4025,7 +4385,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4044,13 +4404,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4115,19 +4475,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4162,7 +4522,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4178,19 +4538,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4265,25 +4625,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4314,25 +4674,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4371,19 +4731,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4409,7 +4769,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4428,13 +4788,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4445,7 +4805,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Upload file template HTML (.html) form-data multipart: field file_template, kode, nama_template, deskripsi, status. File dienkripsi menjadi .html.enc",
+                "description": "Upload file template DOCX (.docx) form-data multipart: field file_template, kode, nama_template, deskripsi, status. File dienkripsi menjadi .docx.enc",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -4459,7 +4819,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "file",
-                        "description": "File template HTML",
+                        "description": "File template DOCX (.docx)",
                         "name": "file_template",
                         "in": "formData",
                         "required": true
@@ -4498,19 +4858,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4545,7 +4905,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4561,19 +4921,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4584,7 +4944,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Upload multipart, file_template opsional. Jika tidak diupload, file lama dipertahankan",
+                "description": "Upload multipart, file_template (.docx) opsional. Jika tidak diupload, file lama dipertahankan",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -4613,7 +4973,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "file",
-                        "description": "File template HTML (opsional)",
+                        "description": "File template DOCX (.docx, opsional)",
                         "name": "file_template",
                         "in": "formData"
                     },
@@ -4635,25 +4995,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4684,25 +5044,204 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-template/{id}/fields": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Daftar metadata field template surat",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.HttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.TemplateFieldDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Simpan metadata field template surat",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Daftar field",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TemplateFieldsUpdateRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/surat-template/{id}/preview": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Konversi file template DOCX menjadi PDF untuk dilihat admin (placeholder tetap tampil)",
+                "produces": [
+                    "application/pdf"
+                ],
+                "tags": [
+                    "surat-template"
+                ],
+                "summary": "Preview template surat sebagai PDF",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID template",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4735,25 +5274,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4791,19 +5330,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4829,7 +5368,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4848,13 +5387,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4880,7 +5419,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/domain.HttpResponse"
+                                    "$ref": "#/definitions/helpers.HttpResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4896,13 +5435,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4935,19 +5474,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -4985,25 +5524,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -5041,19 +5580,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -5086,31 +5625,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
+                            "$ref": "#/definitions/helpers.HttpResponse"
                         }
                     }
                 }
@@ -5118,20 +5657,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "domain.HttpResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 200
-                },
-                "data": {},
-                "message": {
-                    "type": "string",
-                    "example": "Success"
-                }
-            }
-        },
         "dto.AddUserRequestDTO": {
             "type": "object",
             "required": [
@@ -5533,9 +6058,17 @@ const docTemplate = `{
                     "type": "string",
                     "example": "A1B2C3D4E5"
                 },
+                "nama_layanan": {
+                    "type": "string",
+                    "example": "Surat Keterangan Domisili"
+                },
                 "nama_pemohon": {
                     "type": "string",
                     "example": "Rasya"
+                },
+                "nama_template": {
+                    "type": "string",
+                    "example": "Surat Keterangan Domisili"
                 },
                 "nik_pemohon": {
                     "type": "string",
@@ -5560,13 +6093,9 @@ const docTemplate = `{
                 "dicetak_pada": {
                     "type": "string"
                 },
-                "kode_unik": {
-                    "type": "string",
-                    "example": "A1B2C3D4E5"
-                },
                 "nama_pemohon": {
                     "type": "string",
-                    "example": "Rasya"
+                    "example": "R***a"
                 },
                 "nomor_surat": {
                     "type": "string",
@@ -5741,6 +6270,10 @@ const docTemplate = `{
                 "id_kepalakeluarga": {
                     "type": "integer"
                 },
+                "id_status_keluarga": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "jenis_kelamin": {
                     "type": "string",
                     "example": "laki-laki"
@@ -5756,10 +6289,6 @@ const docTemplate = `{
                 "nomor_kk": {
                     "type": "string",
                     "example": "7301011001230002"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "kepala keluarga"
                 },
                 "tanggal_lahir": {
                     "type": "string",
@@ -5789,6 +6318,10 @@ const docTemplate = `{
                 "id_kepalakeluarga": {
                     "type": "integer"
                 },
+                "id_status_keluarga": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "jenis_kelamin": {
                     "type": "string",
                     "example": "laki-laki"
@@ -5809,7 +6342,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "7301011001230002"
                 },
-                "status": {
+                "status_nama": {
                     "type": "string",
                     "example": "kepala keluarga"
                 },
@@ -5837,6 +6370,10 @@ const docTemplate = `{
                 "id_kepalakeluarga": {
                     "type": "integer"
                 },
+                "id_status_keluarga": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "jenis_kelamin": {
                     "type": "string",
                     "example": "laki-laki"
@@ -5852,10 +6389,6 @@ const docTemplate = `{
                 "nomor_kk": {
                     "type": "string",
                     "example": "7301011001230002"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "kepala keluarga"
                 },
                 "tanggal_lahir": {
                     "type": "string",
@@ -6011,6 +6544,58 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.StatusKeluargaCreateRequestDTO": {
+            "type": "object",
+            "required": [
+                "nama"
+            ],
+            "properties": {
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "nama": {
+                    "type": "string",
+                    "example": "Keponakan"
+                }
+            }
+        },
+        "dto.StatusKeluargaResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "nama": {
+                    "type": "string",
+                    "example": "kepala keluarga"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StatusKeluargaUpdateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "is_active": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "nama": {
+                    "type": "string",
+                    "example": "Keponakan"
+                }
+            }
+        },
         "dto.SuratKeluarResponseDTO": {
             "type": "object",
             "properties": {
@@ -6121,6 +6706,86 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.TemplateFieldDTO": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "example": "alamat"
+                },
+                "label": {
+                    "type": "string",
+                    "example": "Alamat"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "required": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "tipe": {
+                    "type": "string",
+                    "example": "textarea"
+                },
+                "urutan": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "dto.TemplateFieldUpdateItemDTO": {
+            "type": "object",
+            "required": [
+                "key",
+                "label",
+                "tipe"
+            ],
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "example": "alamat"
+                },
+                "label": {
+                    "type": "string",
+                    "example": "Alamat"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "tipe": {
+                    "type": "string",
+                    "example": "textarea"
+                },
+                "urutan": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "dto.TemplateFieldsUpdateRequestDTO": {
+            "type": "object",
+            "required": [
+                "fields"
+            ],
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.TemplateFieldUpdateItemDTO"
+                    }
+                }
+            }
+        },
         "dto.TransferSuperadminRequestDTO": {
             "type": "object",
             "required": [
@@ -6180,6 +6845,20 @@ const docTemplate = `{
                 "role": {
                     "type": "string",
                     "example": "superadmin"
+                }
+            }
+        },
+        "helpers.HttpResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "Success"
                 }
             }
         }
