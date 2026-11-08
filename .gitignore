@@ -1,0 +1,13 @@
+# Build artifacts
+/backend/desa-bahontobungku
+
+# Tooling output
+/graphify-out/
+
+# Generated dokumen (root-level)
+/*.pdf
+/*.docx
+
+# Catatan analisis lokal
+/ANALISIS.md
+/analisis-*.md
