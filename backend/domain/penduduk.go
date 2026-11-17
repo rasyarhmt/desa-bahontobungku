@@ -21,6 +21,7 @@ type Penduduk struct {
 	NoKK             string
 	JenisKelamin     string
 	Agama            string
+	Pekerjaan        string
 	IDStatusKeluarga *int
 	StatusNama       string
 	IDKepalakeluarga *int

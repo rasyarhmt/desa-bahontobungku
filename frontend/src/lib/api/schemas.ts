@@ -375,6 +375,7 @@ export const PendudukMemberSchema = z
     nomor_kk: z.string().nullable().optional(),
     jenis_kelamin: z.string().nullable().optional(),
     agama: z.string().nullable().optional(),
+    pekerjaan: z.string().nullable().optional(),
     status: z.string().nullable().optional(),
     status_nama: z.string().nullable().optional(),
     id_status_keluarga: z.number().nullable().optional(),

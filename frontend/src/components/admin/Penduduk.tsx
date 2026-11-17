@@ -43,6 +43,7 @@ interface PendudukFormData {
   nomor_kk: string;
   jenisKelamin: string;
   agama: string;
+  pekerjaan: string;
   id_kepalakeluarga: number | null;
   id_status_keluarga: number | null;
   status: string;
@@ -163,6 +164,7 @@ export default function Penduduk() {
     nomor_kk: "",
     jenisKelamin: "Laki-laki",
     agama: "Islam",
+    pekerjaan: "",
     id_kepalakeluarga: null,
     id_status_keluarga: null,
     status: "",
@@ -188,6 +190,7 @@ export default function Penduduk() {
         tempatLahir: editData.tempatLahir || "",
         nomor_kk: editData.nomor_kk || "",
         agama: editData.agama || "",
+        pekerjaan: editData.pekerjaan || "",
         existingNik: editData.nik,
       });
       setIsEditing(true);
@@ -202,6 +205,7 @@ export default function Penduduk() {
         nomor_kk: "",
         jenisKelamin: "Laki-laki",
         agama: "Islam",
+        pekerjaan: "",
         id_kepalakeluarga: null,
         id_status_keluarga: null,
         status: "",
@@ -307,6 +311,7 @@ export default function Penduduk() {
       nomor_kk: "",
       jenisKelamin: "Laki-laki",
       agama: "Islam",
+      pekerjaan: "",
       id_kepalakeluarga: null,
       id_status_keluarga: null,
       status: "",

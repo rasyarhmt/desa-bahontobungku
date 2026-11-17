@@ -126,6 +126,7 @@ func (u *pendudukUsecase) Create(ctx context.Context, req dto.PendudukRequestDTO
 		NoKK:             strings.TrimSpace(req.NomorKK),
 		JenisKelamin:     req.JenisKelamin,
 		Agama:            req.Agama,
+		Pekerjaan:        req.Pekerjaan,
 		IDStatusKeluarga: req.IDStatusKeluarga,
 		IDKepalakeluarga: req.IDKepalakeluarga,
 	}
@@ -272,6 +273,10 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 	if req.Agama != nil {
 		agama = *req.Agama
 	}
+	pekerjaan := current.Pekerjaan
+	if req.Pekerjaan != nil {
+		pekerjaan = *req.Pekerjaan
+	}
 
 	p := &domain.Penduduk{
 		NIKHash:          utils.HashHex(newNIK),
@@ -283,6 +288,7 @@ func (u *pendudukUsecase) Update(ctx context.Context, req dto.PendudukUpdateRequ
 		NoKK:             noKK,
 		JenisKelamin:     jenisKelamin,
 		Agama:            agama,
+		Pekerjaan:        pekerjaan,
 		IDStatusKeluarga: statusID,
 		IDKepalakeluarga: kkID,
 	}
@@ -527,6 +533,7 @@ func pendudukToDTO(p *domain.Penduduk) *dto.PendudukResponseDTO {
 		NomorKK:            p.NoKK,
 		JenisKelamin:       p.JenisKelamin,
 		Agama:              p.Agama,
+		Pekerjaan:          p.Pekerjaan,
 		IDStatusKeluarga:   p.IDStatusKeluarga,
 		StatusNama:         p.StatusNama,
 		IDKepalakeluarga:   p.IDKepalakeluarga,

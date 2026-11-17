@@ -26,6 +26,7 @@ export interface PendudukAdminView {
   nomor_kk?: string | null;
   jenisKelamin: string;
   agama?: string | null;
+  pekerjaan?: string | null;
   status: string;
   id_status_keluarga?: number | null;
   id_kepalakeluarga?: number | null;
@@ -42,6 +43,7 @@ const normalizePendudukAdmin = (item: PendudukMember): PendudukAdminView => ({
   nomor_kk: item.nomor_kk,
   jenisKelamin: toTitleCase(item.jenis_kelamin ?? ""),
   agama: item.agama,
+  pekerjaan: item.pekerjaan,
   status: toTitleCase((item.status_nama || item.status) ?? ""),
   id_status_keluarga: item.id_status_keluarga ?? null,
   id_kepalakeluarga: item.id_kepalakeluarga ?? null,
@@ -57,6 +59,7 @@ interface PendudukInput {
   nomor_kk?: string;
   jenisKelamin?: string;
   agama?: string;
+  pekerjaan?: string;
   id_status_keluarga?: number | null;
   id_kepalakeluarga?: number | null;
 }
@@ -70,6 +73,7 @@ const pendudukCreatePayload = (data: PendudukInput) => ({
   nomor_kk: data.nomor_kk ?? "",
   jenis_kelamin: data.jenisKelamin ? data.jenisKelamin.toLowerCase() : "",
   agama: data.agama ?? "",
+  pekerjaan: data.pekerjaan ?? "",
   id_status_keluarga: data.id_status_keluarga ?? null,
   id_kepalakeluarga: data.id_kepalakeluarga ?? null,
 });
@@ -85,6 +89,7 @@ const pendudukUpdatePayload = (data: PendudukInput) => ({
     ? data.jenisKelamin.toLowerCase()
     : undefined,
   agama: data.agama ?? "",
+  pekerjaan: data.pekerjaan ?? "",
   id_status_keluarga: data.id_status_keluarga ?? null,
   id_kepalakeluarga: data.id_kepalakeluarga ?? null,
 });

@@ -6290,6 +6290,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "7301011001230002"
                 },
+                "pekerjaan": {
+                    "type": "string",
+                    "example": "Petani"
+                },
                 "tanggal_lahir": {
                     "type": "string",
                     "example": "15-08-1990"
@@ -6342,6 +6346,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "7301011001230002"
                 },
+                "pekerjaan": {
+                    "type": "string",
+                    "example": "Petani"
+                },
                 "status_nama": {
                     "type": "string",
                     "example": "kepala keluarga"
@@ -6389,6 +6397,10 @@ const docTemplate = `{
                 "nomor_kk": {
                     "type": "string",
                     "example": "7301011001230002"
+                },
+                "pekerjaan": {
+                    "type": "string",
+                    "example": "Petani"
                 },
                 "tanggal_lahir": {
                     "type": "string",

@@ -449,6 +449,9 @@ definitions:
       nomor_kk:
         example: "7301011001230002"
         type: string
+      pekerjaan:
+        example: Petani
+        type: string
       tanggal_lahir:
         example: 15-08-1990
         type: string
@@ -491,6 +494,9 @@ definitions:
       nomor_kk:
         example: "7301011001230002"
         type: string
+      pekerjaan:
+        example: Petani
+        type: string
       status_nama:
         example: kepala keluarga
         type: string
@@ -525,6 +531,9 @@ definitions:
         type: string
       nomor_kk:
         example: "7301011001230002"
+        type: string
+      pekerjaan:
+        example: Petani
         type: string
       tanggal_lahir:
         example: 15-08-1990

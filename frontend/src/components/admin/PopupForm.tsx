@@ -24,6 +24,7 @@ interface PopupFormProps {
     nomor_kk: string;
     jenisKelamin: string;
     agama: string;
+    pekerjaan: string;
     id_kepalakeluarga: number | null;
     id_status_keluarga: number | null;
     status: string;
@@ -386,6 +387,19 @@ const PopupForm = ({
                 <option value="Laki-laki">Laki-laki</option>
                 <option value="Perempuan">Perempuan</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pekerjaan
+              </label>
+              <input
+                type="text"
+                name="pekerjaan"
+                value={formData.pekerjaan}
+                onChange={handleInputChange}
+                placeholder="Contoh: Petani"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+              />
             </div>
           </div>
 

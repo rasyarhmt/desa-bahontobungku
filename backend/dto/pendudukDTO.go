@@ -10,6 +10,7 @@ type (
 		NomorKK          string `json:"nomor_kk" example:"7301011001230002"`
 		JenisKelamin     string `json:"jenis_kelamin" binding:"required" example:"laki-laki"`
 		Agama            string `json:"agama" example:"Islam"`
+		Pekerjaan        string `json:"pekerjaan" example:"Petani"`
 		IDStatusKeluarga *int   `json:"id_status_keluarga" example:"1"`
 		IDKepalakeluarga *int   `json:"id_kepalakeluarga"`
 	}
@@ -24,6 +25,7 @@ type (
 		NomorKK          *string `json:"nomor_kk" example:"7301011001230002"`
 		JenisKelamin     *string `json:"jenis_kelamin" example:"laki-laki"`
 		Agama            *string `json:"agama" example:"Islam"`
+		Pekerjaan        *string `json:"pekerjaan" example:"Petani"`
 		IDStatusKeluarga *int    `json:"id_status_keluarga" example:"1"`
 		IDKepalakeluarga *int    `json:"id_kepalakeluarga"`
 	}
@@ -38,6 +40,7 @@ type (
 		NomorKK            string `json:"nomor_kk" example:"7301011001230002"`
 		JenisKelamin       string `json:"jenis_kelamin" example:"laki-laki"`
 		Agama              string `json:"agama" example:"Islam"`
+		Pekerjaan          string `json:"pekerjaan" example:"Petani"`
 		IDStatusKeluarga   *int   `json:"id_status_keluarga" example:"1"`
 		StatusNama         string `json:"status_nama" example:"kepala keluarga"`
 		IDKepalakeluarga   *int   `json:"id_kepalakeluarga"`
