@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"strings"
 	"time"
@@ -75,7 +76,12 @@ func (u *suratMasukUsecase) Create(ctx context.Context, req dto.SuratMasukCreate
 		s.Perihal = &v
 	}
 
-	if _, err = u.suratRepo.Create(ctx, s); err != nil {
+	sEnc, err := encryptSuratMasuk(s)
+	if err != nil {
+		return err
+	}
+
+	if _, err = u.suratRepo.Create(ctx, sEnc); err != nil {
 		return err
 	}
 	committed = true
@@ -87,7 +93,15 @@ func (u *suratMasukUsecase) GetAll(ctx context.Context) ([]dto.SuratMasukRespons
 	if err != nil {
 		return nil, err
 	}
-	return mapToDTOList(list, suratMasukToDTO), nil
+	result := make([]dto.SuratMasukResponseDTO, 0, len(list))
+	for i := range list {
+		dec, err := decryptSuratMasuk(&list[i])
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *suratMasukToDTO(dec))
+	}
+	return result, nil
 }
 
 func (u *suratMasukUsecase) GetByID(ctx context.Context, id int) (*dto.SuratMasukResponseDTO, error) {
@@ -100,6 +114,10 @@ func (u *suratMasukUsecase) GetByID(ctx context.Context, id int) (*dto.SuratMasu
 	}
 	if s == nil {
 		return nil, domain.NewNotFound("surat masuk tidak ditemukan")
+	}
+	s, err = decryptSuratMasuk(s)
+	if err != nil {
+		return nil, err
 	}
 	return suratMasukToDTO(s), nil
 }
@@ -129,6 +147,10 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 	}
 	if existing == nil {
 		return domain.NewNotFound("surat masuk tidak ditemukan")
+	}
+	existing, err = decryptSuratMasuk(existing)
+	if err != nil {
+		return err
 	}
 
 	s := &domain.SuratMasuk{
@@ -188,7 +210,11 @@ func (u *suratMasukUsecase) Update(ctx context.Context, id int, req dto.SuratMas
 		newFileUsed = existing.File != "" && existing.File != s.File
 	}
 
-	if err := u.suratRepo.Update(ctx, id, s); err != nil {
+	sEnc, err := encryptSuratMasuk(s)
+	if err != nil {
+		return err
+	}
+	if err := u.suratRepo.Update(ctx, id, sEnc); err != nil {
 		return err
 	}
 	committed = true
@@ -271,4 +297,51 @@ func suratMasukToDTO(s *domain.SuratMasuk) *dto.SuratMasukResponseDTO {
 		UpdatedAt:     s.UpdatedAt,
 	}
 	return out
+}
+
+func encryptSuratMasuk(s *domain.SuratMasuk) (*domain.SuratMasuk, error) {
+	if s == nil {
+		return nil, nil
+	}
+	res := *s
+	key := utils.GetMasterKEK()
+
+	if res.Pengirim != "" {
+		enc, err := utils.EncryptString(res.Pengirim, key)
+		if err != nil {
+			return nil, err
+		}
+		res.Pengirim = enc
+	}
+	if res.Perihal != nil && *res.Perihal != "" {
+		enc, err := utils.EncryptString(*res.Perihal, key)
+		if err != nil {
+			return nil, err
+		}
+		res.Perihal = &enc
+	}
+	return &res, nil
+}
+
+func decryptSuratMasuk(s *domain.SuratMasuk) (*domain.SuratMasuk, error) {
+	if s == nil {
+		return nil, nil
+	}
+	res := *s
+	key := utils.GetMasterKEK()
+
+	plainPengirim, err := utils.DecryptString(s.Pengirim, key)
+	if err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data surat masuk", fmt.Errorf("pengirim: %w", err))
+	}
+	res.Pengirim = plainPengirim
+
+	if s.Perihal != nil {
+		plainPerihal, err := utils.DecryptString(*s.Perihal, key)
+		if err != nil {
+			return nil, domain.NewInternal("Gagal mendekripsi data surat masuk", fmt.Errorf("perihal: %w", err))
+		}
+		res.Perihal = &plainPerihal
+	}
+	return &res, nil
 }
