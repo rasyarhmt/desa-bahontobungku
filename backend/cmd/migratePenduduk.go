@@ -33,13 +33,14 @@ type oldPendudukRow struct {
 }
 
 type preparedPenduduk struct {
-	Old          oldPendudukRow
-	NIKHash      string
-	EncNIK       string
-	EncNama      string
-	EncAlamat    string
-	JenisKelamin string
-	StatusID     *int
+	Old             oldPendudukRow
+	NIKHash         string
+	EncNIK          string
+	EncNama         string
+	EncAlamat       string
+	EncTanggalLahir string
+	JenisKelamin    string
+	StatusID        *int
 }
 
 func loadOldPenduduk(ctx context.Context, dsn string) ([]oldPendudukRow, error) {
@@ -220,6 +221,11 @@ func runMigratePenduduk() error {
 			return fmt.Errorf("enkripsi alamat id lama %d: %w", o.ID, err)
 		}
 
+		encTanggalLahir, err := encryptIfPlaintext(strings.TrimSpace(o.TanggalLahir), key)
+		if err != nil {
+			return fmt.Errorf("enkripsi tanggal lahir id lama %d: %w", o.ID, err)
+		}
+
 		jenisKelamin, err := normalizeJenisKelaminPenduduk(o.JenisKelamin)
 		if err != nil {
 			return fmt.Errorf("id lama %d: %w", o.ID, err)
@@ -246,13 +252,14 @@ func runMigratePenduduk() error {
 		}
 
 		prepared = append(prepared, preparedPenduduk{
-			Old:          o,
-			NIKHash:      nikHash,
-			EncNIK:       encNIK,
-			EncNama:      encNama,
-			EncAlamat:    encAlamat,
-			JenisKelamin: jenisKelamin,
-			StatusID:     statusID,
+			Old:             o,
+			NIKHash:         nikHash,
+			EncNIK:          encNIK,
+			EncNama:         encNama,
+			EncAlamat:       encAlamat,
+			EncTanggalLahir: encTanggalLahir,
+			JenisKelamin:    jenisKelamin,
+			StatusID:        statusID,
 		})
 	}
 
@@ -286,13 +293,13 @@ func runMigratePenduduk() error {
 		res, err := tx.ExecContext(ctx, `
 			INSERT INTO penduduk
 				(nik_hash, nik, nama, alamat, tanggalLahir, tempatLahir, nomor_kk,
-				 jenisKelamin, agama, id_status_keluarga, id_kepalakeluarga)
-			VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, NULL)`,
+				 jenisKelamin, agama, pekerjaan, id_status_keluarga, id_kepalakeluarga)
+			VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, ?, NULL, ?, NULL)`,
 			p.NIKHash,
 			p.EncNIK,
 			p.EncNama,
 			nullableString(p.EncAlamat),
-			nullableString(p.Old.TanggalLahir),
+			nullableString(p.EncTanggalLahir),
 			p.JenisKelamin,
 			nullableString(strings.TrimSpace(p.Old.Agama)),
 			statusID,
