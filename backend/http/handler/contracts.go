@@ -78,6 +78,7 @@ type (
 		Create(c *gin.Context)
 		GetByNIK(c *gin.Context)
 		GetAll(c *gin.Context)
+		ExportXLSX(c *gin.Context)
 		GetKepalaKeluarga(c *gin.Context)
 		Update(c *gin.Context)
 		Delete(c *gin.Context)

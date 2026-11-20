@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rasyarhmt/desa-bahontobungku/dto"
@@ -112,6 +114,19 @@ func (h *pendudukHandler) GetAll(c *gin.Context) {
 		Message: "Daftar penduduk berhasil diambil",
 		Data:    list,
 	})
+}
+
+func (h *pendudukHandler) ExportXLSX(c *gin.Context) {
+	data, err := h.pendudukUsecase.ExportXLSX(c.Request.Context())
+	if err != nil {
+		logrus.WithError(err).Error("handler.Penduduk.ExportXLSX: failed")
+		helpers.RespondError(c, err)
+		return
+	}
+
+	filename := fmt.Sprintf("data-penduduk-%s.xlsx", time.Now().Format("20060102-150405"))
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
+	c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", data)
 }
 
 // GetKepalaKeluarga godoc
