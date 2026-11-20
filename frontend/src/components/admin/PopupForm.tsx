@@ -29,7 +29,11 @@ interface PopupFormProps {
     id_status_keluarga: number | null;
     status: string;
   };
-  handleInputChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | { target: { name: string; value: string | number | null } }) => void;
+  handleInputChange: (
+    e:
+      | ChangeEvent<HTMLInputElement | HTMLSelectElement>
+      | { target: { name: string; value: string | number | null } },
+  ) => void;
   handleSubmit: (e: FormEvent) => void;
   resetForm: () => void;
   isEditing: boolean;
@@ -62,11 +66,15 @@ const PopupForm = ({
     formData.status.trim().toLowerCase() === "kepala keluarga";
 
   useEffect(() => {
-    if (formData.id_status_keluarga != null || statusKeluargaList.length === 0) {
+    if (
+      formData.id_status_keluarga != null ||
+      statusKeluargaList.length === 0
+    ) {
       return;
     }
     const byName = statusKeluargaList.find(
-      (s) => s.nama.trim().toLowerCase() === formData.status.trim().toLowerCase(),
+      (s) =>
+        s.nama.trim().toLowerCase() === formData.status.trim().toLowerCase(),
     );
     const fallback =
       statusKeluargaList.find(
@@ -285,7 +293,9 @@ const PopupForm = ({
                 </div>
               )}
             </div>
-            <div className="md:col-span-2">
+
+            {/* Alamat & Pekerjaan sekarang sejajar */}
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Alamat
               </label>
@@ -298,6 +308,20 @@ const PopupForm = ({
                 className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pekerjaan
+              </label>
+              <input
+                type="text"
+                name="pekerjaan"
+                value={formData.pekerjaan}
+                onChange={handleInputChange}
+                placeholder="Contoh: Petani"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tanggal Lahir
@@ -387,19 +411,6 @@ const PopupForm = ({
                 <option value="Laki-laki">Laki-laki</option>
                 <option value="Perempuan">Perempuan</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pekerjaan
-              </label>
-              <input
-                type="text"
-                name="pekerjaan"
-                value={formData.pekerjaan}
-                onChange={handleInputChange}
-                placeholder="Contoh: Petani"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              />
             </div>
           </div>
 
