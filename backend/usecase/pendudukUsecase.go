@@ -427,12 +427,17 @@ func (u *pendudukUsecase) GetUmurStats(ctx context.Context) ([]dto.UmurStatsDTO,
 	}
 
 	now := time.Now()
+	key := utils.GetMasterKEK()
 	counts := make(map[string]int)
 	for _, r := range rows {
 		if strings.TrimSpace(r.TanggalLahir) == "" {
 			continue
 		}
-		t, err := parseTanggalLahir(r.TanggalLahir)
+		plain, err := utils.DecryptString(r.TanggalLahir, key)
+		if err != nil {
+			continue
+		}
+		t, err := parseTanggalLahir(plain)
 		if err != nil {
 			continue
 		}
@@ -488,6 +493,16 @@ func (u *pendudukUsecase) encrypt(p *domain.Penduduk) (*domain.Penduduk, error) 
 			return nil, err
 		}
 	}
+	if p.TanggalLahir != "" {
+		if p.TanggalLahir, err = utils.EncryptString(p.TanggalLahir, key); err != nil {
+			return nil, err
+		}
+	}
+	if p.TempatLahir != "" {
+		if p.TempatLahir, err = utils.EncryptString(p.TempatLahir, key); err != nil {
+			return nil, err
+		}
+	}
 
 	return p, nil
 }
@@ -512,6 +527,12 @@ func (u *pendudukUsecase) decrypt(p *domain.Penduduk) (*domain.Penduduk, error) 
 	}
 	if res.NoKK, err = utils.DecryptString(p.NoKK, key); err != nil {
 		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("nomor_kk: %w", err))
+	}
+	if res.TanggalLahir, err = utils.DecryptString(p.TanggalLahir, key); err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("tanggal_lahir: %w", err))
+	}
+	if res.TempatLahir, err = utils.DecryptString(p.TempatLahir, key); err != nil {
+		return nil, domain.NewInternal("Gagal mendekripsi data penduduk", fmt.Errorf("tempat_lahir: %w", err))
 	}
 	if p.KKNama != "" {
 		if res.KKNama, err = utils.DecryptString(p.KKNama, key); err != nil {
