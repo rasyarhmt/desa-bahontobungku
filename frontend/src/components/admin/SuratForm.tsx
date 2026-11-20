@@ -194,7 +194,7 @@ export default function SuratForm({
           htmlFor="upload-file"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Upload Dokumen {isEdit ? "Baru " : ""}(Opsional)
+          Upload Dokumen {isEdit ? "Baru " : ""}
         </label>
         <input
           id="upload-file"

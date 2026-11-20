@@ -100,6 +100,12 @@ export const adminPendudukApi = {
     return list.map(normalizePendudukAdmin);
   },
 
+  exportPendudukXLSX: () =>
+    http.getBlob(
+      "/v1/penduduk/export/xlsx",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ),
+
   getPendudukByNik: async (nik: string): Promise<PendudukAdminView | null> => {
     try {
       const item = await http.get(

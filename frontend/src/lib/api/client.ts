@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 
 import { API_URL } from "./config";
 import { EnvelopeSchema, RefreshTokensSchema, type RefreshTokens } from "./schemas";

@@ -1,4 +1,4 @@
-import { AUTH_STORAGE, ApiError, clearAuth, getAccessToken, http, setTokens } from "./client";
+import { AUTH_STORAGE, ApiError, clearAuth, http, setTokens } from "./client";
 import {
   AnyDataSchema,
   LoginResponseSchema,

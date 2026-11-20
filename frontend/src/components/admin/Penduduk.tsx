@@ -14,6 +14,7 @@ import {
   FaMars,
   FaVenus,
   FaEye,
+  FaFileExcel,
 } from "react-icons/fa";
 
 import PopupForm from "./PopupForm";
@@ -154,6 +155,7 @@ export default function Penduduk() {
   } = useDisclosure();
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [formData, setFormData] = useState<PendudukFormData>({
     id: 0,
     nama: "",
@@ -354,6 +356,26 @@ export default function Penduduk() {
     }
   };
 
+  const handleExportXLSX = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await adminPendudukApi.exportPendudukXLSX();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `data-penduduk-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      toast.success("Data penduduk berhasil diekspor ke Excel");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Gagal mengekspor data penduduk"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleViewDetail = (nik: string) => {
     setSelectedNik(nik);
     setActiveSection("detail");
@@ -516,15 +538,14 @@ export default function Penduduk() {
                 <tr className="border-b border-gray-200">
                   <th className="px-4 py-3 text-left font-medium">#</th>
                   <th className="px-4 py-3 text-left font-medium">Nama</th>
-                  <th className="px-4 py-3 text-left font-medium">NIK</th>
                   <th className="px-4 py-3 text-left font-medium">Alamat</th>
                   <th className="px-4 py-3 text-left font-medium">Tempat Lahir</th>
-                  <th className="px-4 py-3 text-left font-medium">No. KK</th>
                   <th className="px-4 py-3 text-center font-medium">Umur</th>
                   <th className="px-4 py-3 text-center font-medium">
                     Jenis Kelamin
                   </th>
                   <th className="px-4 py-3 text-center font-medium">Agama</th>
+                  <th className="px-4 py-3 text-center font-medium">Pekerjaan</th>
                   <th className="px-4 py-3 text-center font-medium">Status</th>
                   <th className="px-4 py-3 text-center font-medium">Aksi</th>
                 </tr>
@@ -537,20 +558,24 @@ export default function Penduduk() {
                   >
                     <td className="px-4 py-3">{idx + 1}</td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleViewDetail(item.nik)}
-                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer break-words"
-                      >
-                        {item.nama}
-                      </button>
+                      <div className="flex flex-col gap-0.5">
+                        <button
+                          onClick={() => handleViewDetail(item.nik)}
+                          className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer break-words text-left"
+                        >
+                          {item.nama}
+                        </button>
+                        <span className="text-xs text-gray-500 break-all">
+                          NIK: {item.nik}
+                        </span>
+                        <span className="text-xs text-gray-500 break-all">
+                          No. KK: {item.nomor_kk || "-"}
+                        </span>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 break-words">{item.nik}</td>
                     <td className="px-4 py-3 break-words">{item.alamat}</td>
                     <td className="px-4 py-3 break-words">
                       {item.tempatLahir || "-"}
-                    </td>
-                    <td className="px-4 py-3 break-words">
-                      {item.nomor_kk || "-"}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {hitungUmur(item.tanggalLahir)}
@@ -559,6 +584,9 @@ export default function Penduduk() {
                       {item.jenisKelamin}
                     </td>
                     <td className="px-4 py-3 text-center">{item.agama}</td>
+                    <td className="px-4 py-3 text-center">
+                      {item.pekerjaan || "-"}
+                    </td>
                     <td className="px-4 py-3 text-center">
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -600,7 +628,7 @@ export default function Penduduk() {
                 {filteredData.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="px-4 py-6 text-center text-gray-500"
                     >
                       Tidak ada data yang sesuai dengan pencarian
@@ -654,6 +682,18 @@ export default function Penduduk() {
                 </h1>
                 <div className="flex gap-2">
                   <button
+                    onClick={handleExportXLSX}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    {isExporting ? (
+                      <FaSpinner className="animate-spin" size={16} />
+                    ) : (
+                      <FaFileExcel size={16} />
+                    )}
+                    <span>{isExporting ? "Mengekspor..." : "Ekspor Excel"}</span>
+                  </button>
+                  <button
                     onClick={() => setActiveSection("manage")}
                     className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
                   >
@@ -704,6 +744,18 @@ export default function Penduduk() {
                   >
                     <FaHome size={16} />
                     <span>Dashboard</span>
+                  </button>
+                  <button
+                    onClick={handleExportXLSX}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    {isExporting ? (
+                      <FaSpinner className="animate-spin" size={16} />
+                    ) : (
+                      <FaFileExcel size={16} />
+                    )}
+                    <span>{isExporting ? "Mengekspor..." : "Ekspor Excel"}</span>
                   </button>
                   <button
                     onClick={() => openForm()}
