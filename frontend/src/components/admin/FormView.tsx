@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { ArrowLeft } from "lucide-react";
 
 interface FormViewProps {
   title: string;
@@ -25,18 +25,18 @@ const FormView = ({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors shadow-sm"
+        className="inline-flex min-h-11 items-center gap-2 px-4 py-2 mb-6 bg-white text-slate-800 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-semibold"
       >
-        <FaArrowLeft size={14} />
+        <ArrowLeft aria-hidden="true" className="size-5" />
         <span>{backLabel}</span>
       </button>
 
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
-          {icon && <div className="bg-indigo-100 p-2 rounded-lg">{icon}</div>}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div className="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
+          {icon && <div className="bg-slate-100 p-2 rounded-xl text-[#0b6393]">{icon}</div>}
           <div>
-            <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-            {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+            <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+            {subtitle && <p className="text-sm text-slate-600">{subtitle}</p>}
           </div>
         </div>
         {children}

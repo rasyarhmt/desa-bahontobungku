@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUserShield, FaPlus } from "react-icons/fa";
+import { LoaderCircle, Plus, ShieldCheck } from "lucide-react";
 import AdminFormPopup from "@/components/admin/AdminFormPopup";
 import TableAdmin from "@/components/admin/TableAdmin";
 import { adminUserApi } from "@/lib/api/admin";
@@ -114,18 +114,22 @@ export default function AdminManagement() {
   }));
 
   return (
-    <div className="p-6" style={{ fontFamily: "poppins" }}>
-      <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
-        <FaUserShield /> Manajemen Admin
+    <div
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
+    >
+      <h1 className="mb-4 flex items-center gap-3 text-2xl font-bold text-slate-900">
+        <ShieldCheck aria-hidden="true" className="size-6 text-[#0b6393]" />
+        Manajemen Admin
       </h1>
 
       <button
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+        className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-5 font-semibold text-white transition-colors hover:bg-[#0a557c]"
         onClick={() => {
           addModal.open();
         }}
       >
-        <FaPlus /> Tambah Admin
+        <Plus aria-hidden="true" className="size-5" /> Tambah Admin
       </button>
 
       <AdminFormPopup
@@ -135,7 +139,13 @@ export default function AdminManagement() {
       />
 
       {loading ? (
-        <div className="text-center text-gray-500">Memuat data...</div>
+        <div className="py-8 text-center text-base text-slate-600">
+          <LoaderCircle
+            aria-hidden="true"
+            className="mx-auto mb-4 size-6 animate-spin text-[#0b6393]"
+          />
+          Memuat data...
+        </div>
       ) : (
         <TableAdmin
           columns={columns}
@@ -146,22 +156,25 @@ export default function AdminManagement() {
       )}
 
       {confirmDeleteId && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 z-[100] flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl shadow-2xl">
-            <p className="mb-4 text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-xl font-bold text-slate-900">
+              Konfirmasi Hapus
+            </h2>
+            <p className="mb-6 text-center text-base text-slate-600">
               Yakin ingin menghapus user ini? Aksi ini **tidak dapat
               dibatalkan**.
             </p>
-            <div className="flex justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={confirmDelete}
-                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="min-h-11 rounded-xl bg-red-700 px-5 font-semibold text-white transition-colors hover:bg-red-800"
               >
                 Ya, Hapus
               </button>
               <button
                 onClick={() => setConfirmDeleteId(null)}
-                className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-5 font-semibold text-slate-700 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>
@@ -171,22 +184,25 @@ export default function AdminManagement() {
       )}
 
       {transferId && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 z-[100] flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl shadow-2xl">
-            <p className="mb-4 text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-xl font-bold text-slate-900">
+              Konfirmasi Transfer
+            </h2>
+            <p className="mb-6 text-center text-base text-slate-600">
               Yakin ingin memindahkan superadmin ke user ini? Anda akan
               **otomatis logout**.
             </p>
-            <div className="flex justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={confirmTransfer}
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="min-h-11 rounded-xl bg-[#0b6393] px-5 font-semibold text-white transition-colors hover:bg-[#0a557c]"
               >
                 Ya, Transfer
               </button>
               <button
                 onClick={() => setTransferId(null)}
-                className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-5 font-semibold text-slate-700 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>

@@ -1,16 +1,16 @@
 import { useState } from "react";
 import {
-  FaFileAlt,
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaCheck,
-  FaBan,
-  FaSpinner,
-  FaUpload,
-  FaListUl,
-  FaEye,
-} from "react-icons/fa";
+  Ban,
+  Check,
+  Eye,
+  FileText,
+  List,
+  LoaderCircle,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { type SuratTemplate } from "@/lib/api/schemas";
 import { adminTemplateApi } from "@/lib/api/admin";
 import { useAsyncData, useCrudResource } from "@/hooks";
@@ -137,242 +137,256 @@ const TemplateSuratAdmin = () => {
 
   return (
     <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <FaFileAlt className="text-indigo-500 text-xl" />
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-[#0b6393]/10">
+            <FileText
+              className="size-5 text-[#0b6393]"
+              aria-hidden="true"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-slate-900">
             Manajemen Template Surat
           </h1>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Total Template
               </h3>
-              <div className="bg-indigo-100 p-2 rounded-lg">
-                <FaFileAlt className="text-indigo-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-[#0b6393]/10">
+                <FileText
+                  className="size-5 text-[#0b6393]"
+                  aria-hidden="true"
+                />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {templates.length}
             </div>
-            <p className="text-sm text-gray-600">Jumlah template tersedia</p>
+            <p className="text-base text-slate-600">
+              Jumlah template tersedia
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Template Aktif
               </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaCheck className="text-green-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50">
+                <Check
+                  className="size-5 text-emerald-700"
+                  aria-hidden="true"
+                />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countAktif}
             </div>
-            <p className="text-sm text-gray-600">Siap digunakan warga</p>
+            <p className="text-base text-slate-600">Siap digunakan warga</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Template Nonaktif
               </h3>
-              <div className="bg-gray-100 p-2 rounded-lg">
-                <FaBan className="text-gray-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-slate-100">
+                <Ban className="size-5 text-slate-600" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countNonaktif}
             </div>
-            <p className="text-sm text-gray-600">Template yang nonaktif</p>
+            <p className="text-base text-slate-600">Template yang nonaktif</p>
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "semua"
-                  ? "bg-indigo-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaFileAlt
-                className={
-                  activeTab === "semua" ? "text-white" : "text-indigo-500"
-                }
+              <FileText
+                className={`size-5 ${activeTab === "semua" ? "" : "text-[#0b6393]"}`}
+                aria-hidden="true"
               />
               <span>Semua Template</span>
             </button>
             <button
               onClick={() => setActiveTab("aktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "aktif"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-emerald-700 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaCheck
-                className={
-                  activeTab === "aktif" ? "text-white" : "text-green-500"
-                }
+              <Check
+                className={`size-5 ${activeTab === "aktif" ? "" : "text-emerald-700"}`}
+                aria-hidden="true"
               />
               <span>Aktif</span>
             </button>
             <button
               onClick={() => setActiveTab("nonaktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "nonaktif"
-                  ? "bg-gray-600 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-slate-700 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaBan
-                className={
-                  activeTab === "nonaktif" ? "text-white" : "text-gray-500"
-                }
+              <Ban
+                className={`size-5 ${activeTab === "nonaktif" ? "" : "text-slate-600"}`}
+                aria-hidden="true"
               />
               <span>Nonaktif</span>
             </button>
           </div>
         </div>
 
-        {/* Templates Table */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-slate-900">
                 Daftar Template
               </h2>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Template HTML dengan placeholder {"{{ field }}"} untuk surat
                 yang dicetak warga
               </p>
             </div>
             <button
               onClick={handleAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+              className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 text-base font-semibold text-white transition-colors hover:bg-[#084f73]"
             >
-              <FaPlus className="text-white" />
+              <Plus className="size-5" aria-hidden="true" />
               <span>Tambah Template</span>
             </button>
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-indigo-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data template...</p>
+            <div className="py-8 text-center">
+              <LoaderCircle
+                className="mx-auto mb-4 size-8 animate-spin text-[#0b6393]"
+                aria-hidden="true"
+              />
+              <p className="text-base text-slate-600">Memuat data template...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
+            <div className="py-8 text-center text-red-700">
+              <p className="text-base">{error}</p>
               <button
                 onClick={fetchTemplateData}
-                className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+                className="mt-4 min-h-11 rounded-xl bg-[#0b6393] px-4 text-base font-semibold text-white transition-colors hover:bg-[#084f73]"
               >
                 Coba Lagi
               </button>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-base">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
+                  <tr className="bg-slate-50">
+                    <th className="rounded-tl-lg px-4 py-4 text-left text-base font-bold text-slate-900">
                       ID
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Kode
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Nama Template
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Deskripsi
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       File
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
+                    <th className="rounded-tr-lg px-4 py-4 text-right text-base font-bold text-slate-900">
                       Aksi
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-200">
                   {filteredData.length > 0 ? (
                     filteredData.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          {item.id}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md text-xs font-mono font-medium">
+                      <tr key={item.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-4 text-slate-900">{item.id}</td>
+                        <td className="px-4 py-4">
+                          <span className="rounded-md bg-slate-100 px-2 py-1 font-mono text-sm font-semibold text-slate-800">
                             {item.kode}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                        <td className="px-4 py-4 font-semibold text-slate-900">
                           {item.nama_template}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 max-w-xs">
+                        <td className="max-w-xs px-4 py-4 text-slate-700">
                           {item.deskripsi || "-"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                        <td className="px-4 py-4 text-slate-600">
                           {item.file_template
                             ? item.file_template.split("/").pop()
                             : "-"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4">
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            className={`rounded-full px-3 py-1 text-sm font-semibold ${
                               item.status === "aktif"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-slate-100 text-slate-700"
                             }`}
                           >
                             {item.status === "aktif" ? "Aktif" : "Nonaktif"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => setPreviewTemplate(item)}
-                              className="p-1.5 bg-purple-100 rounded-md hover:bg-purple-200 transition-colors"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393] transition-colors hover:bg-sky-100"
+                              aria-label="Lihat Template"
                               title="Lihat Template"
                             >
-                              <FaEye className="text-purple-600" />
+                              <Eye className="size-5" aria-hidden="true" />
                             </button>
                             <button
                               onClick={() => setFieldModalTemplate(item)}
-                              className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-[#0b6393]/10 text-[#0b6393] transition-colors hover:bg-[#0b6393]/20"
+                              aria-label="Atur Field"
                               title="Atur Field"
                             >
-                              <FaListUl className="text-blue-600" />
+                              <List className="size-5" aria-hidden="true" />
                             </button>
                             <button
                               onClick={() => handleEdit(item.id)}
-                              className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
+                              aria-label="Edit"
                               title="Edit"
                             >
-                              <FaEdit className="text-gray-600" />
+                              <Pencil className="size-5" aria-hidden="true" />
                             </button>
                             <button
                               onClick={() => handleToggleStatus(item.id)}
-                              className="p-1.5 bg-yellow-100 rounded-md hover:bg-yellow-200 transition-colors"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700 transition-colors hover:bg-amber-100 disabled:opacity-50"
+                              aria-label={
+                                item.status === "aktif"
+                                  ? "Nonaktifkan"
+                                  : "Aktifkan"
+                              }
                               title={
                                 item.status === "aktif"
                                   ? "Nonaktifkan"
@@ -380,14 +394,15 @@ const TemplateSuratAdmin = () => {
                               }
                               disabled={isActionLoading}
                             >
-                              <FaBan className="text-yellow-600" />
+                              <Ban className="size-5" aria-hidden="true" />
                             </button>
                             <button
                               onClick={() => handleDelete(item.id)}
-                              className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-red-50 text-red-700 transition-colors hover:bg-red-100"
+                              aria-label="Hapus"
                               title="Hapus"
                             >
-                              <FaTrash className="text-red-600" />
+                              <Trash2 className="size-5" aria-hidden="true" />
                             </button>
                           </div>
                         </td>
@@ -397,7 +412,7 @@ const TemplateSuratAdmin = () => {
                     <tr>
                       <td
                         colSpan={7}
-                        className="px-4 py-8 text-center text-gray-500"
+                        className="px-4 py-4 text-center text-base text-slate-600"
                       >
                         Tidak ada template surat yang ditemukan.
                       </td>
@@ -410,23 +425,22 @@ const TemplateSuratAdmin = () => {
         </div>
       </div>
 
-      {/* Add Modal */}
       {addModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Tambah Template Surat Baru
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Unggah file HTML template yang berisi placeholder{" "}
                 {"{{ field }}"}
               </p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Kode Template
                 </label>
                 <input
@@ -435,12 +449,12 @@ const TemplateSuratAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, kode: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Contoh: SK_DOMISILI"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Nama Template
                 </label>
                 <input
@@ -452,12 +466,12 @@ const TemplateSuratAdmin = () => {
                       nama_template: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Contoh: Surat Keterangan Domisili"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Deskripsi
                 </label>
                 <textarea
@@ -465,13 +479,13 @@ const TemplateSuratAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, deskripsi: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Deskripsi singkat template"
                   rows={2}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   File Template (.docx)
                 </label>
                 <div className="flex items-center gap-2">
@@ -484,13 +498,13 @@ const TemplateSuratAdmin = () => {
                         file_template: e.target.files?.[0] || null,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   />
                 </div>
                 {formData.file_template && (
-                  <p className="mt-1 text-xs text-green-600 flex items-center gap-1">
-                    <FaCheck size={10} /> {formData.file_template.name} siap
-                    diupload
+                  <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-emerald-700">
+                    <Check className="size-5" aria-hidden="true" />
+                    {formData.file_template.name} siap diupload
                   </p>
                 )}
               </div>
@@ -499,15 +513,15 @@ const TemplateSuratAdmin = () => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => addModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-4 text-base font-semibold text-slate-700 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={saveNewItem}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+                className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 text-base font-semibold text-white transition-colors hover:bg-[#084f73]"
               >
-                <FaUpload size={12} />
+                <Upload className="size-5" aria-hidden="true" />
                 Simpan
               </button>
             </div>
@@ -515,36 +529,35 @@ const TemplateSuratAdmin = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
       {editModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Edit Template Surat
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Ubah nama, deskripsi, atau ganti file template
               </p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Kode Template
                 </label>
                 <input
                   type="text"
                   value={formData.kode}
                   disabled
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 text-base text-slate-600"
                 />
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-2 text-sm text-slate-600">
                   Kode template tidak dapat diubah
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Nama Template
                 </label>
                 <input
@@ -556,11 +569,11 @@ const TemplateSuratAdmin = () => {
                       nama_template: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Deskripsi
                 </label>
                 <textarea
@@ -568,12 +581,12 @@ const TemplateSuratAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, deskripsi: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   rows={2}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Ganti File Template (.docx)
                 </label>
                 <input
@@ -585,15 +598,15 @@ const TemplateSuratAdmin = () => {
                       file_template: e.target.files?.[0] || null,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 />
                 {formData.file_template ? (
-                  <p className="mt-1 text-xs text-green-600 flex items-center gap-1">
-                    <FaCheck size={10} /> {formData.file_template.name} siap
-                    diupload
+                  <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-emerald-700">
+                    <Check className="size-5" aria-hidden="true" />
+                    {formData.file_template.name} siap diupload
                   </p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-2 text-sm text-slate-600">
                     Kosongkan jika tidak ingin mengganti file
                   </p>
                 )}
@@ -603,13 +616,13 @@ const TemplateSuratAdmin = () => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => editModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-4 text-base font-semibold text-slate-700 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={saveEditedItem}
-                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+                className="min-h-11 rounded-xl bg-[#0b6393] px-4 text-base font-semibold text-white transition-colors hover:bg-[#084f73]"
               >
                 Simpan Perubahan
               </button>
@@ -618,15 +631,14 @@ const TemplateSuratAdmin = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {deleteModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Hapus
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Apakah Anda yakin ingin menghapus template "
                 {currentItem?.nama_template}"? Tindakan ini tidak dapat
                 dibatalkan.
@@ -636,13 +648,13 @@ const TemplateSuratAdmin = () => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-4 text-base font-semibold text-slate-700 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="min-h-11 rounded-xl bg-red-700 px-4 text-base font-semibold text-white transition-colors hover:bg-red-800"
               >
                 Hapus
               </button>

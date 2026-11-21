@@ -1,24 +1,24 @@
 "use client";
 
 import {
-  FaFileAlt,
-  FaEnvelopeOpen,
-  FaEnvelope,
-  FaNewspaper,
-  FaBullhorn,
-  FaChartPie,
-  FaChartLine,
-  FaCalendarAlt,
-  FaArrowRight,
-  FaCheck,
-  FaExclamationTriangle,
-  FaSpinner,
-  FaLink,
-  FaPhotoVideo,
-  FaUsers,
-  FaHome,
-  FaUserCheck,
-} from "react-icons/fa";
+  ArrowRight,
+  CalendarDays,
+  Check,
+  FileText,
+  House,
+  Images,
+  Link2,
+  LoaderCircle,
+  Mail,
+  MailOpen,
+  Megaphone,
+  Newspaper,
+  PieChart,
+  TrendingUp,
+  TriangleAlert,
+  UserCheck,
+  UsersRound,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { adminDashboardApi } from "@/lib/api/admin";
@@ -115,18 +115,20 @@ const KpiCard = ({
   linkClassName,
   children,
 }: KpiCardProps) => (
-  <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col">
-    <div className="flex justify-between items-center mb-4">
-      <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-      <div className={`p-2 rounded-lg ${iconClassName}`}>{icon}</div>
+  <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="mb-4 flex items-center justify-between gap-4">
+      <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+      <div className={`rounded-xl p-2 ${iconClassName}`}>{icon}</div>
     </div>
-    <div className="text-3xl font-bold text-gray-900 mb-2">{value}</div>
-    <div className="flex justify-between text-sm text-gray-600">{children}</div>
+    <div className="mb-2 text-3xl font-bold text-slate-900">{value}</div>
+    <div className="flex flex-wrap justify-between gap-2 text-sm text-slate-600">
+      {children}
+    </div>
     <Link
       to={link}
-      className={`mt-auto pt-4 text-sm font-medium flex items-center hover:underline ${linkClassName}`}
+      className={`mt-auto inline-flex min-h-11 items-center pt-4 text-sm font-semibold hover:underline ${linkClassName}`}
     >
-      {linkLabel} <FaArrowRight className="ml-1 text-xs" />
+      {linkLabel} <ArrowRight aria-hidden="true" className="ml-1 size-4" />
     </Link>
   </div>
 );
@@ -158,26 +160,29 @@ const BerandaAdmin = () => {
       case "Diterima":
       case "Dipublikasi":
       case "Aktif":
-        return "bg-green-100 text-green-800";
+        return "bg-emerald-50 text-emerald-700";
       case "Terkirim":
-        return "bg-blue-100 text-blue-800";
+        return "bg-sky-50 text-[#0b6393]";
       case "Diproses":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-amber-50 text-amber-700";
       case "Draft":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-amber-50 text-amber-700";
       case "Kadaluarsa":
-        return "bg-gray-100 text-gray-800";
+        return "bg-slate-100 text-slate-700";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-slate-100 text-slate-700";
     }
   };
 
   if (isLoading) {
     return (
-      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f6f8fb] p-6">
         <div className="text-center">
-          <FaSpinner className="animate-spin text-4xl text-purple-500 mx-auto mb-4" />
-          <p className="text-gray-600">Memuat data dashboard...</p>
+          <LoaderCircle
+            aria-hidden="true"
+            className="mx-auto mb-4 size-8 animate-spin text-[#0b6393]"
+          />
+          <p className="text-base text-slate-600">Memuat data dashboard...</p>
         </div>
       </div>
     );
@@ -185,13 +190,16 @@ const BerandaAdmin = () => {
 
   if (error) {
     return (
-      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f6f8fb] p-6">
         <div className="text-center">
-          <FaExclamationTriangle className="text-4xl text-red-500 mx-auto mb-4" />
-          <p className="text-red-500 mb-4">{error}</p>
+          <TriangleAlert
+            aria-hidden="true"
+            className="mx-auto mb-4 size-8 text-red-700"
+          />
+          <p className="mb-4 text-base text-red-700">{error}</p>
           <button
             onClick={fetchDashboardData}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+            className="min-h-11 rounded-xl bg-[#0b6393] px-5 font-semibold text-white transition-colors hover:bg-[#0a557c]"
           >
             Coba Lagi
           </button>
@@ -201,30 +209,36 @@ const BerandaAdmin = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="w-full mx-auto">
+    <div className="min-h-screen bg-[#f6f8fb] p-6">
+      <div className="mx-auto w-full">
         {dashboardData?.alerts && dashboardData.alerts.length > 0 && (
           <div className="mb-6">
             {dashboardData.alerts.map((alert) => (
               <div
                 key={alert.id}
-                className={`mb-2 p-4 rounded-xl flex items-start gap-3 ${
+                className={`mb-2 flex items-start gap-3 rounded-xl border-l-4 p-4 ${
                   alert.type === "warning"
-                    ? "bg-amber-50 text-amber-800 border-l-4 border-amber-500"
+                    ? "border-amber-600 bg-amber-50 text-amber-800"
                     : alert.type === "info"
-                      ? "bg-blue-50 text-blue-800 border-l-4 border-blue-500"
-                      : "bg-gray-50 text-gray-800 border-l-4 border-gray-500"
+                      ? "border-[#0b6393] bg-sky-50 text-slate-800"
+                      : "border-slate-400 bg-slate-50 text-slate-800"
                 }`}
               >
                 {alert.type === "warning" ? (
-                  <FaExclamationTriangle className="text-amber-500 mt-0.5" />
+                  <TriangleAlert
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-amber-700"
+                  />
                 ) : (
-                  <FaCheck className="text-blue-500 mt-0.5" />
+                  <Check
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-[#0b6393]"
+                  />
                 )}
-                <div className="flex-1">{alert.message}</div>
+                <div className="flex-1 text-base">{alert.message}</div>
                 <Link
                   to={alert.link}
-                  className="text-sm font-medium hover:underline"
+                  className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-[#0b6393] hover:underline"
                 >
                   Lihat
                 </Link>
@@ -233,15 +247,20 @@ const BerandaAdmin = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3">
           <KpiCard
             title="Total Penduduk"
             value={dashboardData?.penduduk.total ?? 0}
-            icon={<FaUsers className="text-purple-500 text-xl" />}
-            iconClassName="bg-purple-100"
+            icon={
+              <UsersRound
+                aria-hidden="true"
+                className="size-5 text-[#0b6393]"
+              />
+            }
+            iconClassName="bg-[#0b6393]/10"
             link="/admin/infografis"
             linkLabel="Kelola Data"
-            linkClassName="text-purple-600"
+            linkClassName="text-[#0b6393]"
           >
             <span>Laki-laki: {dashboardData?.penduduk.lakiLaki ?? 0}</span>
             <span>Perempuan: {dashboardData?.penduduk.perempuan ?? 0}</span>
@@ -250,11 +269,13 @@ const BerandaAdmin = () => {
           <KpiCard
             title="Kepala Keluarga"
             value={dashboardData?.keluarga.total ?? 0}
-            icon={<FaHome className="text-amber-500 text-xl" />}
-            iconClassName="bg-amber-100"
+            icon={
+              <House aria-hidden="true" className="size-5 text-[#0b6393]" />
+            }
+            iconClassName="bg-[#0b6393]/10"
             link="/admin/infografis"
             linkLabel="Kelola Data"
-            linkClassName="text-amber-600"
+            linkClassName="text-[#0b6393]"
           >
             <span>Anggota: {dashboardData?.keluarga.anggota ?? 0}</span>
             <span>Rata-rata: {dashboardData?.keluarga.rataRata ?? 0}/KK</span>
@@ -263,11 +284,16 @@ const BerandaAdmin = () => {
           <KpiCard
             title="Pengajuan Surat"
             value={dashboardData?.pengajuanSurat.total ?? 0}
-            icon={<FaFileAlt className="text-indigo-500 text-xl" />}
-            iconClassName="bg-indigo-100"
+            icon={
+              <FileText
+                aria-hidden="true"
+                className="size-5 text-[#0b6393]"
+              />
+            }
+            iconClassName="bg-[#0b6393]/10"
             link="/admin/log-cetak"
             linkLabel="Kelola Pengajuan"
-            linkClassName="text-indigo-600"
+            linkClassName="text-[#0b6393]"
           >
             <span>Dicetak: {dashboardData?.pengajuanSurat.dicetak ?? 0}</span>
             <span>
@@ -278,11 +304,16 @@ const BerandaAdmin = () => {
           <KpiCard
             title="Berita"
             value={dashboardData?.berita.total ?? 0}
-            icon={<FaNewspaper className="text-blue-500 text-xl" />}
-            iconClassName="bg-blue-100"
+            icon={
+              <Newspaper
+                aria-hidden="true"
+                className="size-5 text-[#0b6393]"
+              />
+            }
+            iconClassName="bg-[#0b6393]/10"
             link="/admin/berita"
             linkLabel="Kelola Berita"
-            linkClassName="text-blue-600"
+            linkClassName="text-[#0b6393]"
           >
             <span>Dipublikasi: {dashboardData?.berita.published ?? 0}</span>
             <span>Draft: {dashboardData?.berita.draft ?? 0}</span>
@@ -291,11 +322,16 @@ const BerandaAdmin = () => {
           <KpiCard
             title="Pengumuman"
             value={dashboardData?.pengumuman.total ?? 0}
-            icon={<FaBullhorn className="text-green-500 text-xl" />}
-            iconClassName="bg-green-100"
+            icon={
+              <Megaphone
+                aria-hidden="true"
+                className="size-5 text-[#0b6393]"
+              />
+            }
+            iconClassName="bg-[#0b6393]/10"
             link="/admin/pengumuman"
             linkLabel="Kelola Pengumuman"
-            linkClassName="text-green-600"
+            linkClassName="text-[#0b6393]"
           >
             <span>Aktif: {dashboardData?.pengumuman.active ?? 0}</span>
             <span>Kadaluarsa: {dashboardData?.pengumuman.expired ?? 0}</span>
@@ -304,25 +340,33 @@ const BerandaAdmin = () => {
           <KpiCard
             title="Pelayanan"
             value={dashboardData?.pelayanan.total ?? 0}
-            icon={<FaUserCheck className="text-rose-500 text-xl" />}
-            iconClassName="bg-rose-100"
+            icon={
+              <UserCheck
+                aria-hidden="true"
+                className="size-5 text-[#0b6393]"
+              />
+            }
+            iconClassName="bg-[#0b6393]/10"
             link="/admin/pelayanan"
             linkLabel="Kelola Layanan"
-            linkClassName="text-rose-600"
+            linkClassName="text-[#0b6393]"
           >
             <span>Aktif: {dashboardData?.pelayanan.aktif ?? 0}</span>
             <span>Nonaktif: {dashboardData?.pelayanan.nonaktif ?? 0}</span>
           </KpiCard>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Status Pengajuan Surat
               </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaChartPie className="text-purple-500 text-xl" />
+              <div className="rounded-xl bg-[#0b6393]/10 p-2">
+                <PieChart
+                  aria-hidden="true"
+                  className="size-5 text-[#0b6393]"
+                />
               </div>
             </div>
             <DonutChart
@@ -338,25 +382,32 @@ const BerandaAdmin = () => {
               ]}
               colors={["#f59e0b", "#10b981"]}
             />
-            <div className="mt-4 flex justify-center gap-6">
+            <div className="mt-4 flex flex-wrap justify-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                <span className="text-sm">Dicetak</span>
+                <div className="size-3 rounded-full bg-amber-500"></div>
+                <span className="text-sm font-medium text-slate-700">
+                  Dicetak
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="text-sm">Diresmikan</span>
+                <div className="size-3 rounded-full bg-emerald-600"></div>
+                <span className="text-sm font-medium text-slate-700">
+                  Diresmikan
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Arsip Surat
               </h3>
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaChartPie className="text-blue-500 text-xl" />
+              <div className="rounded-xl bg-[#0b6393]/10 p-2">
+                <PieChart
+                  aria-hidden="true"
+                  className="size-5 text-[#0b6393]"
+                />
               </div>
             </div>
             <BarChart
@@ -366,13 +417,16 @@ const BerandaAdmin = () => {
             />
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Pengajuan 6 Bulan Terakhir
               </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaChartLine className="text-green-500 text-xl" />
+              <div className="rounded-xl bg-[#0b6393]/10 p-2">
+                <TrendingUp
+                  aria-hidden="true"
+                  className="size-5 text-[#0b6393]"
+                />
               </div>
             </div>
             <LineChart
@@ -382,15 +436,15 @@ const BerandaAdmin = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Arsip Surat Terbaru
               </h3>
               <Link
                 to="/admin/surat"
-                className="text-sm text-purple-600 hover:underline"
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-[#0b6393] hover:underline"
               >
                 Lihat Semua
               </Link>
@@ -401,50 +455,54 @@ const BerandaAdmin = () => {
                 dashboardData.surat.recent.map((surat) => (
                   <div
                     key={surat.id}
-                    className="border border-gray-100 rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                    className="rounded-xl border border-slate-200 p-4 transition-colors hover:bg-slate-50"
                   >
-                    <div className="flex justify-between items-start">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h4 className="font-medium text-gray-800">
+                        <h4 className="text-base font-semibold text-slate-900">
                           {surat.perihal}
                         </h4>
-                        <p className="text-sm text-gray-600">{surat.nomor}</p>
+                        <p className="text-sm text-slate-600">{surat.nomor}</p>
                       </div>
                     </div>
-                    <div className="mt-2 flex justify-between items-center text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
+                    <div className="mt-2 flex items-center justify-between gap-3 text-sm text-slate-600">
+                      <div className="flex items-center gap-2">
                         {surat.jenis === "Surat Masuk" ? (
-                          <FaEnvelopeOpen className="text-blue-500" />
+                          <MailOpen
+                            aria-hidden="true"
+                            className="size-4 text-[#0b6393]"
+                          />
                         ) : (
-                          <FaEnvelope className="text-green-500" />
+                          <Mail
+                            aria-hidden="true"
+                            className="size-4 text-emerald-700"
+                          />
                         )}
                         <span>{surat.jenis}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <FaCalendarAlt />
-                        <span>
-                          {formatDateShort(surat.tanggal)}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <CalendarDays aria-hidden="true" className="size-4" />
+                        <span>{formatDateShort(surat.tanggal)}</span>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-4 text-gray-500">
+                <div className="py-4 text-center text-base text-slate-600">
                   Belum ada data surat
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Berita Terbaru
               </h3>
               <Link
                 to="/admin/berita"
-                className="text-sm text-blue-600 hover:underline"
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-[#0b6393] hover:underline"
               >
                 Lihat Semua
               </Link>
@@ -455,55 +513,58 @@ const BerandaAdmin = () => {
                 dashboardData.berita.recent.map((berita) => (
                   <div
                     key={berita.id}
-                    className="border border-gray-100 rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                    className="rounded-xl border border-slate-200 p-4 transition-colors hover:bg-slate-50"
                   >
-                    <div className="flex justify-between items-start">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h4 className="font-medium text-gray-800">
+                        <h4 className="text-base font-semibold text-slate-900">
                           {berita.judul}
                         </h4>
-                        <div className="mt-1">
-                          <span className="inline-block px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
+                        <div className="mt-2">
+                          <span className="inline-block rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-medium text-slate-700">
                             {"Umum"}
                           </span>
                         </div>
                       </div>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`shrink-0 rounded-lg px-2.5 py-1 text-sm font-semibold ${getStatusColor(
                           berita.status,
                         )}`}
                       >
                         {berita.status}
                       </span>
                     </div>
-                    <div className="mt-2 flex justify-between items-center text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <FaNewspaper className="text-blue-500" />
+                    <div className="mt-2 flex items-center justify-between gap-3 text-sm text-slate-600">
+                      <div className="flex items-center gap-2">
+                        <Newspaper
+                          aria-hidden="true"
+                          className="size-4 text-[#0b6393]"
+                        />
                         <span>Berita</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <FaCalendarAlt />
+                      <div className="flex items-center gap-2">
+                        <CalendarDays aria-hidden="true" className="size-4" />
                         <span>{formatDateShort(berita.tanggal)}</span>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-4 text-gray-500">
+                <div className="py-4 text-center text-base text-slate-600">
                   Belum ada data berita
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Pengumuman Terbaru
               </h3>
               <Link
                 to="/admin/pengumuman"
-                className="text-sm text-green-600 hover:underline"
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-[#0b6393] hover:underline"
               >
                 Lihat Semua
               </Link>
@@ -514,41 +575,44 @@ const BerandaAdmin = () => {
                 dashboardData.pengumuman.recent.map((pengumuman) => (
                   <div
                     key={pengumuman.id}
-                    className="border border-gray-100 rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                    className="rounded-xl border border-slate-200 p-4 transition-colors hover:bg-slate-50"
                   >
-                    <div className="flex justify-between items-start">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h4 className="font-medium text-gray-800">
+                        <h4 className="text-base font-semibold text-slate-900">
                           {pengumuman.judul}
                         </h4>
-                        <div className="mt-1">
-                          <span className="inline-block px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
+                        <div className="mt-2">
+                          <span className="inline-block rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-medium text-slate-700">
                             {"Informasi"}
                           </span>
                         </div>
                       </div>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`shrink-0 rounded-lg px-2.5 py-1 text-sm font-semibold ${getStatusColor(
                           pengumuman.status,
                         )}`}
                       >
                         {pengumuman.status}
                       </span>
                     </div>
-                    <div className="mt-2 flex justify-between items-center text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <FaBullhorn className="text-green-500" />
+                    <div className="mt-2 flex items-center justify-between gap-3 text-sm text-slate-600">
+                      <div className="flex items-center gap-2">
+                        <Megaphone
+                          aria-hidden="true"
+                          className="size-4 text-emerald-700"
+                        />
                         <span>Pengumuman</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <FaCalendarAlt />
+                      <div className="flex items-center gap-2">
+                        <CalendarDays aria-hidden="true" className="size-4" />
                         <span>{formatDateShort(pengumuman.tanggal)}</span>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-4 text-gray-500">
+                <div className="py-4 text-center text-base text-slate-600">
                   Belum ada data pengumuman
                 </div>
               )}
@@ -556,53 +620,62 @@ const BerandaAdmin = () => {
           </div>
         </div>
 
-        <div className="mt-6 bg-white rounded-2xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">
             Aksi Cepat
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
             <Link
               to="/admin/surat"
-              className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors"
+              className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center transition-colors hover:border-[#0b6393] hover:bg-[#0b6393]/5"
             >
-              <FaFileAlt className="text-purple-500 text-2xl mb-2" />
-              <span className="text-sm font-medium text-gray-800">
+              <FileText
+                aria-hidden="true"
+                className="size-6 text-[#0b6393]"
+              />
+              <span className="text-sm font-semibold text-slate-900">
                 Kelola Arsip Surat
               </span>
             </Link>
             <Link
               to="/admin/berita"
-              className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
+              className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center transition-colors hover:border-[#0b6393] hover:bg-[#0b6393]/5"
             >
-              <FaNewspaper className="text-blue-500 text-2xl mb-2" />
-              <span className="text-sm font-medium text-gray-800">
+              <Newspaper
+                aria-hidden="true"
+                className="size-6 text-[#0b6393]"
+              />
+              <span className="text-sm font-semibold text-slate-900">
                 Kelola Berita
               </span>
             </Link>
             <Link
               to="/admin/pengumuman"
-              className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors"
+              className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center transition-colors hover:border-[#0b6393] hover:bg-[#0b6393]/5"
             >
-              <FaBullhorn className="text-green-500 text-2xl mb-2" />
-              <span className="text-sm font-medium text-gray-800">
+              <Megaphone
+                aria-hidden="true"
+                className="size-6 text-[#0b6393]"
+              />
+              <span className="text-sm font-semibold text-slate-900">
                 Kelola Pengumuman
               </span>
             </Link>
             <Link
               to="/admin/pelayanan"
-              className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
+              className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center transition-colors hover:border-[#0b6393] hover:bg-[#0b6393]/5"
             >
-              <FaLink className="text-blue-500 text-2xl mb-2" />
-              <span className="text-sm font-medium text-gray-800">
+              <Link2 aria-hidden="true" className="size-6 text-[#0b6393]" />
+              <span className="text-sm font-semibold text-slate-900">
                 Kelola Layanan
               </span>
             </Link>
             <Link
               to="/admin/media"
-              className="flex flex-col items-center justify-center p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors"
+              className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center transition-colors hover:border-[#0b6393] hover:bg-[#0b6393]/5"
             >
-              <FaPhotoVideo className="text-amber-500 text-2xl mb-2" />
-              <span className="text-sm font-medium text-gray-800">
+              <Images aria-hidden="true" className="size-6 text-[#0b6393]" />
+              <span className="text-sm font-semibold text-slate-900">
                 Kelola Media
               </span>
             </Link>

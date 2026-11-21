@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -89,4 +90,92 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* ===== Panel admin: teks besar, kontras tinggi, target sentuh luas ===== */
+.admin-app,
+.admin-app * {
+  font-family: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+.admin-app {
+  --admin-ink: #0f172a;
+  --admin-muted: #475569;
+  --admin-line: #cbd5e1;
+  --admin-surface: #ffffff;
+  --admin-canvas: #f6f8fb;
+  --admin-accent: #0b6393;
+  --admin-accent-dark: #084c73;
+  --admin-focus: #0284c7;
+  color: var(--admin-ink);
+  background-color: var(--admin-canvas);
+  font-size: 1rem;
+}
+
+.admin-app .text-xs {
+  font-size: 0.875rem !important;
+}
+.admin-app .text-sm {
+  font-size: 0.9375rem !important;
+}
+.admin-app .text-lg {
+  font-size: 1.125rem !important;
+}
+.admin-app .text-xl {
+  font-size: 1.375rem !important;
+}
+.admin-app .text-2xl {
+  font-size: 1.5rem !important;
+}
+.admin-app .text-3xl {
+  font-size: 1.875rem !important;
+}
+
+.admin-app button,
+.admin-app a[role="button"] {
+  min-height: 44px;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.admin-app input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.admin-app select,
+.admin-app textarea {
+  min-height: 46px;
+  font-size: 1rem !important;
+  color: var(--admin-ink);
+  border-color: #94a3b8 !important;
+  border-radius: 0.75rem !important;
+}
+
+.admin-app ::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.admin-app table {
+  font-size: 0.9375rem;
+}
+.admin-app th {
+  color: var(--admin-ink);
+  font-weight: 700;
+}
+.admin-app td {
+  color: #1e293b;
+}
+
+.admin-app :is(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-app *,
+  .admin-app *::before,
+  .admin-app *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

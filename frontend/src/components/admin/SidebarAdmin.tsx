@@ -1,229 +1,193 @@
-import { useState, useEffect } from "react";
-import type { JSX } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
-  FaHome,
-  FaNewspaper,
-  FaBullhorn,
-  FaChartPie,
-  FaPhotoVideo,
-  FaEnvelope,
-  FaLink,
-  FaChevronLeft,
-  FaChevronRight,
-  FaUser,
-  FaCog,
-  FaSignOutAlt,
-  FaSearch,
-  FaUserTie,
-  FaUserShield,
-  FaFileAlt,
-  FaPrint,
-  FaTags,
-} from "react-icons/fa";
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Images,
+  LayoutDashboard,
+  Link2,
+  LogOut,
+  Mail,
+  Megaphone,
+  Newspaper,
+  PieChart,
+  Printer,
+  Search,
+  Settings,
+  ShieldCheck,
+  Tags,
+  UserRound,
+  UserRoundCog,
+  type LucideIcon,
+} from "lucide-react";
 import { useDisclosure } from "@/hooks";
 import { getAuthState } from "@/lib/auth";
 import LogoutAdminDialog from "./LogoutAdminDialog";
 
-export default function ModernSidebarAdmin() {
+type MenuItem = { path: string; icon: LucideIcon; label: string };
+
+export default function SidebarAdmin() {
   const { nama, role } = getAuthState();
   const userNama = nama || "Admin";
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 1024,
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const logoutDialog = useDisclosure();
-  const location = useLocation();
   const navigate = useNavigate();
 
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed);
-  };
-
-  const navigateToSettings = () => {
-    navigate("/admin/setting");
-  };
-
-  const handleLogout = () => {
-    logoutDialog.open();
-  };
-
-  const menuItems: { path: string; icon: JSX.Element; label: string }[] = [
-    { path: "/admin/beranda", icon: <FaHome />, label: "Dashboard" },
-    { path: "/admin/aparat", icon: <FaUserTie />, label: "Aparat" },
-    { path: "/admin/infografis", icon: <FaChartPie />, label: "Infografis" },
-    { path: "/admin/pelayanan", icon: <FaLink />, label: "Pelayanan" },
-    { path: "/admin/status-keluarga", icon: <FaTags />, label: "Status Keluarga" },
-    {
-      path: "/admin/template-surat",
-      icon: <FaFileAlt />,
-      label: "Template Surat",
-    },
-    { path: "/admin/log-cetak", icon: <FaPrint />, label: "Log Cetak Surat" },
-    { path: "/admin/media", icon: <FaPhotoVideo />, label: "Media" },
-    { path: "/admin/surat", icon: <FaEnvelope />, label: "Arsip Surat" },
-    { path: "/admin/berita", icon: <FaNewspaper />, label: "Berita" },
-    { path: "/admin/pengumuman", icon: <FaBullhorn />, label: "Pengumuman" },
+  const menuItems: MenuItem[] = [
+    { path: "/admin/beranda", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/admin/aparat", icon: UserRoundCog, label: "Aparat" },
+    { path: "/admin/infografis", icon: PieChart, label: "Infografis" },
+    { path: "/admin/pelayanan", icon: Link2, label: "Pelayanan" },
+    { path: "/admin/status-keluarga", icon: Tags, label: "Status Keluarga" },
+    { path: "/admin/template-surat", icon: FileText, label: "Template Surat" },
+    { path: "/admin/log-cetak", icon: Printer, label: "Log Cetak Surat" },
+    { path: "/admin/media", icon: Images, label: "Media" },
+    { path: "/admin/surat", icon: Mail, label: "Arsip Surat" },
+    { path: "/admin/berita", icon: Newspaper, label: "Berita" },
+    { path: "/admin/pengumuman", icon: Megaphone, label: "Pengumuman" },
   ];
+
   if (role === "superadmin") {
     menuItems.push({
       path: "/admin/manajemen-admin",
-      icon: <FaUserShield />,
+      icon: ShieldCheck,
       label: "Manajemen Admin",
     });
   }
 
   const filteredMenuItems = menuItems.filter((item) =>
-    item.label.toLowerCase().includes(searchTerm.toLowerCase())
+    item.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  useEffect(() => {
-    const sidebar = document.getElementById("sidebar");
-    if (sidebar) {
-      sidebar.classList.add("sidebar-enter");
-    }
-  }, []);
-
   return (
-    <div className="relative h-screen" style={{ fontFamily: "poppins" }}>
-      <aside
-        id="sidebar"
-        className={`fixed top-0 left-0 h-full bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-900 text-white transition-all duration-300 ease-in-out z-10 overflow-y-scroll scrollbar-hide ${
-          collapsed ? "w-20" : "w-72"
-        } shadow-2xl overflow-y-auto`}
+    <aside
+      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-200 ${
+        collapsed ? "w-20" : "w-72"
+      }`}
+    >
+      <div
+        className={`flex items-center border-b border-slate-200 p-4 ${
+          collapsed ? "justify-center" : "justify-between"
+        }`}
       >
-        <div className="relative p-4 border-b border-indigo-800/30">
-          <div
-            className={`flex items-center ${
-              collapsed ? "justify-center" : "justify-between"
-            }`}
-          >
-            {!collapsed && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                  <FaUser />
-                </div>
-                <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-300">
-                  {userNama}
-                </h2>
-              </div>
-            )}
-            <button
-              onClick={toggleSidebar}
-              className="p-2 rounded-full bg-indigo-800/30 hover:bg-indigo-700/50 hover:rotate-180 transition-transform duration-300"
-            >
-              {collapsed ? (
-                <FaChevronRight size={14} />
-              ) : (
-                <FaChevronLeft size={14} />
-              )}
-            </button>
-          </div>
-        </div>
-
         {!collapsed && (
-          <div className="px-4 py-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-indigo-900/30 border border-indigo-800/30 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              />
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-300/70" />
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#0b6393] text-white">
+              <UserRound aria-hidden="true" className="size-6" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Panel Admin
+              </p>
+              <p className="truncate text-base font-bold text-slate-900">
+                {userNama}
+              </p>
             </div>
           </div>
         )}
-
-        <div className="px-3 py-2">
-          {!collapsed && (
-            <h3 className="text-xs font-semibold uppercase text-indigo-300/70 px-3 mb-2">
-              Menu
-            </h3>
-          )}
-          <nav className={`${collapsed ? "space-y-4" : "space-y-1"}`}>
-            {filteredMenuItems.map((item, index) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `menu-item group flex items-center ${
-                    collapsed ? "justify-center" : "justify-start"
-                  } gap-3 p-3 rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? "bg-gradient-to-r from-indigo-600/80 to-purple-600/80 text-white shadow-lg shadow-indigo-900/30"
-                      : "text-indigo-200 hover:bg-indigo-800/30 hover:text-white"
-                  }`
-                }
-                style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-              >
-                <span
-                  className={`text-lg ${
-                    location.pathname === item.path ? "animate-pulse" : ""
-                  }`}
-                >
-                  {item.icon}
-                </span>
-                {!collapsed && <span>{item.label}</span>}
-
-                {collapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-indigo-900 text-white text-sm rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 whitespace-nowrap z-20 shadow-lg">
-                    {item.label}
-                  </div>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-
-        <div
-          className={`p-4 border-t border-indigo-800/30 ${
-            collapsed ? "flex justify-center" : ""
-          }`}
+        <button
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          aria-label={collapsed ? "Buka menu" : "Tutup menu"}
+          title={collapsed ? "Buka menu" : "Tutup menu"}
+          className="flex size-11 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900"
         >
           {collapsed ? (
-            <div className="flex flex-col gap-4">
-              <button
-                onClick={navigateToSettings}
-                className="p-2 text-indigo-200 hover:text-white transition-colors"
-              >
-                <FaCog />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="p-2 text-indigo-200 hover:text-white transition-colors"
-              >
-                <FaSignOutAlt />
-              </button>
-            </div>
+            <ChevronRight aria-hidden="true" className="size-5" />
           ) : (
-            <div className="flex justify-between">
-              <button
-                onClick={navigateToSettings}
-                className="p-2 text-indigo-200 hover:text-white transition-colors"
-              >
-                <FaCog />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="p-2 text-indigo-200 hover:text-white transition-colors"
-              >
-                <FaSignOutAlt />
-              </button>
-            </div>
+            <ChevronLeft aria-hidden="true" className="size-5" />
           )}
+        </button>
+      </div>
+
+      {!collapsed && (
+        <div className="px-4 py-4">
+          <label className="relative block">
+            <span className="sr-only">Cari menu</span>
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+            />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Cari menu..."
+              className="w-full border border-slate-300 bg-white py-3 pl-11 pr-4 text-base text-slate-900 shadow-sm"
+            />
+          </label>
+          <p className="mt-4 px-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+            Menu Utama
+          </p>
         </div>
-      </aside>
+      )}
+
+      <nav
+        className={`flex-1 overflow-y-auto px-3 pb-4 ${collapsed ? "space-y-2" : "space-y-1"}`}
+      >
+        {filteredMenuItems.map(({ path, icon: Icon, label }) => (
+          <NavLink
+            key={path}
+            to={path}
+            title={label}
+            aria-label={label}
+            className={({ isActive }) =>
+              `flex min-h-12 items-center rounded-xl px-3 py-3 text-base font-semibold transition-colors ${
+                collapsed ? "justify-center" : "gap-3"
+              } ${
+                isActive
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              }`
+            }
+          >
+            <Icon aria-hidden="true" className="size-5 shrink-0" />
+            {!collapsed && <span className="truncate">{label}</span>}
+          </NavLink>
+        ))}
+        {filteredMenuItems.length === 0 && (
+          <p className="px-3 py-4 text-sm text-slate-600">
+            Menu tidak ditemukan.
+          </p>
+        )}
+      </nav>
 
       <div
-        className={`transition-all duration-300 ${
-          collapsed ? "ml-20" : "ml-72"
-        }`}
+        className={`border-t border-slate-200 p-4 ${collapsed ? "flex flex-col gap-2" : "space-y-2"}`}
       >
+        <button
+          type="button"
+          onClick={() => navigate("/admin/setting")}
+          aria-label="Pengaturan"
+          title="Pengaturan"
+          className={`flex min-h-12 items-center rounded-xl px-3 py-3 text-base font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 ${
+            collapsed ? "justify-center" : "gap-3"
+          }`}
+        >
+          <Settings aria-hidden="true" className="size-5 shrink-0" />
+          {!collapsed && <span>Pengaturan</span>}
+        </button>
+        <button
+          type="button"
+          onClick={logoutDialog.open}
+          aria-label="Keluar"
+          title="Keluar"
+          className={`flex min-h-12 items-center rounded-xl px-3 py-3 text-base font-semibold text-red-700 hover:bg-red-50 ${
+            collapsed ? "justify-center" : "gap-3"
+          }`}
+        >
+          <LogOut aria-hidden="true" className="size-5 shrink-0" />
+          {!collapsed && <span>Keluar</span>}
+        </button>
       </div>
 
       {logoutDialog.isOpen && (
         <LogoutAdminDialog onClose={logoutDialog.close} />
       )}
-    </div>
+    </aside>
   );
 }

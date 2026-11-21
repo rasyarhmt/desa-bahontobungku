@@ -1,16 +1,16 @@
 import {
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaEye,
-  FaSearch,
-  FaCalendarAlt,
-  FaUser,
-  FaSpinner,
-  FaCheck,
-  FaTimesCircle,
-  FaImage,
-} from "react-icons/fa";
+  CalendarDays,
+  Check,
+  CircleX,
+  Eye,
+  Image as ImageIcon,
+  LoaderCircle,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 
 import { formatDateLong, formatImageUrl } from "@/lib/format";
 
@@ -44,111 +44,135 @@ export default function BeritaTable({
   onToggleStatus,
 }: BeritaTableProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Daftar Berita</h2>
-          <p className="text-gray-600 text-sm">
+          <h2 className="text-xl font-bold text-slate-900">Daftar Berita</h2>
+          <p className="text-base text-slate-600">
             Kelola berita dan artikel website desa
           </p>
         </div>
-        <div className="flex gap-2">
-          <div className="relative">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Cari berita..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 w-64"
-            />
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label
+              htmlFor="search-berita"
+              className="mb-1 block text-sm font-semibold text-slate-700"
+            >
+              Cari Berita
+            </label>
+            <div className="relative">
+              <Search
+                aria-hidden="true"
+                className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                id="search-berita"
+                type="text"
+                placeholder="Cari berita..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="min-h-11 w-64 rounded-xl border border-slate-300 py-2 pl-10 pr-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/30"
+              />
+            </div>
           </div>
           <button
             onClick={onAdd}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+            className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#0a577f]"
           >
-            <FaPlus className="text-white" />
+            <Plus aria-hidden="true" className="size-5" />
             <span>Tambah Berita</span>
           </button>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8">
-          <FaSpinner className="animate-spin text-purple-500 text-4xl mx-auto mb-4" />
-          <p className="text-gray-600">Memuat data berita...</p>
+        <div className="py-8 text-center">
+          <LoaderCircle
+            aria-hidden="true"
+            className="mx-auto mb-4 size-10 animate-spin text-[#0b6393]"
+          />
+          <p className="text-base text-slate-600">Memuat data berita...</p>
         </div>
       ) : error ? (
-        <div className="text-center py-8 text-red-500">
+        <div className="py-8 text-center text-base text-red-700">
           <p>{error}</p>
           <button
             onClick={onRetry}
-            className="mt-4 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+            className="mt-4 min-h-11 rounded-xl bg-[#0b6393] px-5 py-2 font-semibold text-white transition-colors hover:bg-[#0a577f]"
           >
             Coba Lagi
           </button>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-base">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
+              <tr className="bg-slate-50">
+                <th className="rounded-tl-lg px-4 py-4 text-left text-base font-bold text-slate-900">
                   Judul
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                   Thumbnail
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                   Tanggal
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                   Penulis
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                   Status
                 </th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
+                <th className="rounded-tr-lg px-4 py-4 text-right text-base font-bold text-slate-900">
                   Aksi
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-200">
               {items.length > 0 ? (
                 items.map((berita) => (
-                  <tr key={berita.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                  <tr key={berita.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-4 font-medium text-slate-900">
                       {berita.judul}
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-4">
                       {berita.foto ? (
                         <img
                           src={formatImageUrl(berita.foto)}
                           alt={berita.judul}
-                          className="w-12 h-12 object-cover rounded-md"
+                          className="h-12 w-12 rounded-lg bg-slate-100 object-cover"
                         />
                       ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
-                          <FaImage className="text-gray-400" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100">
+                          <ImageIcon
+                            aria-hidden="true"
+                            className="size-5 text-slate-400"
+                          />
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
+                    <td className="px-4 py-4 text-slate-800">
                       <div className="flex items-center gap-2">
-                        <FaCalendarAlt className="text-gray-400" />
+                        <CalendarDays
+                          aria-hidden="true"
+                          className="size-5 text-slate-400"
+                        />
                         {formatDateLong(berita.tanggalTerbit)}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
+                    <td className="px-4 py-4 text-slate-800">
                       <div className="flex items-center gap-2">
-                        <FaUser className="text-gray-400" />
+                        <UserRound
+                          aria-hidden="true"
+                          className="size-5 text-slate-400"
+                        />
                         {berita.penulis}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          className={`rounded-full px-3 py-1.5 text-base font-semibold ${getStatusColor(
                             berita.status,
                           )}`}
                         >
@@ -156,47 +180,55 @@ export default function BeritaTable({
                         </span>
                         <button
                           onClick={() => onToggleStatus(berita.id)}
-                          className={`p-1 rounded-full ${
+                          aria-label={
                             berita.status === "Dipublikasi"
-                              ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                              : "bg-green-100 text-green-700 hover:bg-green-200"
-                          }`}
+                              ? "Ubah ke Draft"
+                              : "Publikasikan"
+                          }
                           title={
                             berita.status === "Dipublikasi"
                               ? "Ubah ke Draft"
                               : "Publikasikan"
                           }
+                          className={`flex min-h-11 min-w-11 items-center justify-center rounded-xl ${
+                            berita.status === "Dipublikasi"
+                              ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                              : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                          }`}
                         >
                           {berita.status === "Dipublikasi" ? (
-                            <FaTimesCircle className="text-xs" />
+                            <CircleX aria-hidden="true" className="size-5" />
                           ) : (
-                            <FaCheck className="text-xs" />
+                            <Check aria-hidden="true" className="size-5" />
                           )}
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => onPreview(berita.id)}
-                          className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                          aria-label="Lihat Detail"
                           title="Lihat Detail"
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393] transition-colors hover:bg-sky-100"
                         >
-                          <FaEye className="text-blue-600" />
+                          <Eye aria-hidden="true" className="size-5" />
                         </button>
                         <button
                           onClick={() => onEdit(berita.id)}
-                          className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                          aria-label="Edit"
                           title="Edit"
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
                         >
-                          <FaEdit className="text-gray-600" />
+                          <Pencil aria-hidden="true" className="size-5" />
                         </button>
                         <button
                           onClick={() => onDelete(berita.id)}
-                          className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                          aria-label="Hapus"
                           title="Hapus"
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-red-50 text-red-700 transition-colors hover:bg-red-100"
                         >
-                          <FaTrash className="text-red-600" />
+                          <Trash2 aria-hidden="true" className="size-5" />
                         </button>
                       </div>
                     </td>
@@ -204,7 +236,10 @@ export default function BeritaTable({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-8 text-center text-base text-slate-600"
+                  >
                     Tidak ada data berita yang ditemukan.
                   </td>
                 </tr>

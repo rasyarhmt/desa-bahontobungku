@@ -1,4 +1,4 @@
-import { FaMoneyBillWave, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { Banknote, Plus, Pencil, Trash2 } from "lucide-react";
 
 import { formatCurrency, getMonthName } from "@/lib/format";
 
@@ -22,93 +22,95 @@ export default function DanaMasukTable({
   onDelete,
 }: DanaMasukTableProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="bg-green-100 p-2 rounded-lg">
-              <FaMoneyBillWave className="text-green-500 text-xl" />
+            <div className="rounded-xl bg-emerald-50 p-2">
+              <Banknote aria-hidden="true" className="size-5 text-emerald-700" />
             </div>
-            <h2 className="font-semibold text-xl text-gray-800">
+            <h2 className="text-xl font-semibold text-slate-900">
               Data Pendapatan
             </h2>
           </div>
           <button
+            type="button"
             onClick={onAdd}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+            className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-[#0a547d]"
           >
-            <FaPlus size={16} />
+            <Plus aria-hidden="true" className="size-5" />
             <span>Tambah Pendapatan</span>
           </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm text-gray-600">
+          <table className="min-w-full text-left">
             <thead>
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-green-50 rounded-tl-lg">
+              <tr className="border-b border-slate-200 bg-slate-50">
+                <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                   ID
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-green-50">
+                <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                   Tahun
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-green-50">
+                <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                   Bulan
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-gray-700 bg-green-50">
+                <th className="whitespace-nowrap px-4 py-4 text-right text-base font-bold text-slate-900">
                   Jumlah
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-green-50">
+                <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                   Sumber
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-green-50">
+                <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                   Keterangan
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-gray-700 bg-green-50 rounded-tr-lg">
+                <th className="whitespace-nowrap px-4 py-4 text-right text-base font-bold text-slate-900">
                   Aksi
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-200">
               {items.length > 0 ? (
                 items.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <td className="px-4 py-3 text-sm text-gray-800">
+                  <tr key={item.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-4 text-base text-slate-800">
                       {item.id}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
+                    <td className="px-4 py-4 text-base text-slate-800">
                       {item.tahun}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                    <td className="px-4 py-4 text-base font-semibold text-slate-800">
                       {getMonthName(item.bulan ?? 0)}
                     </td>
-                    <td className="px-4 py-3 text-sm text-green-600 font-mono font-medium text-right">
+                    <td className="px-4 py-4 text-right text-base font-semibold text-emerald-700">
                       {formatCurrency(Number(item.jumlah ?? 0))}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
+                    <td className="px-4 py-4 text-base text-slate-800">
                       {item.sumber}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 max-w-xs truncate">
+                    <td className="max-w-xs px-4 py-4 text-base text-slate-800">
                       {item.keterangan}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button
+                          type="button"
                           onClick={() => onEdit(item)}
-                          className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors shadow-sm"
-                          title="Edit"
+                          title="Edit pendapatan"
+                          aria-label={`Edit pendapatan ${item.id}`}
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 p-2 text-slate-700 transition-colors hover:bg-slate-200"
                         >
-                          <FaEdit className="text-blue-600" />
+                          <Pencil aria-hidden="true" className="size-5" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => onDelete(item.id)}
-                          className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors shadow-sm"
-                          title="Hapus"
+                          title="Hapus pendapatan"
+                          aria-label={`Hapus pendapatan ${item.id}`}
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-red-50 p-2 text-red-700 transition-colors hover:bg-red-100"
                         >
-                          <FaTrash className="text-red-600" />
+                          <Trash2 aria-hidden="true" className="size-5" />
                         </button>
                       </div>
                     </td>
@@ -118,7 +120,7 @@ export default function DanaMasukTable({
                 <tr>
                   <td
                     colSpan={7}
-                    className="px-4 py-8 text-center text-gray-500 italic"
+                    className="px-4 py-8 text-center text-base text-slate-600"
                   >
                     Tidak ada data pendapatan untuk tahun {selectedYear}
                   </td>
@@ -126,20 +128,17 @@ export default function DanaMasukTable({
               )}
             </tbody>
             <tfoot>
-              <tr>
+              <tr className="border-t border-slate-200 bg-slate-50">
                 <td
                   colSpan={3}
-                  className="px-4 py-3 font-medium text-right bg-green-50 rounded-bl-lg"
+                  className="px-4 py-4 text-right text-base font-bold text-slate-900"
                 >
                   Total:
                 </td>
-                <td className="px-4 py-3 font-medium text-right bg-green-50 text-green-600 font-mono">
+                <td className="px-4 py-4 text-right text-base font-bold text-emerald-700">
                   {formatCurrency(totalPendapatan)}
                 </td>
-                <td
-                  colSpan={3}
-                  className="px-4 py-3 bg-green-50 rounded-br-lg"
-                ></td>
+                <td colSpan={3} className="px-4 py-4"></td>
               </tr>
             </tfoot>
           </table>

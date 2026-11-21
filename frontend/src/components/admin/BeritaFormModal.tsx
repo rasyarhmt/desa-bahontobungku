@@ -1,5 +1,11 @@
 import type { Dispatch, SetStateAction } from "react";
-import { FaSpinner, FaImage, FaPlus, FaExchangeAlt } from "react-icons/fa";
+import {
+  ArrowLeftRight,
+  Image as ImageIcon,
+  LoaderCircle,
+  Plus,
+  X,
+} from "lucide-react";
 
 import type { BeritaForm } from "./beritaShared";
 
@@ -14,7 +20,7 @@ interface BeritaFormModalProps {
 }
 
 const fieldInputClass =
-  "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500";
+  "min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/30 file:mr-3 file:min-h-8 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200";
 
 const BeritaFormModal = ({
   isOpen,
@@ -46,24 +52,24 @@ const BeritaFormModal = ({
   };
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 animate-modalFadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-6">
-          <h3 className="text-xl font-bold text-gray-800">
+          <h3 className="text-xl font-bold text-slate-900">
             {isEdit ? "Edit Berita" : "Tambah Berita Baru"}
           </h3>
-          <p className="text-gray-600 text-sm">
+          <p className="text-base text-slate-600">
             {isEdit
               ? "Ubah informasi berita"
               : "Masukkan informasi berita yang akan ditambahkan"}
           </p>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="mb-6 space-y-4">
           <div>
             <label
               htmlFor={`${idPrefix}judul`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Judul Berita
             </label>
@@ -81,8 +87,12 @@ const BeritaFormModal = ({
 
           <div>
             <label
-              htmlFor={`${idPrefix}foto`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor={
+                isEdit
+                  ? `${idPrefix}thumbnail-file-input`
+                  : `${idPrefix}foto`
+              }
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Thumbnail Berita
             </label>
@@ -90,35 +100,38 @@ const BeritaFormModal = ({
               <div className="flex flex-col gap-3">
                 {formData.fotoPreview ? (
                   <div className="flex items-center gap-4">
-                    <div className="w-24 h-24 relative">
+                    <div className="relative h-24 w-24">
                       <img
                         src={formData.fotoPreview || "/placeholder.svg"}
                         alt="Thumbnail"
-                        className="w-24 h-24 object-cover rounded-md"
+                        className="h-24 w-24 rounded-lg bg-slate-100 object-cover"
                       />
                     </div>
                     <div className="flex flex-col gap-2">
                       <button
                         type="button"
                         onClick={handleChangeThumbnail}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#0a577f]"
                       >
-                        <FaExchangeAlt size={14} />
+                        <ArrowLeftRight aria-hidden="true" className="size-5" />
                         <span>Ganti Thumbnail</span>
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-4">
-                    <div className="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center">
-                      <FaImage className="text-gray-400 text-2xl" />
+                    <div className="flex h-24 w-24 items-center justify-center rounded-lg bg-slate-100">
+                      <ImageIcon
+                        aria-hidden="true"
+                        className="size-8 text-slate-400"
+                      />
                     </div>
                     <button
                       type="button"
                       onClick={handleChangeThumbnail}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                      className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#0a577f]"
                     >
-                      <FaPlus size={14} />
+                      <Plus aria-hidden="true" className="size-5" />
                       <span>Tambah Thumbnail</span>
                     </button>
                   </div>
@@ -142,13 +155,16 @@ const BeritaFormModal = ({
                   className={fieldInputClass}
                 />
                 {formData.fotoPreview && (
-                  <div className="relative w-16 h-16">
+                  <div className="relative h-16 w-16">
                     <img
                       src={formData.fotoPreview || "/placeholder.svg"}
                       alt="Preview"
-                      className="w-16 h-16 object-cover rounded-md"
+                      className="h-16 w-16 rounded-lg bg-slate-100 object-cover"
                     />
                     <button
+                      type="button"
+                      aria-label="Hapus thumbnail"
+                      title="Hapus thumbnail"
                       onClick={() =>
                         setFormData({
                           ...formData,
@@ -156,9 +172,9 @@ const BeritaFormModal = ({
                           fotoPreview: null,
                         })
                       }
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                      className="absolute -right-3 -top-3 flex size-11 items-center justify-center rounded-full bg-red-700 text-white transition-colors hover:bg-red-800"
                     >
-                      ×
+                      <X aria-hidden="true" className="size-5" />
                     </button>
                   </div>
                 )}
@@ -166,11 +182,11 @@ const BeritaFormModal = ({
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label
                 htmlFor={`${idPrefix}tanggalTerbit`}
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-2 block text-base font-semibold text-slate-900"
               >
                 Tanggal
               </label>
@@ -191,7 +207,7 @@ const BeritaFormModal = ({
             <div>
               <label
                 htmlFor={`${idPrefix}penulis`}
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-2 block text-base font-semibold text-slate-900"
               >
                 Penulis
               </label>
@@ -211,7 +227,7 @@ const BeritaFormModal = ({
           <div>
             <label
               htmlFor={`${idPrefix}status`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Status
             </label>
@@ -231,7 +247,7 @@ const BeritaFormModal = ({
           <div>
             <label
               htmlFor={`${idPrefix}isi`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Konten Berita
             </label>
@@ -247,22 +263,22 @@ const BeritaFormModal = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="min-h-11 rounded-xl border border-slate-300 bg-white px-5 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-100"
             disabled={isActionLoading}
           >
             Batal
           </button>
           <button
             onClick={onSubmit}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
+            className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-5 py-2 font-semibold text-white transition-colors hover:bg-[#0a577f]"
             disabled={isActionLoading}
           >
             {isActionLoading ? (
               <>
-                <FaSpinner className="animate-spin" />
+                <LoaderCircle aria-hidden="true" className="size-5 animate-spin" />
                 <span>Menyimpan...</span>
               </>
             ) : (

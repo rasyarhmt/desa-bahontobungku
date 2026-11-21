@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { FaCog, FaSignOutAlt, FaUser } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDisclosure } from "@/hooks";
 import { getAuthState } from "@/lib/auth";
@@ -13,22 +13,9 @@ export default function HeaderAdmin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
-
-  const navigateToSettings = () => {
-    navigate("/admin/setting");
-    dropdown.close();
-  };
-
-  const handleLogout = () => {
-    logoutDialog.open();
-    dropdown.close();
-  };
 
   const formattedDate = new Intl.DateTimeFormat("id-ID", {
     weekday: "long",
@@ -36,75 +23,80 @@ export default function HeaderAdmin() {
     month: "long",
     day: "numeric",
   }).format(currentTime);
-
   const formattedTime = currentTime.toLocaleTimeString("id-ID", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
   return (
-    <header
-      className="w-full bg-gradient-to-r from-slate-800 via-indigo-900 to-purple-800 shadow-xl px-6 py-4 text-white"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="bg-gradient-to-r from-blue-400 to-purple-400 h-10 w-1.5 rounded-full hidden md:block"></div>
-          <div>
-            <h1 className="text-xl font-bold flex items-center">
-              Dashboard Admin
-            </h1>
-            <div className="text-sm text-indigo-200 hidden md:block">
-              Selamat datang kembali di panel admin
-            </div>
-          </div>
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white px-6 py-4 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-bold text-slate-900">
+            Panel Admin Desa
+          </h1>
+          <p className="hidden text-sm text-slate-600 sm:block">
+            Kelola data dan layanan desa dengan mudah
+          </p>
         </div>
 
-        <div className="hidden md:flex flex-col items-center">
-          <div className="flex items-center space-x-2 text-white">
-            <span className="font-medium">{formattedTime}</span>
-          </div>
-          <div className="text-xs text-indigo-200">{formattedDate}</div>
+        <div className="hidden text-right lg:block">
+          <p className="text-base font-bold text-slate-900">
+            {formattedTime} WITA
+          </p>
+          <p className="text-sm text-slate-600">{formattedDate}</p>
         </div>
 
         <div className="relative">
           <button
-            className="flex items-center gap-3 hover:bg-indigo-800/50 p-2 rounded-xl transition-colors border border-transparent hover:border-indigo-700"
+            type="button"
             onClick={dropdown.toggle}
+            aria-haspopup="menu"
+            aria-expanded={dropdown.isOpen}
+            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left hover:bg-slate-50"
           >
-            <div className="flex flex-col items-end text-end mr-2 md:block">
-              <p className="text-white font-medium">{userNama}</p>
-              <p className="text-sm font-medium text-indigo-200 mt-0.5">
-                {userEmail || "-"}
-              </p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center text-indigo-900 p-1 ring-2 ring-indigo-300/30">
-              <div className="w-full h-full rounded-full bg-indigo-900 flex items-center justify-center text-white">
-                <FaUser />
-              </div>
-            </div>
+            <span className="hidden text-right sm:block">
+              <span className="block text-base font-bold text-slate-900">
+                {userNama}
+              </span>
+              <span className="block text-sm text-slate-600">
+                {userEmail || "Pengguna desa"}
+              </span>
+            </span>
+            <span className="flex size-11 items-center justify-center rounded-full bg-[#0b6393] text-white">
+              <UserRound aria-hidden="true" className="size-6" />
+            </span>
+            <ChevronDown aria-hidden="true" className="size-5 text-slate-600" />
           </button>
 
           {dropdown.isOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-indigo-950 rounded-xl shadow-lg py-2 z-10 border border-indigo-800/30">
-              <div className="py-1">
-                <button
-                  onClick={navigateToSettings}
-                  className="flex items-center gap-3 px-4 py-2 text-indigo-200 hover:bg-indigo-800/30 hover:text-white w-full text-left"
-                >
-                  <FaCog className="text-indigo-300" />
-                  <span>Pengaturan</span>
-                </button>
-              </div>
-
-              <div className="border-t border-indigo-800/30 my-1"></div>
-
+            <div
+              role="menu"
+              className="absolute right-0 top-full z-30 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-lg"
+            >
               <button
-                onClick={handleLogout}
-                className="flex items-center gap-3 px-4 py-2 text-red-300 hover:bg-indigo-800/30 hover:text-red-200 w-full text-left"
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  navigate("/admin/setting");
+                  dropdown.close();
+                }}
+                className="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-100"
               >
-                <FaSignOutAlt className="text-red-300" />
-                <span>Logout</span>
+                <Settings aria-hidden="true" className="size-5" />
+                Pengaturan
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  logoutDialog.open();
+                  dropdown.close();
+                }}
+                className="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-3 text-base font-semibold text-red-700 hover:bg-red-50"
+              >
+                <LogOut aria-hidden="true" className="size-5" />
+                Keluar
               </button>
             </div>
           )}

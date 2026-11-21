@@ -1,15 +1,15 @@
 import { useState } from "react";
 import {
-  FaLink,
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaCheck,
-  FaBan,
-  FaSpinner,
-  FaFileSignature,
-  FaEye,
-} from "react-icons/fa";
+  Ban,
+  Check,
+  Eye,
+  FilePenLine,
+  Link2,
+  LoaderCircle,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { type Pelayanan, type SuratTemplate } from "@/lib/api/schemas";
 import { adminPelayananApi, adminTemplateApi } from "@/lib/api/admin";
 import { useAsyncData, useCrudResource } from "@/hooks";
@@ -126,235 +126,226 @@ const PelayananAdmin = () => {
     );
 
   return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <FaLink className="text-blue-500 text-xl" />
+    <div className="w-full text-slate-900">
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393]">
+            <Link2 aria-hidden="true" className="size-5" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">
             Manajemen Pelayanan
           </h1>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Total Layanan
               </h3>
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaLink className="text-blue-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393]">
+                <Link2 aria-hidden="true" className="size-5" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {layananData.length}
             </div>
-            <p className="text-sm text-gray-600">Jenis layanan tersedia</p>
+            <p className="text-base text-slate-600">Jenis layanan tersedia</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Layanan Aktif
               </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaCheck className="text-green-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                <Check aria-hidden="true" className="size-5" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countAktif}
             </div>
-            <p className="text-sm text-gray-600">Layanan yang aktif</p>
+            <p className="text-base text-slate-600">Layanan yang aktif</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Layanan Nonaktif
               </h3>
-              <div className="bg-gray-100 p-2 rounded-lg">
-                <FaBan className="text-gray-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <Ban aria-hidden="true" className="size-5" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countNonaktif}
             </div>
-            <p className="text-sm text-gray-600">Layanan yang dinonaktifkan</p>
+            <p className="text-base text-slate-600">
+              Layanan yang dinonaktifkan
+            </p>
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
                 activeTab === "semua"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaLink
-                className={
-                  activeTab === "semua" ? "text-white" : "text-blue-500"
-                }
-              />
+              <Link2 aria-hidden="true" className="size-5" />
               <span>Semua Layanan</span>
             </button>
             <button
               onClick={() => setActiveTab("aktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
                 activeTab === "aktif"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-emerald-700 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaCheck
-                className={
-                  activeTab === "aktif" ? "text-white" : "text-green-500"
-                }
-              />
+              <Check aria-hidden="true" className="size-5" />
               <span>Aktif</span>
             </button>
             <button
               onClick={() => setActiveTab("nonaktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
                 activeTab === "nonaktif"
-                  ? "bg-gray-600 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-slate-700 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaBan
-                className={
-                  activeTab === "nonaktif" ? "text-white" : "text-gray-500"
-                }
-              />
+              <Ban aria-hidden="true" className="size-5" />
               <span>Nonaktif</span>
             </button>
           </div>
         </div>
 
-        {/* Services Table */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-slate-900">
                 Daftar Layanan
               </h2>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Kelola layanan administrasi desa yang tersedia untuk warga
               </p>
             </div>
             <button
               onClick={handleAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a]"
             >
-              <FaPlus className="text-white" />
+              <Plus aria-hidden="true" className="size-5" />
               <span>Tambah Layanan</span>
             </button>
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-blue-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data layanan...</p>
+            <div className="py-8 text-center">
+              <LoaderCircle
+                aria-hidden="true"
+                className="mx-auto mb-4 size-5 animate-spin text-[#0b6393]"
+              />
+              <p className="text-base text-slate-600">Memuat data layanan...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-red-500">
+            <div className="py-8 text-center text-base text-red-700">
               <p>{error}</p>
               <button
                 onClick={fetchPelayananData}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a]"
               >
                 Coba Lagi
               </button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto rounded-2xl border border-slate-200">
+              <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
+                  <tr className="border-b border-slate-200 bg-slate-50">
+                    <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                       ID
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                       Nama Layanan
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                       Deskripsi
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                       Template Surat
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
+                    <th className="whitespace-nowrap px-4 py-4 text-right text-base font-bold text-slate-900">
                       Aksi
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-200">
                   {filteredData.length > 0 ? (
                     filteredData.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                      <tr key={item.id} className="hover:bg-slate-50">
+                        <td className="whitespace-nowrap px-4 py-4 text-base text-slate-800">
                           {item.id}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-base text-slate-800">
                           <div className="flex flex-col">
-                            <div className="font-medium">
+                            <div className="font-semibold">
                               {item.nama_layanan}
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 max-w-xs">
+                        <td className="max-w-xs px-4 py-4 text-base text-slate-800">
                           {item.deskripsi}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-base text-slate-800">
                           {item.id_surat_template ? (
                             <button
                               onClick={() =>
                                 handlePreviewTemplate(item.id_surat_template!)
                               }
-                              className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md text-xs font-medium hover:bg-indigo-100 transition-colors"
+                              className="inline-flex min-h-11 items-center rounded-xl bg-sky-50 px-3 py-2 text-sm font-semibold text-[#0b6393] hover:bg-sky-100"
                               title="Lihat Template Surat"
                             >
                               {getTemplateName(item.id_surat_template)}
                             </button>
                           ) : (
-                            <span className="text-gray-400">-</span>
+                            <span className="text-slate-500">-</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-base text-slate-800">
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${
                               item.status === "aktif"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-slate-100 text-slate-700"
                             }`}
                           >
                             {item.status === "aktif" ? "Aktif" : "Nonaktif"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-2">
-                            {/* Tombol Buat Surat (Hanya muncul jika layanan aktif dan punya template) */}
+                        <td className="px-4 py-4 text-right">
+                          <div className="flex flex-wrap justify-end gap-2">
                             {item.status === "aktif" &&
                               item.id_surat_template && (
                                 <button
                                   onClick={() =>
                                     setSelectedPelayananForSurat(item)
                                   }
-                                  className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                                  className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-sky-50 px-3 py-2 text-sm font-semibold text-[#0b6393] hover:bg-sky-100"
                                   title="Buatkan Surat untuk Warga"
+                                  aria-label="Buatkan Surat untuk Warga"
                                 >
-                                  <FaFileSignature className="text-blue-600" />
+                                  <FilePenLine
+                                    aria-hidden="true"
+                                    className="size-5"
+                                  />
+                                  <span>Buat Surat</span>
                                 </button>
                               )}
 
@@ -365,38 +356,54 @@ const PelayananAdmin = () => {
                                     item.id_surat_template!,
                                   )
                                 }
-                                className="p-1.5 bg-purple-100 rounded-md hover:bg-purple-200 transition-colors"
+                                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
                                 title="Lihat Template Surat"
+                                aria-label="Lihat Template Surat"
                               >
-                                <FaEye className="text-purple-600" />
+                                <Eye aria-hidden="true" className="size-5" />
+                                <span>Lihat Template</span>
                               </button>
                             )}
 
                             <button
                               onClick={() => handleEdit(item.id)}
-                              className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
                               title="Edit"
+                              aria-label="Edit"
                             >
-                              <FaEdit className="text-gray-600" />
+                              <Pencil aria-hidden="true" className="size-5" />
+                              <span>Edit</span>
                             </button>
                             <button
                               onClick={() => handleToggleStatus(item.id)}
-                              className="p-1.5 bg-yellow-100 rounded-md hover:bg-yellow-200 transition-colors"
+                              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100"
                               title={
+                                item.status === "aktif"
+                                  ? "Nonaktifkan"
+                                  : "Aktifkan"
+                              }
+                              aria-label={
                                 item.status === "aktif"
                                   ? "Nonaktifkan"
                                   : "Aktifkan"
                               }
                               disabled={isActionLoading}
                             >
-                              <FaBan className="text-yellow-600" />
+                              <Ban aria-hidden="true" className="size-5" />
+                              <span>
+                                {item.status === "aktif"
+                                  ? "Nonaktifkan"
+                                  : "Aktifkan"}
+                              </span>
                             </button>
                             <button
                               onClick={() => handleDelete(item.id)}
-                              className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
                               title="Hapus"
+                              aria-label="Hapus"
                             >
-                              <FaTrash className="text-red-600" />
+                              <Trash2 aria-hidden="true" className="size-5" />
+                              <span>Hapus</span>
                             </button>
                           </div>
                         </td>
@@ -406,7 +413,7 @@ const PelayananAdmin = () => {
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-4 py-8 text-center text-gray-500"
+                        className="px-4 py-8 text-center text-base text-slate-600"
                       >
                         Tidak ada data layanan yang ditemukan.
                       </td>
@@ -419,24 +426,23 @@ const PelayananAdmin = () => {
         </div>
       </div>
 
-      {/* Add Modal */}
       {addModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Tambah Layanan Baru
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Masukkan informasi layanan yang akan ditambahkan
               </p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
                 <label
                   htmlFor="nama_layanan"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-700"
                 >
                   Nama Layanan
                 </label>
@@ -447,14 +453,14 @@ const PelayananAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, nama_layanan: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Nama layanan"
                 />
               </div>
               <div>
                 <label
                   htmlFor="deskripsi"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-700"
                 >
                   Deskripsi
                 </label>
@@ -464,7 +470,7 @@ const PelayananAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, deskripsi: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Deskripsi singkat layanan"
                   rows={3}
                 />
@@ -472,7 +478,7 @@ const PelayananAdmin = () => {
               <div>
                 <label
                   htmlFor="add-id_surat_template"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-700"
                 >
                   Template Surat (opsional)
                 </label>
@@ -487,7 +493,7 @@ const PelayananAdmin = () => {
                         : null,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 >
                   <option value="">Tidak ada template</option>
                   {templates.length > 0 ? (
@@ -502,23 +508,23 @@ const PelayananAdmin = () => {
                     </option>
                   )}
                 </select>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-sm text-slate-600">
                   Template yang digunakan saat warga mencetak surat lewat
                   layanan ini
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
                 onClick={() => addModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={saveNewItem}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a]"
               >
                 Simpan
               </button>
@@ -527,20 +533,19 @@ const PelayananAdmin = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
       {editModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">Edit Layanan</h3>
-              <p className="text-gray-600 text-sm">Ubah informasi layanan</p>
+              <h3 className="text-xl font-bold text-slate-900">Edit Layanan</h3>
+              <p className="text-base text-slate-600">Ubah informasi layanan</p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
                 <label
                   htmlFor="edit-nama_layanan"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-700"
                 >
                   Nama Layanan
                 </label>
@@ -551,13 +556,13 @@ const PelayananAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, nama_layanan: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="edit-deskripsi"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-700"
                 >
                   Deskripsi
                 </label>
@@ -567,14 +572,14 @@ const PelayananAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, deskripsi: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   rows={3}
                 />
               </div>
               <div>
                 <label
                   htmlFor="edit-id_surat_template"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-700"
                 >
                   Template Surat (opsional)
                 </label>
@@ -589,7 +594,7 @@ const PelayananAdmin = () => {
                         : null,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 >
                   <option value="">Tidak ada template</option>
                   {templates.length > 0 ? (
@@ -604,22 +609,22 @@ const PelayananAdmin = () => {
                     </option>
                   )}
                 </select>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-sm text-slate-600">
                   Kosongkan jika ingin mempertahankan template saat ini
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
                 onClick={() => editModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={saveEditedItem}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a]"
               >
                 Simpan Perubahan
               </button>
@@ -628,31 +633,30 @@ const PelayananAdmin = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {deleteModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Hapus
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Apakah Anda yakin ingin menghapus layanan "
                 {currentItem?.nama_layanan}"? Tindakan ini tidak dapat
                 dibatalkan.
               </p>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
                 onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800"
               >
                 Hapus
               </button>

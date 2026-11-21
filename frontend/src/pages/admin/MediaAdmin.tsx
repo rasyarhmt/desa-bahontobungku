@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import {
-  FaImage,
-  FaVideo,
-  FaFileAlt,
-  FaChartBar,
-  FaSpinner,
-} from "react-icons/fa";
+  BarChart3,
+  FileText,
+  Image as ImageIcon,
+  LoaderCircle,
+  Video,
+} from "lucide-react";
 
 import { adminMediaApi } from "@/lib/api/admin";
 import { type Media } from "@/lib/api/schemas";
@@ -181,133 +181,125 @@ const MediaAdmin = () => {
 
   return (
     <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaChartBar className="text-purple-500 text-xl" />
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-[#e6f1f7] text-[#0b6393]">
+            <BarChart3 className="size-5" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Manajemen Media</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Manajemen Media</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Total Media
               </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaFileAlt className="text-purple-500 text-xl" />
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e6f1f7] text-[#0b6393]">
+                <FileText className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {mediaData.length}
             </div>
-            <p className="text-sm text-gray-600">Item media tersimpan</p>
+            <p className="text-sm text-slate-600">Item media tersimpan</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Foto</h3>
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaImage className="text-blue-500 text-xl" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">Foto</h3>
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e6f1f7] text-[#0b6393]">
+                <ImageIcon className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countFoto}
             </div>
-            <p className="text-sm text-gray-600">Foto tersimpan</p>
+            <p className="text-sm text-slate-600">Foto tersimpan</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Video</h3>
-              <div className="bg-red-100 p-2 rounded-lg">
-                <FaVideo className="text-red-500 text-xl" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">Video</h3>
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-700">
+                <Video className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countVideo}
             </div>
-            <p className="text-sm text-gray-600">Video tersimpan</p>
+            <p className="text-sm text-slate-600">Video tersimpan</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Dokumen</h3>
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <FaFileAlt className="text-yellow-500 text-xl" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">Dokumen</h3>
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+                <FileText className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countDokumen}
             </div>
-            <p className="text-sm text-gray-600">Dokumen tersimpan</p>
+            <p className="text-sm text-slate-600">Dokumen tersimpan</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <button
+              type="button"
               onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "semua"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "semua"
-                  ? "bg-purple-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaFileAlt
-                className={
-                  activeTab === "semua" ? "text-white" : "text-purple-500"
-                }
-              />
+              <FileText className="size-5" aria-hidden="true" />
               <span>Semua Media</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("foto")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "foto"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "foto"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaImage
-                className={
-                  activeTab === "foto" ? "text-white" : "text-blue-500"
-                }
-              />
+              <ImageIcon className="size-5" aria-hidden="true" />
               <span>Foto</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("video")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "video"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "video"
-                  ? "bg-red-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaVideo
-                className={
-                  activeTab === "video" ? "text-white" : "text-red-500"
-                }
-              />
+              <Video className="size-5" aria-hidden="true" />
               <span>Video</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("dokumen")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "dokumen"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "dokumen"
-                  ? "bg-yellow-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaFileAlt
-                className={
-                  activeTab === "dokumen" ? "text-white" : "text-yellow-500"
-                }
-              />
+              <FileText className="size-5" aria-hidden="true" />
               <span>Dokumen</span>
             </button>
           </div>
@@ -346,33 +338,36 @@ const MediaAdmin = () => {
       />
 
       {deleteModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto py-8">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+          onClick={() => deleteModal.close()}
+        >
           <div
-            className="fixed inset-0 backdrop-blur-sm bg-gray-700/30"
-            onClick={() => deleteModal.close()}
-          ></div>
-
-          <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-xl p-6">
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Hapus
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Apakah Anda yakin ingin menghapus media &quot;{currentItem?.nama}
                 &quot;? Tindakan ini tidak dapat dibatalkan.
               </p>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
+                type="button"
                 onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-base font-semibold text-slate-700 transition-colors hover:bg-slate-50"
               >
                 Batal
               </button>
               <button
+                type="button"
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-red-700 px-4 text-base font-semibold text-white transition-colors hover:bg-red-800"
               >
                 Hapus
               </button>
@@ -388,13 +383,18 @@ const MediaAdmin = () => {
       />
 
       {isThumbnailLoading && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-700/30 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
-            <FaSpinner className="animate-spin text-purple-500 text-4xl mx-auto mb-4" />
-            <p className="text-gray-800 font-medium">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-xl">
+            <LoaderCircle
+              className="mx-auto mb-4 block size-5 animate-spin text-[#0b6393]"
+              aria-hidden="true"
+            />
+            <p className="text-base font-semibold text-slate-900">
               Menghasilkan thumbnail dari video...
             </p>
-            <p className="text-gray-600 text-sm mt-2">Mohon tunggu sebentar</p>
+            <p className="mt-2 text-base text-slate-600">
+              Mohon tunggu sebentar
+            </p>
           </div>
         </div>
       )}

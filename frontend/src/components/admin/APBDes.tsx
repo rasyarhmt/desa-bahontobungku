@@ -1,12 +1,12 @@
 import { useState } from "react";
 import {
-  FaMoneyBillWave,
-  FaMoneyCheckAlt,
-  FaChartPie,
-  FaCalendarAlt,
-  FaSpinner,
-  FaExclamationTriangle,
-} from "react-icons/fa";
+  Banknote,
+  Wallet,
+  PieChart,
+  CalendarDays,
+  LoaderCircle,
+  TriangleAlert,
+} from "lucide-react";
 import { adminApbdesApi } from "@/lib/api/admin";
 import { getErrorMessage } from "@/lib/errors";
 import { useAsyncData, useDisclosure } from "@/hooks";
@@ -211,21 +211,28 @@ export default function APBDes() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
-        <span className="ml-2">Memuat data...</span>
+      <div className="flex min-h-64 items-center justify-center text-base text-slate-600">
+        <LoaderCircle
+          aria-hidden="true"
+          className="size-7 animate-spin text-[#0b6393]"
+        />
+        <span className="ml-3">Memuat data...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <FaExclamationTriangle className="text-4xl text-yellow-500 mx-auto mb-4" />
-        <p className="text-red-500 mb-4">{error}</p>
+      <div className="py-12 text-center">
+        <TriangleAlert
+          aria-hidden="true"
+          className="mx-auto mb-4 size-10 text-amber-700"
+        />
+        <p className="mb-4 text-base text-red-700">{error}</p>
         <button
+          type="button"
           onClick={fetchData}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="min-h-11 rounded-xl bg-[#0b6393] px-5 py-2 text-base font-semibold text-white transition-colors hover:bg-[#0a547d]"
         >
           Coba Lagi
         </button>
@@ -235,19 +242,22 @@ export default function APBDes() {
 
   return (
     <div
-      className="space-y-8 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen space-y-8 bg-[#f6f8fb]"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Manajemen APBDes</h1>
+      <div className="mx-auto w-full">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold text-slate-900">
+            Manajemen APBDes
+          </h1>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <FaCalendarAlt className="text-gray-500" />
+            <div className="flex items-center gap-3">
+              <CalendarDays aria-hidden="true" className="size-5 text-slate-600" />
               <select
+                aria-label="Pilih tahun anggaran"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0b6393]"
               >
                 {availableYears.length > 0 ? (
                   availableYears.map((year) => (
@@ -265,51 +275,42 @@ export default function APBDes() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <button
+              type="button"
               onClick={() => setActiveTab("summary")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-base font-semibold transition-colors ${
                 activeTab === "summary"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaChartPie
-                className={
-                  activeTab === "summary" ? "text-white" : "text-blue-500"
-                }
-              />
+              <PieChart aria-hidden="true" className="size-5" />
               <span>Ringkasan</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("income")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-base font-semibold transition-colors ${
                 activeTab === "income"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaMoneyBillWave
-                className={
-                  activeTab === "income" ? "text-white" : "text-green-500"
-                }
-              />
+              <Banknote aria-hidden="true" className="size-5" />
               <span>Pendapatan</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("expense")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-base font-semibold transition-colors ${
                 activeTab === "expense"
-                  ? "bg-red-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaMoneyCheckAlt
-                className={
-                  activeTab === "expense" ? "text-white" : "text-red-500"
-                }
-              />
+              <Wallet aria-hidden="true" className="size-5" />
               <span>Pengeluaran</span>
             </button>
           </div>

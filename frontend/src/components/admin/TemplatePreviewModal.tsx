@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-  FaDownload,
-  FaSpinner,
-  FaFilePdf,
-  FaExclamationTriangle,
-  FaTimes,
-} from "react-icons/fa";
+  Download,
+  FileText,
+  LoaderCircle,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 
 import { type SuratTemplate } from "@/lib/api/schemas";
 import { adminTemplateApi } from "@/lib/api/admin";
@@ -82,86 +82,117 @@ export default function TemplatePreviewModal({
   if (!isOpen || !item) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-5xl max-h-2xl overflow-y-auto border border-gray-200 animate-modalFadeIn">
-        <div className="flex justify-between items-center mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <FaFilePdf className="text-red-500" /> {item.nama_template}
+            <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900">
+              <FileText
+                className="size-5 text-red-700"
+                aria-hidden="true"
+              />
+              {item.nama_template}
             </h3>
-            <p className="text-sm text-gray-500">{item.kode}</p>
+            <p className="mt-1 text-base text-slate-600">{item.kode}</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+            className="inline-flex min-h-11 min-w-11 font-semibold shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+            aria-label="Tutup pratinjau"
             title="Tutup"
           >
-            <FaTimes className="text-gray-600" />
+            <X className="size-5" aria-hidden="true" />
           </button>
         </div>
 
-        <div className="border-t border-b border-gray-200 py-4 mb-4">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="col-span-2">
-              <p className="text-gray-500">Deskripsi</p>
-              <p className="font-medium">{item.deskripsi || "-"}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">File</p>
-              <p className="font-medium">
-                {item.file_template ? item.file_template.split("/").pop() : "-"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500">Status</p>
-              <p className="font-medium">
-                {item.status === "aktif" ? "Aktif" : "Nonaktif"}
-              </p>
-            </div>
+        <div className="grid gap-4 border-b border-slate-200 py-5 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <p className="text-sm font-semibold text-slate-600">Deskripsi</p>
+            <p className="mt-1 text-base font-semibold text-slate-900">
+              {item.deskripsi || "-"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-600">File</p>
+            <p className="mt-1 text-base font-semibold text-slate-900">
+              {item.file_template ? item.file_template.split("/").pop() : "-"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-600">Status</p>
+            <p
+              className={`mt-1 text-base font-semibold ${
+                item.status === "aktif" ? "text-emerald-700" : "text-slate-600"
+              }`}
+            >
+              {item.status === "aktif" ? "Aktif" : "Nonaktif"}
+            </p>
           </div>
         </div>
 
-        <div className="mb-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">
+        <div className="mt-6">
+          <h4 className="text-lg font-semibold text-slate-900">
             Preview Template
           </h4>
-          <div className="bg-gray-50 p-4 rounded-lg text-gray-700 max-w-full overflow-hidden">
+          <p className="mt-1 text-sm text-slate-600">
+            Pratinjai template surat di bawah ini. Gunakan tombol Unduh untuk
+            menyimpan salinan.
+          </p>
+          <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
             {pdfLoading ? (
-              <div className="flex flex-col items-center justify-center py-8">
-                <FaSpinner className="animate-spin text-4xl text-indigo-500 mb-4" />
-                <p className="text-center">Memuat template...</p>
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <LoaderCircle
+                  className="size-5 animate-spin text-[#0b6393]"
+                  aria-hidden="true"
+                />
+                <p className="mt-3 text-base text-slate-600">
+                  Memuat template...
+                </p>
               </div>
             ) : pdfUrl ? (
-              <div className="flex flex-col gap-4 min-w-0">
-                <div className="flex items-center justify-between gap-3 min-w-0">
-                  <div className="flex items-center min-w-0 flex-1">
-                    <FaFilePdf className="flex-shrink-0 mr-2 text-red-500" />
-                    <p className="font-medium truncate min-w-0">
+              <div className="flex min-w-0 flex-col gap-4">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <FileText
+                      className="size-5 shrink-0 text-red-700"
+                      aria-hidden="true"
+                    />
+                    <p className="truncate font-semibold text-slate-900">
                       template-{item.kode || item.id}.pdf
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={handleDownload}
-                    className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-1 flex-shrink-0 text-sm"
+                    className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-4 text-base font-semibold text-white hover:bg-[#0b4f75]"
                   >
-                    <FaDownload className="w-3 h-3" />
-                    <span className="hidden sm:inline">Unduh</span>
+                    <Download className="size-5" aria-hidden="true" />
+                    Unduh
                   </button>
                 </div>
 
-                <div className="w-full h-[400px] border border-gray-200 rounded-lg overflow-hidden bg-white">
+                <div className="h-[420px] w-full overflow-hidden rounded-xl border border-slate-300 bg-white">
                   <iframe
                     src={pdfUrl}
-                    className="w-full h-full"
+                    className="h-full w-full"
                     title={`Preview template ${item.nama_template}`}
                   ></iframe>
                 </div>
+                <p className="text-sm text-slate-600">
+                  Pratinjau template {item.nama_template}.
+                </p>
               </div>
             ) : pdfError ? (
-              <div className="flex flex-col items-center justify-center py-8 text-red-500 text-center">
-                <FaExclamationTriangle className="text-4xl mb-4" />
-                <p className="px-2">Terjadi kesalahan saat memuat template.</p>
-                <p className="text-sm mt-2 px-2">
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <TriangleAlert
+                  className="size-5 text-red-700"
+                  aria-hidden="true"
+                />
+                <p className="mt-3 text-base font-semibold text-red-700">
+                  Terjadi kesalahan saat memuat template.
+                </p>
+                <p className="mt-2 text-sm text-slate-600">
                   File mungkin tidak tersedia atau tidak dapat dikonversi.
                 </p>
               </div>
@@ -169,11 +200,13 @@ export default function TemplatePreviewModal({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-2">
+        <div className="mt-6 flex justify-end border-t border-slate-200 pt-5">
           <button
+            type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 hover:bg-slate-100"
           >
+            <X className="size-5" aria-hidden="true" />
             Tutup
           </button>
         </div>

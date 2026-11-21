@@ -1,15 +1,18 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import {
-  FaCog,
-  FaUser,
-  FaEnvelope,
-  FaLock,
-  FaSave,
-  FaUndo,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
+  CircleCheck,
+  Eye,
+  EyeOff,
+  LoaderCircle,
+  Lock,
+  Mail,
+  RotateCcw,
+  Save,
+  Settings,
+  UserRound,
+  X,
+} from "lucide-react";
 import { adminUserApi } from "@/lib/api/admin";
 import { useAsyncData, useDisclosure } from "@/hooks";
 import { getErrorMessage } from "@/lib/errors";
@@ -124,36 +127,43 @@ const SettingAdminComp = () => {
 
   if (loadingUser) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Memuat data user...</p>
+      <div className="flex h-screen items-center justify-center bg-[#f6f8fb]">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <LoaderCircle
+            className="size-5 animate-spin text-[#0b6393]"
+            aria-hidden="true"
+          />
+          <p className="text-base text-slate-600">Memuat data user...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 min-h-screen" style={{ fontFamily: "poppins" }}>
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaCog className="text-purple-500 text-xl" />
+    <div className="min-h-screen bg-[#f6f8fb] p-6">
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="rounded-xl bg-slate-100 p-3">
+            <Settings
+              className="size-5 text-[#0b6393]"
+              aria-hidden="true"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Pengaturan Akun</h1>
+          <h1 className="text-xl font-bold text-slate-900">Pengaturan Akun</h1>
         </div>
 
-        <div className="rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Kredensial Akun
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Kelola informasi akun dan kredensial login Anda
-              </p>
-            </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-slate-900">
+              Kredensial Akun
+            </h2>
+            <p className="mt-1 text-base text-slate-600">
+              Kelola informasi akun dan kredensial login Anda
+            </p>
           </div>
 
           {(error || fetchError) && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-base text-red-700">
               {error || fetchError}
             </div>
           )}
@@ -162,14 +172,15 @@ const SettingAdminComp = () => {
             <div>
               <label
                 htmlFor="nama"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-2 block text-base font-semibold text-slate-900"
               >
                 Nama
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="text-gray-400" />
-                </div>
+                <UserRound
+                  className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                  aria-hidden="true"
+                />
                 <input
                   id="nama"
                   type="text"
@@ -177,11 +188,11 @@ const SettingAdminComp = () => {
                   onChange={(e) =>
                     setUserData({ ...userData, nama: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Masukkan nama Anda"
                 />
               </div>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-slate-600">
                 Nama yang akan ditampilkan di dashboard
               </p>
             </div>
@@ -189,24 +200,25 @@ const SettingAdminComp = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-2 block text-base font-semibold text-slate-900"
               >
                 Email
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="text-gray-400" />
-                </div>
+                <Mail
+                  className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                  aria-hidden="true"
+                />
                 <input
                   id="email"
                   type="email"
                   value={userData.email}
                   disabled
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-slate-100 pl-11 pr-4 text-base text-slate-600"
                   placeholder="Email Anda (tidak dapat diubah)"
                 />
               </div>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-slate-600">
                 Email yang digunakan untuk login (tidak dapat diubah)
               </p>
             </div>
@@ -214,14 +226,15 @@ const SettingAdminComp = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-2 block text-base font-semibold text-slate-900"
               >
                 Password Baru
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
-                </div>
+                <Lock
+                  className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                  aria-hidden="true"
+                />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -229,47 +242,57 @@ const SettingAdminComp = () => {
                   onChange={(e) =>
                     setUserData({ ...userData, password: e.target.value })
                   }
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-14 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Kosongkan jika tidak ingin mengubah password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 inline-flex min-h-11 min-w-11 font-semibold items-center justify-center pr-2 text-slate-600 hover:text-slate-900"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={
+                    showPassword ? "Sembunyikan password" : "Tampilkan password"
+                  }
+                  title={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                 >
                   {showPassword ? (
-                    <FaEyeSlash className="text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="size-5" aria-hidden="true" />
                   ) : (
-                    <FaEye className="text-gray-400 hover:text-gray-600" />
+                    <Eye className="size-5" aria-hidden="true" />
                   )}
                 </button>
               </div>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-slate-600">
                 Isi hanya jika ingin mengubah password
               </p>
             </div>
 
-            <div className="flex justify-between pt-4">
+            <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-between">
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 hover:bg-slate-100"
               >
-                <FaUndo />
-                <span>Reset Form</span>
+                <RotateCcw className="size-5" aria-hidden="true" />
+                Reset Form
               </button>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-5 text-base font-semibold text-white hover:bg-[#0b4f75] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading ? (
-                  <span>Menyimpan...</span>
+                  <>
+                    <LoaderCircle
+                      className="size-5 animate-spin"
+                      aria-hidden="true"
+                    />
+                    Menyimpan...
+                  </>
                 ) : (
                   <>
-                    <FaSave />
-                    <span>Simpan Perubahan</span>
+                    <Save className="size-5" aria-hidden="true" />
+                    Simpan Perubahan
                   </>
                 )}
               </button>
@@ -279,34 +302,26 @@ const SettingAdminComp = () => {
       </div>
 
       {successModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6 text-center">
-              <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
+                <CircleCheck
+                  className="size-5 text-emerald-700"
+                  aria-hidden="true"
+                />
               </div>
-              <h3 className="text-xl font-bold text-gray-800">Berhasil</h3>
-              <p className="text-gray-600">{successMessage}</p>
+              <h3 className="text-xl font-bold text-slate-900">Berhasil</h3>
+              <p className="mt-2 text-base text-slate-600">{successMessage}</p>
             </div>
 
             <div className="flex justify-center">
               <button
+                type="button"
                 onClick={successModal.close}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-5 text-base font-semibold text-white hover:bg-[#0b4f75]"
               >
+                <X className="size-5" aria-hidden="true" />
                 Tutup
               </button>
             </div>
@@ -315,29 +330,33 @@ const SettingAdminComp = () => {
       )}
 
       {resetModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Reset
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="mt-2 text-base text-slate-600">
                 Apakah Anda yakin ingin mereset form? Nama akan dikembalikan ke
                 data asli dan password akan dikosongkan.
               </p>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
+                type="button"
                 onClick={resetModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 hover:bg-slate-100"
               >
+                <X className="size-5" aria-hidden="true" />
                 Batal
               </button>
               <button
+                type="button"
                 onClick={confirmReset}
-                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-amber-700 px-5 text-base font-semibold text-white hover:bg-amber-800"
               >
+                <RotateCcw className="size-5" aria-hidden="true" />
                 Ya, Reset
               </button>
             </div>
@@ -346,29 +365,33 @@ const SettingAdminComp = () => {
       )}
 
       {saveModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Simpan
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="mt-2 text-base text-slate-600">
                 Apakah Anda yakin ingin menyimpan perubahan pada pengaturan
                 akun?
               </p>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
+                type="button"
                 onClick={saveModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 hover:bg-slate-100"
               >
+                <X className="size-5" aria-hidden="true" />
                 Batal
               </button>
               <button
+                type="button"
                 onClick={confirmSave}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-5 text-base font-semibold text-white hover:bg-[#0b4f75]"
               >
+                <Save className="size-5" aria-hidden="true" />
                 Ya, Simpan
               </button>
             </div>

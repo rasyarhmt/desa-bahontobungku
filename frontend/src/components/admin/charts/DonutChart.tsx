@@ -14,15 +14,20 @@ export default function DonutChart({ data, colors }: DonutChartProps) {
 
   if (total === 0) {
     return (
-      <div className="w-32 h-32 mx-auto flex items-center justify-center rounded-full border-8 border-gray-100 text-sm text-gray-400">
+      <div className="mx-auto flex size-36 items-center justify-center rounded-full border-8 border-slate-100 text-base font-semibold text-slate-600">
         Kosong
       </div>
     );
   }
 
   return (
-    <div className="relative w-32 h-32 mx-auto">
-      <svg viewBox="0 0 100 100" className="w-full h-full">
+    <div className="relative mx-auto size-36">
+      <svg
+        viewBox="0 0 100 100"
+        className="h-full w-full"
+        role="img"
+        aria-label={`Diagram donut dengan total ${total}`}
+      >
         {data.map((item, index) => {
           const percentage = item.count / total;
           const angle = percentage * 360;

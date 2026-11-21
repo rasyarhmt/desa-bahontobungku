@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
+import { Check, X } from "lucide-react";
 
 import type { SuratFormData } from "./suratShared";
 
@@ -63,15 +64,11 @@ export default function SuratForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4"
-      style={{ fontFamily: "poppins" }}
-    >
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label
           htmlFor="jenis"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="mb-2 block text-base font-semibold text-slate-900"
         >
           Jenis Surat
         </label>
@@ -84,7 +81,7 @@ export default function SuratForm({
               jenis: e.target.value as "Surat Masuk" | "Surat Keluar",
             })
           }
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+          className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
           disabled={isEdit && currentItem?.id != null && currentItem.id > 0}
         >
           <option value="Surat Masuk">Surat Masuk</option>
@@ -95,7 +92,7 @@ export default function SuratForm({
       <div>
         <label
           htmlFor="nomor"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="mb-2 block text-base font-semibold text-slate-900"
         >
           Nomor Surat
         </label>
@@ -104,20 +101,24 @@ export default function SuratForm({
           type="text"
           value={formData.nomor}
           onChange={(e) => setFormData({ ...formData, nomor: e.target.value })}
-          className={`w-full px-4 py-2 border ${
-            formErrors.nomor ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
+          className={`min-h-11 w-full rounded-xl border bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0b6393]/20 ${
+            formErrors.nomor
+              ? "border-red-700 focus:border-red-700"
+              : "border-slate-300 focus:border-[#0b6393]"
+          }`}
           placeholder="Contoh: SM/2024/001"
         />
         {formErrors.nomor && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.nomor}</p>
+          <p className="mt-2 text-sm font-medium text-red-700">
+            {formErrors.nomor}
+          </p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="perihal"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="mb-2 block text-base font-semibold text-slate-900"
         >
           Perihal
         </label>
@@ -128,20 +129,24 @@ export default function SuratForm({
           onChange={(e) =>
             setFormData({ ...formData, perihal: e.target.value })
           }
-          className={`w-full px-4 py-2 border ${
-            formErrors.perihal ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
+          className={`min-h-11 w-full rounded-xl border bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0b6393]/20 ${
+            formErrors.perihal
+              ? "border-red-700 focus:border-red-700"
+              : "border-slate-300 focus:border-[#0b6393]"
+          }`}
           placeholder="Perihal surat"
         />
         {formErrors.perihal && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.perihal}</p>
+          <p className="mt-2 text-sm font-medium text-red-700">
+            {formErrors.perihal}
+          </p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="pengirim"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="mb-2 block text-base font-semibold text-slate-900"
         >
           {formData.jenis === "Surat Masuk" ? "Pengirim" : "Penerima"}
         </label>
@@ -152,22 +157,26 @@ export default function SuratForm({
           onChange={(e) =>
             setFormData({ ...formData, pengirim: e.target.value })
           }
-          className={`w-full px-4 py-2 border ${
-            formErrors.pengirim ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
+          className={`min-h-11 w-full rounded-xl border bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0b6393]/20 ${
+            formErrors.pengirim
+              ? "border-red-700 focus:border-red-700"
+              : "border-slate-300 focus:border-[#0b6393]"
+          }`}
           placeholder={
             formData.jenis === "Surat Masuk" ? "Nama pengirim" : "Nama penerima"
           }
         />
         {formErrors.pengirim && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.pengirim}</p>
+          <p className="mt-2 text-sm font-medium text-red-700">
+            {formErrors.pengirim}
+          </p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="tanggal"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="mb-2 block text-base font-semibold text-slate-900"
         >
           {formData.jenis === "Surat Masuk"
             ? "Tanggal Terima"
@@ -180,19 +189,23 @@ export default function SuratForm({
           onChange={(e) =>
             setFormData({ ...formData, tanggal: e.target.value })
           }
-          className={`w-full px-4 py-2 border ${
-            formErrors.tanggal ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
+          className={`min-h-11 w-full rounded-xl border bg-white px-4 text-base text-slate-900 focus:ring-2 focus:ring-[#0b6393]/20 ${
+            formErrors.tanggal
+              ? "border-red-700 focus:border-red-700"
+              : "border-slate-300 focus:border-[#0b6393]"
+          }`}
         />
         {formErrors.tanggal && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.tanggal}</p>
+          <p className="mt-2 text-sm font-medium text-red-700">
+            {formErrors.tanggal}
+          </p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="upload-file"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="mb-2 block text-base font-semibold text-slate-900"
         >
           Upload Dokumen {isEdit ? "Baru " : ""}
         </label>
@@ -201,16 +214,16 @@ export default function SuratForm({
           type="file"
           accept=".pdf,.doc,.docx"
           onChange={handleFileChange}
-          className="w-full border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+          className="min-h-11 w-full rounded-xl border border-slate-300 bg-white p-2.5 text-base text-slate-900 file:mr-4 file:min-h-9 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-900 hover:file:bg-slate-200"
         />
         {isEdit && currentItem?.file && (
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-2 text-base text-slate-600">
             File saat ini:{" "}
             <a
               href={`/storage/${currentItem.file}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 underline hover:text-blue-800"
+              className="font-semibold text-[#0b6393] underline hover:text-[#0b4f75]"
             >
               Lihat Dokumen
             </a>
@@ -218,18 +231,20 @@ export default function SuratForm({
         )}
       </div>
 
-      <div className="flex justify-end gap-2 pt-4">
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 hover:bg-slate-100"
         >
+          <X className="size-5" aria-hidden="true" />
           Batal
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-5 text-base font-semibold text-white hover:bg-[#0b4f75]"
         >
+          <Check className="size-5" aria-hidden="true" />
           {isEdit ? "Simpan Perubahan" : "Simpan"}
         </button>
       </div>

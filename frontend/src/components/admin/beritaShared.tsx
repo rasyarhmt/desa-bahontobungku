@@ -17,10 +17,10 @@ export interface BeritaForm {
 export const getStatusColor = (status: string | undefined) => {
   switch (status) {
     case "Dipublikasi":
-      return "bg-green-100 text-green-800";
+      return "bg-emerald-50 text-emerald-700";
     case "Draft":
-      return "bg-yellow-100 text-yellow-800";
+      return "bg-amber-50 text-amber-700";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-slate-100 text-slate-700";
   }
 };

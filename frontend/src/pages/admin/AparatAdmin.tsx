@@ -1,15 +1,15 @@
 import {
-  FaEdit,
-  FaExchangeAlt,
-  FaIdCard,
-  FaImage,
-  FaPlus,
-  FaSearch,
-  FaSpinner,
-  FaTrash,
-  FaTrashAlt,
-  FaUser,
-} from "react-icons/fa";
+  ArrowLeftRight,
+  IdCard,
+  Image as ImageIcon,
+  LoaderCircle,
+  Pencil,
+  Plus,
+  Save,
+  Search,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 import { adminAparatApi, type AparatFormattedAdmin } from "@/lib/api/admin";
 import { getAuthState } from "@/lib/auth";
 import { useAsyncData, useCrudResource, useSearchFilter } from "@/hooks";
@@ -141,97 +141,115 @@ const AparatAdmin = () => {
 
   return (
     <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <FaUser className="text-blue-500 text-xl" />
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="rounded-xl bg-[#0b6393]/10 p-2">
+            <UserRound
+              aria-hidden="true"
+              className="size-5 text-[#0b6393]"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-slate-900">
             Manajemen Aparat Desa
           </h1>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-slate-900">
                 Daftar Aparat Desa
               </h2>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Kelola data aparat dan pejabat desa
               </p>
             </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Cari aparat..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
-                />
+            <div className="flex flex-wrap items-end gap-3">
+              <div>
+                <label
+                  htmlFor="aparat-search"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
+                >
+                  Cari Aparat
+                </label>
+                <div className="relative">
+                  <Search
+                    aria-hidden="true"
+                    className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                  />
+                  <input
+                    id="aparat-search"
+                    type="text"
+                    placeholder="Cari aparat..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="min-h-11 w-64 rounded-xl border border-slate-300 bg-white pl-11 pr-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
+                  />
+                </div>
               </div>
               <button
                 onClick={handleAdd}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 font-semibold text-white transition-colors hover:bg-[#0a557c]"
               >
-                <FaPlus className="text-white" />
+                <Plus aria-hidden="true" className="size-5" />
                 <span>Tambah Aparat</span>
               </button>
             </div>
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-blue-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data aparat...</p>
+            <div className="py-8 text-center">
+              <LoaderCircle
+                aria-hidden="true"
+                className="mx-auto mb-4 size-8 animate-spin text-[#0b6393]"
+              />
+              <p className="text-base text-slate-600">Memuat data aparat...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
+            <div className="py-8 text-center text-red-700">
+              <p className="text-base">{error}</p>
               <button
                 onClick={fetchAparatData}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="mt-4 min-h-11 rounded-xl bg-[#0b6393] px-4 font-semibold text-white transition-colors hover:bg-[#0a557c]"
               >
                 Coba Lagi
               </button>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-base">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
+                  <tr className="bg-slate-50">
+                    <th className="rounded-tl-xl px-4 py-4 text-left text-base font-bold text-slate-900">
                       Foto
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Nama
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Jabatan
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       NIP
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
+                    <th className="rounded-tr-xl px-4 py-4 text-right text-base font-bold text-slate-900">
                       Aksi
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-200">
                   {filteredData.length > 0 ? (
                     filteredData.map((aparat) => (
-                      <tr key={aparat.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm">
+                      <tr key={aparat.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-4 text-base">
                           {aparat.foto ? (
                             <img
                               src={aparat.foto || "/placeholder.svg"}
                               alt={aparat.nama}
-                              className="w-12 h-12 object-cover rounded-full border-2 border-gray-200"
+                              className="size-12 rounded-full border-2 border-slate-200 object-cover"
                               onError={(e) => {
                                 e.currentTarget.style.display = "none";
                                 const sibling = e.currentTarget
@@ -242,26 +260,35 @@ const AparatAdmin = () => {
                               }}
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
-                              <FaImage className="text-gray-400" />
+                            <div className="flex size-12 items-center justify-center rounded-lg bg-slate-100">
+                              <ImageIcon
+                                aria-hidden="true"
+                                className="size-5 text-slate-500"
+                              />
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                        <td className="px-4 py-4 text-base font-semibold text-slate-900">
                           <div className="flex items-center gap-2">
-                            <FaUser className="text-gray-400" />
+                            <UserRound
+                              aria-hidden="true"
+                              className="size-5 shrink-0 text-slate-500"
+                            />
                             {aparat.nama}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-base text-slate-800">
                           {aparat.jabatan}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-base text-slate-800">
                           <div className="flex items-center gap-2">
                             <span>
                               {aparat.nip ? (
                                 <div className="flex items-center gap-2">
-                                  <FaIdCard className="text-gray-400" />
+                                  <IdCard
+                                    aria-hidden="true"
+                                    className="size-5 shrink-0 text-slate-500"
+                                  />
                                   <span>{aparat.nip}</span>
                                 </div>
                               ) : (
@@ -270,21 +297,23 @@ const AparatAdmin = () => {
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => handleEdit(aparat.id)}
-                              className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                              aria-label={`Edit ${aparat.nama}`}
                               title="Edit"
+                              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
                             >
-                              <FaEdit className="text-gray-600" />
+                              <Pencil aria-hidden="true" className="size-5" />
                             </button>
                             <button
                               onClick={() => handleDelete(aparat.id)}
-                              className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                              aria-label={`Hapus ${aparat.nama}`}
                               title="Hapus"
+                              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-red-50 text-red-700 transition-colors hover:bg-red-100"
                             >
-                              <FaTrash className="text-red-600" />
+                              <Trash2 aria-hidden="true" className="size-5" />
                             </button>
                           </div>
                         </td>
@@ -294,7 +323,7 @@ const AparatAdmin = () => {
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-4 py-8 text-center text-gray-500"
+                        className="px-4 py-8 text-center text-base text-slate-600"
                       >
                         {searchQuery
                           ? "Tidak ada aparat yang ditemukan dengan pencarian tersebut."
@@ -310,24 +339,24 @@ const AparatAdmin = () => {
       </div>
 
       {addModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 animate-modalFadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Tambah Aparat Baru
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Masukkan informasi aparat yang akan ditambahkan
               </p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
                 <label
                   htmlFor="nama"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
                 >
-                  Nama Lengkap <span className="text-red-500">*</span>
+                  Nama Lengkap <span className="text-red-700">*</span>
                 </label>
                 <input
                   id="nama"
@@ -336,7 +365,7 @@ const AparatAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, nama: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Masukkan nama lengkap"
                 />
               </div>
@@ -344,7 +373,7 @@ const AparatAdmin = () => {
               <div>
                 <label
                   htmlFor="foto"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
                 >
                   Foto Aparat
                 </label>
@@ -354,18 +383,18 @@ const AparatAdmin = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label
                     htmlFor="jabatan"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="mb-1 block text-sm font-semibold text-slate-800"
                   >
-                    Jabatan <span className="text-red-500">*</span>
+                    Jabatan <span className="text-red-700">*</span>
                   </label>
                   <input
                     id="jabatan"
@@ -374,7 +403,7 @@ const AparatAdmin = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, jabatan: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                     placeholder="Contoh: Kepala Desa, Sekretaris"
                   />
                 </div>
@@ -382,7 +411,7 @@ const AparatAdmin = () => {
                 <div>
                   <label
                     htmlFor="nip"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="mb-1 block text-sm font-semibold text-slate-800"
                   >
                     NIP
                   </label>
@@ -393,43 +422,49 @@ const AparatAdmin = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, nip: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                     placeholder="Masukkan NIP atau NIK"
                   />
                 </div>
               </div>
 
               {formData.fotoPreview && (
-                <div className="relative w-40 h-16">
+                <div className="relative size-32">
                   <img
                     src={formData.fotoPreview || "/placeholder.svg"}
                     alt="Preview"
-                    className="w-32 h-32 object-cover rounded-md border-2 border-gray-200"
+                    className="size-32 rounded-lg border-2 border-slate-200 object-cover"
                   />
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-3">
               <button
                 onClick={() => addModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-5 font-semibold text-slate-700 transition-colors hover:bg-slate-200"
                 disabled={isActionLoading}
               >
                 Batal
               </button>
               <button
                 onClick={saveNewItem}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-5 font-semibold text-white transition-colors hover:bg-[#0a557c]"
                 disabled={isActionLoading}
               >
                 {isActionLoading ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="size-5 animate-spin"
+                    />
                     <span>Menyimpan...</span>
                   </>
                 ) : (
-                  <span>Simpan</span>
+                  <>
+                    <Save aria-hidden="true" className="size-5" />
+                    <span>Simpan</span>
+                  </>
                 )}
               </button>
             </div>
@@ -438,20 +473,20 @@ const AparatAdmin = () => {
       )}
 
       {editModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 animate-modalFadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">Edit Aparat</h3>
-              <p className="text-gray-600 text-sm">Ubah informasi aparat</p>
+              <h3 className="text-xl font-bold text-slate-900">Edit Aparat</h3>
+              <p className="text-base text-slate-600">Ubah informasi aparat</p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
                 <label
                   htmlFor="edit-nama"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
                 >
-                  Nama Lengkap <span className="text-red-500">*</span>
+                  Nama Lengkap <span className="text-red-700">*</span>
                 </label>
                 <input
                   id="edit-nama"
@@ -460,57 +495,63 @@ const AparatAdmin = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, nama: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 />
               </div>
 
               <div>
                 <label
-                  htmlFor="edit-foto"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  htmlFor="thumbnail-file-input"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
                 >
                   Foto Aparat
                 </label>
                 <div className="flex flex-col gap-3">
                   {formData.fotoPreview ? (
-                    <div className="flex items-center gap-4">
-                      <div className="w-24 h-24 relative">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="relative size-24">
                         <img
                           src={formData.fotoPreview || "/placeholder.svg"}
                           alt="Foto"
-                          className="w-24 h-24 object-cover rounded-full border-2 border-gray-200"
+                          className="size-24 rounded-full border-2 border-slate-200 object-cover"
                         />
                       </div>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
                           onClick={handleChangeThumbnail}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 font-semibold text-white transition-colors hover:bg-[#0a557c]"
                         >
-                          <FaExchangeAlt size={14} />
+                          <ArrowLeftRight
+                            aria-hidden="true"
+                            className="size-5"
+                          />
                           <span>Ganti Foto</span>
                         </button>
                         <button
                           type="button"
                           onClick={handleDeleteThumbnail}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-4 font-semibold text-red-700 transition-colors hover:bg-red-100"
                         >
-                          <FaTrashAlt size={14} />
+                          <Trash2 aria-hidden="true" className="size-5" />
                           <span>Hapus Foto</span>
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-4">
-                      <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-                        <FaUser className="text-gray-400 text-2xl" />
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex size-24 items-center justify-center rounded-full bg-slate-100">
+                        <UserRound
+                          aria-hidden="true"
+                          className="size-8 text-slate-500"
+                        />
                       </div>
                       <button
                         type="button"
                         onClick={handleChangeThumbnail}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 font-semibold text-white transition-colors hover:bg-[#0a557c]"
                       >
-                        <FaPlus size={14} />
+                        <Plus aria-hidden="true" className="size-5" />
                         <span>Tambah Foto</span>
                       </button>
                     </div>
@@ -526,13 +567,13 @@ const AparatAdmin = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label
                     htmlFor="edit-jabatan"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="mb-1 block text-sm font-semibold text-slate-800"
                   >
-                    Jabatan <span className="text-red-500">*</span>
+                    Jabatan <span className="text-red-700">*</span>
                   </label>
                   <input
                     id="edit-jabatan"
@@ -541,14 +582,14 @@ const AparatAdmin = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, jabatan: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="edit-nip"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="mb-1 block text-sm font-semibold text-slate-800"
                   >
                     NIP
                   </label>
@@ -559,32 +600,38 @@ const AparatAdmin = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, nip: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-3">
               <button
                 onClick={() => editModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-5 font-semibold text-slate-700 transition-colors hover:bg-slate-200"
                 disabled={isActionLoading}
               >
                 Batal
               </button>
               <button
                 onClick={saveEditedItem}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-5 font-semibold text-white transition-colors hover:bg-[#0a557c]"
                 disabled={isActionLoading}
               >
                 {isActionLoading ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="size-5 animate-spin"
+                    />
                     <span>Menyimpan...</span>
                   </>
                 ) : (
-                  <span>Simpan Perubahan</span>
+                  <>
+                    <Save aria-hidden="true" className="size-5" />
+                    <span>Simpan Perubahan</span>
+                  </>
                 )}
               </button>
             </div>
@@ -593,38 +640,44 @@ const AparatAdmin = () => {
       )}
 
       {deleteModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md border border-gray-200 animate-modalFadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Hapus
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Apakah Anda yakin ingin menghapus aparat "{currentItem?.nama}"?
                 Tindakan ini tidak dapat dibatalkan.
               </p>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-3">
               <button
                 onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-5 font-semibold text-slate-700 transition-colors hover:bg-slate-200"
                 disabled={isActionLoading}
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-700 px-5 font-semibold text-white transition-colors hover:bg-red-800"
                 disabled={isActionLoading}
               >
                 {isActionLoading ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="size-5 animate-spin"
+                    />
                     <span>Menghapus...</span>
                   </>
                 ) : (
-                  <span>Hapus</span>
+                  <>
+                    <Trash2 aria-hidden="true" className="size-5" />
+                    <span>Hapus</span>
+                  </>
                 )}
               </button>
             </div>

@@ -1,4 +1,4 @@
-import { FaMoneyBillWave, FaMoneyCheckAlt, FaChartPie } from "react-icons/fa";
+import { Banknote, Wallet, PieChart } from "lucide-react";
 
 import { formatCurrency } from "@/lib/format";
 
@@ -16,52 +16,52 @@ export default function ApbdesSummaryCards({
   selectedYear,
 }: ApbdesSummaryCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="text-lg font-semibold text-slate-900">
             Total Pendapatan
           </h3>
-          <div className="bg-green-100 p-2 rounded-lg">
-            <FaMoneyBillWave className="text-green-500 text-xl" />
+          <div className="rounded-xl bg-emerald-50 p-2">
+            <Banknote aria-hidden="true" className="size-5 text-emerald-700" />
           </div>
         </div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">
+        <div className="mb-1 text-2xl font-bold text-slate-900">
           {formatCurrency(totalPendapatan)}
         </div>
-        <p className="text-sm text-gray-600">Tahun {selectedYear}</p>
+        <p className="text-base text-slate-600">Tahun {selectedYear}</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="text-lg font-semibold text-slate-900">
             Total Pengeluaran
           </h3>
-          <div className="bg-red-100 p-2 rounded-lg">
-            <FaMoneyCheckAlt className="text-red-500 text-xl" />
+          <div className="rounded-xl bg-red-50 p-2">
+            <Wallet aria-hidden="true" className="size-5 text-red-700" />
           </div>
         </div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">
+        <div className="mb-1 text-2xl font-bold text-slate-900">
           {formatCurrency(totalPengeluaran)}
         </div>
-        <p className="text-sm text-gray-600">Tahun {selectedYear}</p>
+        <p className="text-base text-slate-600">Tahun {selectedYear}</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">Saldo</h3>
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <FaChartPie className="text-blue-500 text-xl" />
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="text-lg font-semibold text-slate-900">Saldo</h3>
+          <div className="rounded-xl bg-slate-100 p-2">
+            <PieChart aria-hidden="true" className="size-5 text-[#0b6393]" />
           </div>
         </div>
         <div
-          className={`text-3xl font-bold mb-1 ${
-            saldo >= 0 ? "text-green-600" : "text-red-600"
+          className={`mb-1 text-2xl font-bold ${
+            saldo >= 0 ? "text-emerald-700" : "text-red-700"
           }`}
         >
           {formatCurrency(saldo)}
         </div>
-        <p className="text-sm text-gray-600">Tahun {selectedYear}</p>
+        <p className="text-base text-slate-600">Tahun {selectedYear}</p>
       </div>
     </div>
   );

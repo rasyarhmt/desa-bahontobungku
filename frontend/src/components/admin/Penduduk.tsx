@@ -1,21 +1,22 @@
 import { useState } from "react";
 import type { JSX, ChangeEvent, FormEvent } from "react";
 import {
-  FaUsers,
-  FaUserTie,
-  FaPray,
-  FaEdit,
-  FaTrash,
-  FaUserPlus,
-  FaListAlt,
-  FaHome,
-  FaSpinner,
-  FaExclamationTriangle,
-  FaMars,
-  FaVenus,
-  FaEye,
-  FaFileExcel,
-} from "react-icons/fa";
+  UsersRound,
+  UserRoundCog,
+  Hand,
+  Pencil,
+  Trash2,
+  UserPlus,
+  ListChecks,
+  House,
+  LoaderCircle,
+  TriangleAlert,
+  Mars,
+  Venus,
+  Eye,
+  FileSpreadsheet,
+  Search,
+} from "lucide-react";
 
 import PopupForm from "./PopupForm";
 import DetailKeluarga from "./DetailKeluarga";
@@ -386,9 +387,9 @@ export default function Penduduk() {
   const renderProgressBar = (value: number, total: number) => {
     const percentage = total > 0 ? (value / total) * 100 : 0;
     return (
-      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+      <div className="mt-1 h-2.5 w-full rounded-full bg-slate-200">
         <div
-          className="bg-blue-600 h-2.5 rounded-full"
+          className="h-2.5 rounded-full bg-[#0b6393]"
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
@@ -401,46 +402,45 @@ export default function Penduduk() {
       {
         title: "Total Penduduk",
         value: totalSum,
-        icon: <FaUsers className="text-blue-500" size={24} />,
-        color: "from-blue-500 to-blue-600",
+        icon: (
+          <UsersRound aria-hidden="true" className="size-5 text-[#0b6393]" />
+        ),
       },
       {
         title: "Kepala Keluarga",
         value: totalPenduduk[2].total,
-        icon: <FaUserTie className="text-green-500" size={24} />,
-        color: "from-green-500 to-green-600",
+        icon: (
+          <UserRoundCog aria-hidden="true" className="size-5 text-emerald-700" />
+        ),
       },
       {
         title: "Laki-laki",
         value: totalPenduduk[0].total,
-        icon: <FaMars className="text-indigo-500" size={24} />,
-        color: "from-indigo-500 to-indigo-600",
+        icon: <Mars aria-hidden="true" className="size-5 text-[#0b6393]" />,
       },
       {
         title: "Perempuan",
         value: totalPenduduk[1].total,
-        icon: <FaVenus className="text-pink-500" size={24} />,
-        color: "from-pink-500 to-pink-600",
+        icon: <Venus aria-hidden="true" className="size-5 text-[#0b6393]" />,
       },
     ];
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100"
+            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
           >
-            <div className={`h-2 bg-gradient-to-r ${card.color}`}></div>
-            <div className="p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-gray-500 text-sm">{card.title}</p>
-                  <p className="text-2xl font-bold text-gray-800 mt-1">
-                    {card.value}
-                  </p>
-                </div>
-                <div className="bg-gray-100 p-3 rounded-xl">{card.icon}</div>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-600">
+                  {card.title}
+                </p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {card.value}
+                </p>
               </div>
+              <div className="rounded-xl bg-slate-100 p-2">{card.icon}</div>
             </div>
           </div>
         ))}
@@ -451,36 +451,41 @@ export default function Penduduk() {
   const renderTable = (title: string, data: StatItem[], icon: JSX.Element) => {
     const total = getTotal(data);
     return (
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-blue-100 p-2 rounded-lg">{icon}</div>
-            <h2 className="font-semibold text-xl text-gray-800">{title}</h2>
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-xl bg-slate-100 p-2">{icon}</div>
+            <h2 className="text-xl font-bold text-slate-900">{title}</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-gray-600">
+            <table className="min-w-full text-base text-slate-700">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left font-medium">#</th>
-                  <th className="px-4 py-3 text-left font-medium">Kategori</th>
-                  <th className="px-4 py-3 text-center font-medium">Total</th>
-                  <th className="px-4 py-3 text-center font-medium">
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    #
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    Kategori
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Total
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
                     Persentase
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-200">
                 {data.map((row, idx) => (
-                  <tr
-                    key={idx}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition"
-                  >
-                    <td className="px-4 py-3">{idx + 1}</td>
-                    <td className="px-4 py-3 font-medium">{row.kategori}</td>
-                    <td className="px-4 py-3 text-center">{row.total}</td>
-                    <td className="px-4 py-3">
+                  <tr key={idx} className="hover:bg-slate-50 transition">
+                    <td className="px-4 py-4">{idx + 1}</td>
+                    <td className="px-4 py-4 font-semibold text-slate-900">
+                      {row.kategori}
+                    </td>
+                    <td className="px-4 py-4 text-center">{row.total}</td>
+                    <td className="px-4 py-4">
                       <div>
-                        <span className="text-gray-700">
+                        <span className="text-slate-800">
                           {total > 0
                             ? ((row.total / total) * 100).toFixed(1)
                             : 0}
@@ -508,118 +513,156 @@ export default function Penduduk() {
     );
 
     return (
-      <div
-        className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100"
-        style={{ fontFamily: "poppins" }}
-      >
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <FaListAlt className="text-blue-500" size={20} />
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-xl bg-slate-100 p-2 text-[#0b6393]">
+              <ListChecks aria-hidden="true" className="size-5" />
             </div>
-            <h2 className="font-semibold text-xl text-gray-800">
+            <h2 className="text-xl font-bold text-slate-900">
               Daftar Penduduk
             </h2>
           </div>
 
           <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Cari berdasarkan nama, NIK, atau alamat..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-            />
+            <label
+              htmlFor="cari-penduduk"
+              className="mb-1 block text-sm font-semibold text-slate-800"
+            >
+              Cari penduduk
+            </label>
+            <div className="relative">
+              <Search
+                aria-hidden="true"
+                className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+              />
+              <input
+                id="cari-penduduk"
+                type="text"
+                placeholder="Cari berdasarkan nama, NIK, atau alamat..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-white py-2 pl-12 pr-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20 focus:outline-none"
+              />
+            </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-gray-600">
+            <table className="min-w-full text-base text-slate-700">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left font-medium">#</th>
-                  <th className="px-4 py-3 text-left font-medium">Nama</th>
-                  <th className="px-4 py-3 text-left font-medium">Alamat</th>
-                  <th className="px-4 py-3 text-left font-medium">Tempat Lahir</th>
-                  <th className="px-4 py-3 text-center font-medium">Umur</th>
-                  <th className="px-4 py-3 text-center font-medium">
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    #
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    Nama
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    Alamat
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    Tempat Lahir
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Umur
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
                     Jenis Kelamin
                   </th>
-                  <th className="px-4 py-3 text-center font-medium">Agama</th>
-                  <th className="px-4 py-3 text-center font-medium">Pekerjaan</th>
-                  <th className="px-4 py-3 text-center font-medium">Status</th>
-                  <th className="px-4 py-3 text-center font-medium">Aksi</th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Agama
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Pekerjaan
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Status
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-200">
                 {filteredData.map((item, idx) => (
                   <tr
                     key={item.id || idx}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition"
+                    className="hover:bg-slate-50 transition"
                   >
-                    <td className="px-4 py-3">{idx + 1}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-4">{idx + 1}</td>
+                    <td className="px-4 py-4">
                       <div className="flex flex-col gap-0.5">
                         <button
+                          type="button"
                           onClick={() => handleViewDetail(item.nik)}
-                          className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer break-words text-left"
+                          className="min-h-11 break-words text-left text-base font-semibold text-[#0b6393] hover:text-[#084c73] hover:underline"
                         >
                           {item.nama}
                         </button>
-                        <span className="text-xs text-gray-500 break-all">
+                        <span className="break-all text-sm text-slate-600">
                           NIK: {item.nik}
                         </span>
-                        <span className="text-xs text-gray-500 break-all">
+                        <span className="break-all text-sm text-slate-600">
                           No. KK: {item.nomor_kk || "-"}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 break-words">{item.alamat}</td>
-                    <td className="px-4 py-3 break-words">
+                    <td className="break-words px-4 py-4">{item.alamat}</td>
+                    <td className="break-words px-4 py-4">
                       {item.tempatLahir || "-"}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       {hitungUmur(item.tanggalLahir)}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       {item.jenisKelamin}
                     </td>
-                    <td className="px-4 py-3 text-center">{item.agama}</td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">{item.agama}</td>
+                    <td className="px-4 py-4 text-center">
                       {item.pekerjaan || "-"}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
                           item.status === "Kepala Keluarga"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-slate-100 text-slate-700"
                         }`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
+                          type="button"
                           onClick={() => handleViewDetail(item.nik)}
-                          className="bg-green-500 hover:bg-green-600 text-white p-1.5 rounded-lg transition-colors"
                           title="Lihat Detail Keluarga"
+                          aria-label="Lihat Detail Keluarga"
+                          className="flex min-h-11 items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-200"
                         >
-                          <FaEye size={14} />
+                          <Eye aria-hidden="true" className="size-5" />
+                          <span className="hidden xl:inline">Detail</span>
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleEdit(item.nik)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-lg transition-colors"
                           title="Edit"
+                          aria-label="Edit penduduk"
+                          className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-3 py-2 text-sm font-semibold text-white hover:bg-[#084c73]"
                         >
-                          <FaEdit size={14} />
+                          <Pencil aria-hidden="true" className="size-5" />
+                          <span className="hidden xl:inline">Edit</span>
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleDelete(item.nik)}
-                          className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors"
                           title="Hapus"
+                          aria-label="Hapus penduduk"
+                          className="flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
                         >
-                          <FaTrash size={14} />
+                          <Trash2 aria-hidden="true" className="size-5" />
+                          <span className="hidden xl:inline">Hapus</span>
                         </button>
                       </div>
                     </td>
@@ -629,7 +672,7 @@ export default function Penduduk() {
                   <tr>
                     <td
                       colSpan={10}
-                      className="px-4 py-6 text-center text-gray-500"
+                      className="px-4 py-8 text-center text-base text-slate-600"
                     >
                       Tidak ada data yang sesuai dengan pencarian
                     </td>
@@ -645,21 +688,28 @@ export default function Penduduk() {
 
   if (isLoading && activeSection === "dashboard") {
     return (
-      <div className="flex justify-center items-center h-64">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
-        <span className="ml-2">Memuat data...</span>
+      <div className="flex justify-center items-center h-64 gap-2 text-base text-slate-600">
+        <LoaderCircle
+          aria-hidden="true"
+          className="size-5 animate-spin text-[#0b6393]"
+        />
+        <span>Memuat data...</span>
       </div>
     );
   }
 
   if (error && activeSection === "dashboard") {
     return (
-      <div className="text-center py-12">
-        <FaExclamationTriangle className="text-4xl text-yellow-500 mx-auto mb-4" />
-        <p className="text-red-500 mb-4">{error}</p>
+      <div className="py-12 text-center">
+        <TriangleAlert
+          aria-hidden="true"
+          className="mx-auto mb-4 size-5 text-amber-700"
+        />
+        <p className="mb-4 text-base text-red-700">{error}</p>
         <button
+          type="button"
           onClick={fetchData}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="min-h-11 rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#084c73]"
         >
           Coba Lagi
         </button>
@@ -669,35 +719,40 @@ export default function Penduduk() {
 
   return (
     <>
-      <div
-        className="space-y-8 bg-gray-50 min-h-screen"
-        style={{ fontFamily: "poppins" }}
-      >
-        <div className="w-full mx-auto">
+      <div className="min-h-screen space-y-8 bg-[#f6f8fb]">
+        <div className="mx-auto w-full">
           {activeSection === "dashboard" && (
             <>
-              <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">
+              <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+                <h1 className="text-2xl font-bold text-slate-900">
                   Data Kependudukan
                 </h1>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <button
+                    type="button"
                     onClick={handleExportXLSX}
                     disabled={isExporting}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
                   >
                     {isExporting ? (
-                      <FaSpinner className="animate-spin" size={16} />
+                      <LoaderCircle
+                        aria-hidden="true"
+                        className="size-5 animate-spin text-[#0b6393]"
+                      />
                     ) : (
-                      <FaFileExcel size={16} />
+                      <FileSpreadsheet
+                        aria-hidden="true"
+                        className="size-5 text-emerald-700"
+                      />
                     )}
                     <span>{isExporting ? "Mengekspor..." : "Ekspor Excel"}</span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => setActiveSection("manage")}
-                    className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#084c73]"
                   >
-                    <FaListAlt size={16} />
+                    <ListChecks aria-hidden="true" className="size-5" />
                     <span>Kelola Data</span>
                   </button>
                 </div>
@@ -707,12 +762,18 @@ export default function Penduduk() {
                 {renderTable(
                   "Total Penduduk",
                   totalPenduduk,
-                  <FaUsers className="text-blue-500" size={20} />
+                  <UsersRound
+                    aria-hidden="true"
+                    className="size-5 text-[#0b6393]"
+                  />,
                 )}
                 {renderTable(
                   "Jumlah Penduduk Berdasarkan Usia",
                   pendudukUsia,
-                  <FaUsers className="text-green-500" size={20} />
+                  <UsersRound
+                    aria-hidden="true"
+                    className="size-5 text-[#0b6393]"
+                  />,
                 )}
                 {renderTable(
                   "Jumlah Penduduk Berdasarkan Jenis Kelamin",
@@ -720,12 +781,15 @@ export default function Penduduk() {
                     { kategori: "Laki-laki", total: totalPenduduk[0].total },
                     { kategori: "Perempuan", total: totalPenduduk[1].total },
                   ],
-                  <FaUsers className="text-purple-500" size={20} />
+                  <UsersRound
+                    aria-hidden="true"
+                    className="size-5 text-[#0b6393]"
+                  />,
                 )}
                 {renderTable(
                   "Jumlah Penduduk Berdasarkan Keyakinan",
                   pendudukKeyakinan,
-                  <FaPray className="text-orange-500" size={20} />
+                  <Hand aria-hidden="true" className="size-5 text-[#0b6393]" />,
                 )}
               </div>
             </>
@@ -733,35 +797,44 @@ export default function Penduduk() {
 
           {activeSection === "manage" && (
             <>
-              <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">
+              <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+                <h1 className="text-2xl font-bold text-slate-900">
                   Kelola Data Penduduk
                 </h1>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <button
+                    type="button"
                     onClick={() => setActiveSection("dashboard")}
-                    className="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
                   >
-                    <FaHome size={16} />
+                    <House aria-hidden="true" className="size-5" />
                     <span>Dashboard</span>
                   </button>
                   <button
+                    type="button"
                     onClick={handleExportXLSX}
                     disabled={isExporting}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
                   >
                     {isExporting ? (
-                      <FaSpinner className="animate-spin" size={16} />
+                      <LoaderCircle
+                        aria-hidden="true"
+                        className="size-5 animate-spin text-[#0b6393]"
+                      />
                     ) : (
-                      <FaFileExcel size={16} />
+                      <FileSpreadsheet
+                        aria-hidden="true"
+                        className="size-5 text-emerald-700"
+                      />
                     )}
                     <span>{isExporting ? "Mengekspor..." : "Ekspor Excel"}</span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => openForm()}
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#084c73]"
                   >
-                    <FaUserPlus size={16} />
+                    <UserPlus aria-hidden="true" className="size-5" />
                     <span>Tambah Penduduk</span>
                   </button>
                 </div>
@@ -787,15 +860,16 @@ export default function Penduduk() {
 
           {activeSection === "detail" && (
             <>
-              <div className="flex items-center gap-4 mb-8">
+              <div className="mb-8 flex flex-wrap items-center gap-4">
                 <button
+                  type="button"
                   onClick={() => setActiveSection("manage")}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                  className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
                 >
-                  <FaHome size={16} />
-                  Kembali ke Manajemen
+                  <House aria-hidden="true" className="size-5" />
+                  <span>Kembali ke Manajemen</span>
                 </button>
-                <h1 className="text-3xl font-bold text-gray-800">
+                <h1 className="text-2xl font-bold text-slate-900">
                   Detail Keluarga
                 </h1>
               </div>
@@ -811,12 +885,20 @@ export default function Penduduk() {
         </div>
       </div>
       {showDeleteModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md border border-gray-200 animate-modalFadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
             <div className="mb-6">
-              <p className="text-gray-600 text-md font-medium text-center">
+              <div className="mb-3 flex items-center gap-3">
+                <div className="rounded-xl bg-amber-50 p-2 text-amber-700">
+                  <TriangleAlert aria-hidden="true" className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900">
+                  Konfirmasi Hapus
+                </h2>
+              </div>
+              <p className="text-base text-slate-700">
                 Apakah Anda yakin ingin menghapus penduduk{" "}
-                <span className="font-bold">
+                <span className="font-bold text-slate-900">
                   {(() => {
                     const penduduk = pendudukData.find(
                       (p) => p.nik === itemToDelete
@@ -826,29 +908,37 @@ export default function Penduduk() {
                       : itemToDelete;
                   })()}
                 </span>
-                ? <br />
+                ?
               </p>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4">
               <button
+                type="button"
                 onClick={() => closeDeleteModal()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex min-h-11 items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-200"
                 disabled={isActionLoading}
               >
                 Batal
               </button>
               <button
+                type="button"
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                className="flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
                 disabled={isActionLoading}
               >
                 {isActionLoading ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="size-5 animate-spin"
+                    />
                     <span>Menghapus...</span>
                   </>
                 ) : (
-                  <span>Hapus</span>
+                  <>
+                    <Trash2 aria-hidden="true" className="size-5" />
+                    <span>Hapus</span>
+                  </>
                 )}
               </button>
             </div>

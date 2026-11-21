@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-  FaPrint,
-  FaDownload,
-  FaStamp,
-  FaSpinner,
-  FaCheck,
-  FaClock,
-  FaEye,
-} from "react-icons/fa";
+  Check,
+  Clock,
+  Download,
+  Eye,
+  LoaderCircle,
+  Printer,
+  Stamp,
+} from "lucide-react";
 import { type LogCetakSurat } from "@/lib/api/schemas";
 import { adminLogCetakApi } from "@/lib/api/admin";
 import { getErrorMessage } from "@/lib/errors";
@@ -113,105 +113,114 @@ const LogCetakAdmin = () => {
 
   return (
     <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaPrint className="text-purple-500 text-xl" />
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-[#0b6393]/10">
+            <Printer
+              className="size-5 text-[#0b6393]"
+              aria-hidden="true"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-slate-900">
             Log Cetak Surat
           </h1>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Total Cetak
               </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaPrint className="text-purple-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-[#0b6393]/10">
+                <Printer
+                  className="size-5 text-[#0b6393]"
+                  aria-hidden="true"
+                />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {logs.length}
             </div>
-            <p className="text-sm text-gray-600">Jumlah surat yang dicetak</p>
+            <p className="text-base text-slate-600">
+              Jumlah surat yang dicetak
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Dicetak
-              </h3>
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <FaClock className="text-yellow-500 text-xl" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">Dicetak</h3>
+              <div className="flex size-11 items-center justify-center rounded-xl bg-amber-50">
+                <Clock
+                  className="size-5 text-amber-700"
+                  aria-hidden="true"
+                />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countDicetak}
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-base text-slate-600">
               Menunggu nomor surat (belum resmi)
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Diresmikan
               </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaStamp className="text-green-500 text-xl" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50">
+                <Stamp
+                  className="size-5 text-emerald-700"
+                  aria-hidden="true"
+                />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countDiresmikan}
             </div>
-            <p className="text-sm text-gray-600">Sudah memiliki nomor surat</p>
+            <p className="text-base text-slate-600">
+              Sudah memiliki nomor surat
+            </p>
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             {statusOptions.map((status) => (
               <button
                 key={status}
                 onClick={() => setActiveTab(status)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                className={`flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                   activeTab === status
-                    ? "bg-purple-500 text-white font-medium shadow-sm"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? status === "dicetak"
+                      ? "bg-amber-700 text-white shadow-sm"
+                      : status === "diresmikan"
+                        ? "bg-emerald-700 text-white shadow-sm"
+                        : "bg-[#0b6393] text-white shadow-sm"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
                 {status === "semua" && (
-                  <FaPrint
-                    className={
-                      activeTab === status ? "text-white" : "text-purple-500"
-                    }
+                  <Printer
+                    className={`size-5 ${activeTab === status ? "" : "text-[#0b6393]"}`}
+                    aria-hidden="true"
                   />
                 )}
                 {status === "dicetak" && (
-                  <FaClock
-                    className={
-                      activeTab === status
-                        ? "text-white"
-                        : "text-yellow-500"
-                    }
+                  <Clock
+                    className={`size-5 ${activeTab === status ? "" : "text-amber-700"}`}
+                    aria-hidden="true"
                   />
                 )}
                 {status === "diresmikan" && (
-                  <FaStamp
-                    className={
-                      activeTab === status
-                        ? "text-white"
-                        : "text-green-500"
-                    }
+                  <Stamp
+                    className={`size-5 ${activeTab === status ? "" : "text-emerald-700"}`}
+                    aria-hidden="true"
                   />
                 )}
                 <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
@@ -220,102 +229,106 @@ const LogCetakAdmin = () => {
           </div>
         </div>
 
-        {/* Logs Table */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-800">
+            <h2 className="text-xl font-bold text-slate-900">
               Riwayat Cetak Surat
             </h2>
-            <p className="text-gray-600 text-sm">
+            <p className="text-base text-slate-600">
               Kelola surat yang diajukan warga: unduh PDF dan resmikan dengan
               nomor surat
             </p>
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-purple-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data log cetak...</p>
+            <div className="py-8 text-center">
+              <LoaderCircle
+                className="mx-auto mb-4 size-8 animate-spin text-[#0b6393]"
+                aria-hidden="true"
+              />
+              <p className="text-base text-slate-600">
+                Memuat data log cetak...
+              </p>
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
+            <div className="py-8 text-center text-red-700">
+              <p className="text-base">{error}</p>
               <button
                 onClick={fetchLogData}
-                className="mt-4 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                className="mt-4 min-h-11 rounded-xl bg-[#0b6393] px-4 text-base font-semibold text-white transition-colors hover:bg-[#084f73]"
               >
                 Coba Lagi
               </button>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-base">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
+                  <tr className="bg-slate-50">
+                    <th className="rounded-tl-lg px-4 py-4 text-left text-base font-bold text-slate-900">
                       No
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Kode Unik
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Pemohon
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Layanan
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Template
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Nomor Surat
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-4 py-4 text-left text-base font-bold text-slate-900">
                       Tanggal
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
+                    <th className="rounded-tr-lg px-4 py-4 text-right text-base font-bold text-slate-900">
                       Aksi
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-200">
                   {filteredData.length > 0 ? (
                     filteredData.map((item, idx) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {idx + 1}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-mono font-medium">
+                      <tr key={item.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-4 text-slate-600">{idx + 1}</td>
+                        <td className="px-4 py-4">
+                          <span className="rounded-md bg-slate-100 px-2 py-1 font-mono text-sm font-semibold text-slate-800">
                             {item.kode_unik}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          <div className="font-medium">{item.nama_pemohon}</div>
-                          <div className="text-xs text-gray-500">
+                        <td className="px-4 py-4 text-slate-900">
+                          <div className="font-semibold">
+                            {item.nama_pemohon}
+                          </div>
+                          <div className="text-sm text-slate-600">
                             NIK: {item.nik_pemohon || "-"}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-slate-900">
                           {item.nama_layanan || `ID ${item.id_pelayanan || "-"}`}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-slate-900">
                           {item.nama_template || "-"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4 text-slate-900">
                           {item.nomor_surat || (
-                            <span className="text-gray-400">Belum ada</span>
+                            <span className="text-slate-500">Belum ada</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className="px-4 py-4">
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            className={`rounded-full px-3 py-1 text-sm font-semibold ${
                               item.status === "diresmikan"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-700"
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-amber-50 text-amber-700"
                             }`}
                           >
                             {item.status === "diresmikan"
@@ -323,33 +336,38 @@ const LogCetakAdmin = () => {
                               : "Dicetak"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                        <td className="px-4 py-4 text-slate-600">
                           {formatDateTime(item.created_at)}
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => handlePreview(item)}
-                              className="p-1.5 bg-purple-100 rounded-md hover:bg-purple-200 transition-colors"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393] transition-colors hover:bg-sky-100"
+                              aria-label="Lihat Surat"
                               title="Lihat Surat"
                             >
-                              <FaEye className="text-purple-600" />
+                              <Eye className="size-5" aria-hidden="true" />
                             </button>
                             <button
-                              onClick={() => handleDownload(item.id, item.kode_unik)}
-                              className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                              onClick={() =>
+                                handleDownload(item.id, item.kode_unik)
+                              }
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-[#0b6393]/10 text-[#0b6393] transition-colors hover:bg-[#0b6393]/20 disabled:opacity-50"
+                              aria-label="Unduh PDF"
                               title="Unduh PDF"
                               disabled={isActionLoading}
                             >
-                              <FaDownload className="text-blue-600" />
+                              <Download className="size-5" aria-hidden="true" />
                             </button>
                             {item.status !== "diresmikan" && (
                               <button
                                 onClick={() => handleResmikan(item.id)}
-                                className="p-1.5 bg-green-100 rounded-md hover:bg-green-200 transition-colors"
+                                className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100"
+                                aria-label="Resmikan dengan nomor surat"
                                 title="Resmikan dengan nomor surat"
-                            >
-                                <FaStamp className="text-green-600" />
+                              >
+                                <Stamp className="size-5" aria-hidden="true" />
                               </button>
                             )}
                           </div>
@@ -360,7 +378,7 @@ const LogCetakAdmin = () => {
                     <tr>
                       <td
                         colSpan={9}
-                        className="px-4 py-8 text-center text-gray-500"
+                        className="px-4 py-4 text-center text-base text-slate-600"
                       >
                         Tidak ada data log cetak surat.
                       </td>
@@ -373,32 +391,31 @@ const LogCetakAdmin = () => {
         </div>
       </div>
 
-      {/* Resmikan Modal */}
       {resmikanModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Resmikan Surat
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Berikan nomor surat untuk surat{" "}
-                <span className="font-medium">
+                <span className="font-semibold text-slate-900">
                   {currentItem?.nama_pemohon} ({currentItem?.kode_unik})
                 </span>
               </p>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="mb-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-2 block text-base font-semibold text-slate-900">
                   Nomor Surat
                 </label>
                 <input
                   type="text"
                   value={nomorSurat}
                   onChange={(e) => setNomorSurat(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
                   placeholder="Contoh: 470/001/SK/2026"
                 />
               </div>
@@ -407,19 +424,22 @@ const LogCetakAdmin = () => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => resmikanModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 rounded-xl bg-slate-100 px-4 text-base font-semibold text-slate-700 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={submitResmikan}
-                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                className="flex min-h-11 items-center gap-2 rounded-xl bg-emerald-700 px-4 text-base font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-60"
                 disabled={isActionLoading}
               >
                 {isActionLoading ? (
-                  <FaSpinner className="animate-spin" />
+                  <LoaderCircle
+                    className="size-5 animate-spin"
+                    aria-hidden="true"
+                  />
                 ) : (
-                  <FaCheck size={12} />
+                  <Check className="size-5" aria-hidden="true" />
                 )}
                 Resmikan
               </button>

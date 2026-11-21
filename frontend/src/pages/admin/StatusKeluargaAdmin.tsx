@@ -1,16 +1,16 @@
 import { useState } from "react";
 import {
-  FaTags,
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaCheck,
-  FaBan,
-  FaSpinner,
-  FaSearch,
-  FaLock,
-  FaUsers,
-} from "react-icons/fa";
+  Ban,
+  Check,
+  LoaderCircle,
+  Lock,
+  Pencil,
+  Plus,
+  Search,
+  Tags,
+  Trash2,
+  UsersRound,
+} from "lucide-react";
 import {
   type StatusKeluarga,
   adminStatusKeluargaApi,
@@ -189,23 +189,20 @@ const StatusKeluargaAdmin = () => {
   };
 
   return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <FaTags className="text-indigo-500 text-xl" />
+    <div className="w-full text-slate-900">
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393]">
+            <Tags aria-hidden="true" className="size-5" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">
             Manajemen Status Keluarga
           </h1>
         </div>
 
         {isFormView ? (
           <FormView
-            icon={<FaTags className="text-indigo-500 text-xl" />}
+            icon={<Tags aria-hidden="true" className="size-5 text-[#0b6393]" />}
             title={
               mode === "add"
                 ? "Tambah Status Keluarga Baru"
@@ -225,316 +222,396 @@ const StatusKeluargaAdmin = () => {
                   type="text"
                   value={formData.nama}
                   onChange={(e) => setFormData({ nama: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                   placeholder="Contoh: Kepala Keluarga, Istri, Anak"
                 />
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-sm text-slate-600">
                   Huruf besar-kecil tidak berpengaruh, spasi berlebih akan
                   dirapikan
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-6">
+            <div className="mt-6 flex flex-wrap justify-end gap-2">
               <button
                 onClick={() => setIsFormView(false)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={save}
                 disabled={isActionLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-60"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a] disabled:opacity-60"
               >
-                {isActionLoading && <FaSpinner className="animate-spin" />}
+                {isActionLoading && (
+                  <LoaderCircle
+                    aria-hidden="true"
+                    className="size-5 animate-spin"
+                  />
+                )}
                 Simpan
               </button>
             </div>
           </FormView>
         ) : (
           <>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Total Status
-              </h3>
-              <div className="bg-indigo-100 p-2 rounded-lg">
-                <FaTags className="text-indigo-500 text-xl" />
+            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Total Status
+                  </h3>
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393]">
+                    <Tags aria-hidden="true" className="size-5" />
+                  </div>
+                </div>
+                <div className="mb-1 text-3xl font-bold text-slate-900">
+                  {list.length}
+                </div>
+                <p className="text-base text-slate-600">Pilihan tersedia</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Aktif
+                  </h3>
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                    <Check aria-hidden="true" className="size-5" />
+                  </div>
+                </div>
+                <div className="mb-1 text-3xl font-bold text-slate-900">
+                  {countAktif}
+                </div>
+                <p className="text-base text-slate-600">
+                  Muncul di form penduduk
+                </p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Nonaktif
+                  </h3>
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                    <Ban aria-hidden="true" className="size-5" />
+                  </div>
+                </div>
+                <div className="mb-1 text-3xl font-bold text-slate-900">
+                  {countNonaktif}
+                </div>
+                <p className="text-base text-slate-600">
+                  Disembunyikan dari form
+                </p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Dipakai
+                  </h3>
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-sky-50 text-[#0b6393]">
+                    <UsersRound aria-hidden="true" className="size-5" />
+                  </div>
+                </div>
+                <div className="mb-1 text-3xl font-bold text-slate-900">
+                  {totalDipakai}
+                </div>
+                <p className="text-base text-slate-600">Penduduk terdata</p>
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {list.length}
-            </div>
-            <p className="text-sm text-gray-600">Pilihan tersedia</p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Aktif</h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaCheck className="text-green-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countAktif}
-            </div>
-            <p className="text-sm text-gray-600">Muncul di form penduduk</p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Nonaktif</h3>
-              <div className="bg-gray-100 p-2 rounded-lg">
-                <FaBan className="text-gray-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countNonaktif}
-            </div>
-            <p className="text-sm text-gray-600">Disembunyikan dari form</p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Dipakai</h3>
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaUsers className="text-blue-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {totalDipakai}
-            </div>
-            <p className="text-sm text-gray-600">Penduduk terdata</p>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                { key: "semua", label: "Semua", icon: FaTags, color: "indigo" },
-                { key: "aktif", label: "Aktif", icon: FaCheck, color: "green" },
-                {
-                  key: "nonaktif",
-                  label: "Nonaktif",
-                  icon: FaBan,
-                  color: "gray",
-                },
-              ] as const
-            ).map((tab) => {
-              const Icon = tab.icon;
-              const on = activeTab === tab.key;
-              const onCls =
-                tab.color === "green"
-                  ? "bg-green-500"
-                  : tab.color === "gray"
-                    ? "bg-gray-600"
-                    : "bg-indigo-500";
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                    on
-                      ? `${onCls} text-white font-medium shadow-sm`
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  <Icon className={on ? "text-white" : "text-gray-400"} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6 gap-4 flex-wrap">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Daftar Status
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Status nonaktif tidak muncul di form tambah penduduk, tetapi
-                data lama tetap tersimpan
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Cari status..."
-                  className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
+            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    { key: "semua", label: "Semua", icon: Tags, color: "teal" },
+                    {
+                      key: "aktif",
+                      label: "Aktif",
+                      icon: Check,
+                      color: "green",
+                    },
+                    {
+                      key: "nonaktif",
+                      label: "Nonaktif",
+                      icon: Ban,
+                      color: "gray",
+                    },
+                  ] as const
+                ).map((tab) => {
+                  const Icon = tab.icon;
+                  const on = activeTab === tab.key;
+                  const onCls =
+                    tab.color === "green"
+                      ? "bg-emerald-700"
+                      : tab.color === "gray"
+                        ? "bg-slate-700"
+                        : "bg-[#0b6393]";
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                        on
+                          ? `${onCls} text-white shadow-sm`
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      <Icon
+                        aria-hidden="true"
+                        className={`size-5 ${on ? "text-white" : "text-slate-600"}`}
+                      />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
-              <button
-                onClick={openAdd}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
-              >
-                <FaPlus className="text-white" />
-                <span>Tambah Status</span>
-              </button>
             </div>
-          </div>
 
-          {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-indigo-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data status...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
-              <button
-                onClick={fetchData}
-                className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
-              >
-                Coba Lagi
-              </button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
-                      ID
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Nama Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Dipakai
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filtered.length > 0 ? (
-                    filtered.map((item) => {
-                      const used = usage[item.id] ?? 0;
-                      const reserved = isReserved(item.nama);
-                      return (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 text-sm text-gray-500">
-                            {item.id}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-gray-800 capitalize">
-                                {item.nama}
-                              </span>
-                              {reserved && (
-                                <span className="flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-xs">
-                                  <FaLock size={10} /> Sistem
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Daftar Status
+                  </h2>
+                  <p className="text-base text-slate-600">
+                    Status nonaktif tidak muncul di form tambah penduduk, tetapi
+                    data lama tetap tersimpan
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-end gap-3">
+                  <div>
+                    <label
+                      htmlFor="cari-status"
+                      className="mb-1 block text-sm font-semibold text-slate-700"
+                    >
+                      Cari Status
+                    </label>
+                    <div className="relative">
+                      <Search
+                        aria-hidden="true"
+                        className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                      />
+                      <input
+                        id="cari-status"
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Cari status..."
+                        className="min-h-11 w-full rounded-xl border border-slate-300 py-2 pl-11 pr-4 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={openAdd}
+                    className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a]"
+                  >
+                    <Plus aria-hidden="true" className="size-5" />
+                    <span>Tambah Status</span>
+                  </button>
+                </div>
+              </div>
+
+              {isLoading ? (
+                <div className="py-8 text-center">
+                  <LoaderCircle
+                    aria-hidden="true"
+                    className="mx-auto mb-4 size-5 animate-spin text-[#0b6393]"
+                  />
+                  <p className="text-base text-slate-600">
+                    Memuat data status...
+                  </p>
+                </div>
+              ) : error ? (
+                <div className="py-8 text-center text-base text-red-700">
+                  <p>{error}</p>
+                  <button
+                    onClick={fetchData}
+                    className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b6393] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0a547a]"
+                  >
+                    Coba Lagi
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50">
+                        <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
+                          ID
+                        </th>
+                        <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
+                          Nama Status
+                        </th>
+                        <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
+                          Dipakai
+                        </th>
+                        <th className="whitespace-nowrap px-4 py-4 text-base font-bold text-slate-900">
+                          Status
+                        </th>
+                        <th className="whitespace-nowrap px-4 py-4 text-right text-base font-bold text-slate-900">
+                          Aksi
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {filtered.length > 0 ? (
+                        filtered.map((item) => {
+                          const used = usage[item.id] ?? 0;
+                          const reserved = isReserved(item.nama);
+                          return (
+                            <tr key={item.id} className="hover:bg-slate-50">
+                              <td className="whitespace-nowrap px-4 py-4 text-base text-slate-600">
+                                {item.id}
+                              </td>
+                              <td className="px-4 py-4">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="text-base font-semibold capitalize text-slate-900">
+                                    {item.nama}
+                                  </span>
+                                  {reserved && (
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-[#0b6393]">
+                                      <Lock
+                                        aria-hidden="true"
+                                        className="size-5"
+                                      />
+                                      Sistem
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-4 text-base text-slate-600">
+                                {used} penduduk
+                              </td>
+                              <td className="px-4 py-4">
+                                <span
+                                  className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${
+                                    item.is_active
+                                      ? "bg-emerald-50 text-emerald-700"
+                                      : "bg-slate-100 text-slate-700"
+                                  }`}
+                                >
+                                  {item.is_active ? "Aktif" : "Nonaktif"}
                                 </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {used} penduduk
-                          </td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                item.is_active
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-gray-100 text-gray-800"
-                              }`}
-                            >
-                              {item.is_active ? "Aktif" : "Nonaktif"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex justify-end gap-2">
-                              <button
-                                onClick={() => openEdit(item)}
-                                className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-40"
-                                title={reserved ? "Status sistem" : "Edit"}
-                                disabled={isActionLoading || reserved}
-                              >
-                                <FaEdit className="text-gray-600" />
-                              </button>
-                              <button
-                                onClick={() => handleToggle(item)}
-                                className="p-1.5 bg-yellow-100 rounded-md hover:bg-yellow-200 transition-colors disabled:opacity-40"
-                                title={
-                                  reserved
-                                    ? "Status sistem"
-                                    : item.is_active
-                                      ? "Nonaktifkan"
-                                      : "Aktifkan"
-                                }
-                                disabled={isActionLoading || reserved}
-                              >
-                                {item.is_active ? (
-                                  <FaBan className="text-yellow-600" />
-                                ) : (
-                                  <FaCheck className="text-yellow-600" />
-                                )}
-                              </button>
-                              <button
-                                onClick={() => openDelete(item)}
-                                className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors disabled:opacity-40"
-                                title={used > 0 ? "Masih dipakai" : "Hapus"}
-                                disabled={isActionLoading || reserved || used > 0}
-                              >
-                                <FaTrash className="text-red-600" />
-                              </button>
-                            </div>
+                              </td>
+                              <td className="px-4 py-4 text-right">
+                                <div className="flex flex-wrap justify-end gap-2">
+                                  <button
+                                    onClick={() => openEdit(item)}
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 disabled:opacity-60"
+                                    title={reserved ? "Status sistem" : "Edit"}
+                                    aria-label={
+                                      reserved ? "Status sistem" : "Edit"
+                                    }
+                                    disabled={isActionLoading || reserved}
+                                  >
+                                    <Pencil
+                                      aria-hidden="true"
+                                      className="size-5"
+                                    />
+                                    <span>Edit</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleToggle(item)}
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100 disabled:opacity-60"
+                                    title={
+                                      reserved
+                                        ? "Status sistem"
+                                        : item.is_active
+                                          ? "Nonaktifkan"
+                                          : "Aktifkan"
+                                    }
+                                    aria-label={
+                                      reserved
+                                        ? "Status sistem"
+                                        : item.is_active
+                                          ? "Nonaktifkan"
+                                          : "Aktifkan"
+                                    }
+                                    disabled={isActionLoading || reserved}
+                                  >
+                                    {item.is_active ? (
+                                      <Ban
+                                        aria-hidden="true"
+                                        className="size-5"
+                                      />
+                                    ) : (
+                                      <Check
+                                        aria-hidden="true"
+                                        className="size-5"
+                                      />
+                                    )}
+                                    <span>
+                                      {item.is_active
+                                        ? "Nonaktifkan"
+                                        : "Aktifkan"}
+                                    </span>
+                                  </button>
+                                  <button
+                                    onClick={() => openDelete(item)}
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                                    title={
+                                      used > 0 ? "Masih dipakai" : "Hapus"
+                                    }
+                                    aria-label={
+                                      used > 0 ? "Masih dipakai" : "Hapus"
+                                    }
+                                    disabled={
+                                      isActionLoading || reserved || used > 0
+                                    }
+                                  >
+                                    <Trash2
+                                      aria-hidden="true"
+                                      className="size-5"
+                                    />
+                                    <span>Hapus</span>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="px-4 py-8 text-center text-base text-slate-600"
+                          >
+                            Tidak ada status keluarga yang ditemukan.
                           </td>
                         </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-4 py-8 text-center text-gray-500"
-                      >
-                        Tidak ada status keluarga yang ditemukan.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          )}
-        </div>
           </>
         )}
       </div>
 
       {deleteModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Hapus
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Apakah Anda yakin ingin menghapus status "
                 {current?.nama}"? Tindakan ini tidak dapat dibatalkan.
               </p>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
                 onClick={deleteModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={isActionLoading}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-60"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60"
               >
                 Hapus
               </button>

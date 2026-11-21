@@ -22,7 +22,7 @@ export default function BarChart({
   );
 
   return (
-    <div className="w-full h-40" style={{ fontFamily: "poppins" }}>
+    <div className="h-48 w-full">
       <div className="flex h-full items-end justify-around">
         {data.map((item, index) => {
           const val = item[valueKey as keyof BarChartItem] as number;
@@ -37,10 +37,10 @@ export default function BarChart({
                   minHeight: "10%",
                 }}
               ></div>
-              <div className="text-xs mt-1 font-medium text-gray-600">
+              <div className="mt-2 text-sm font-semibold text-slate-700">
                 {item[labelKey as keyof BarChartItem] as string}
               </div>
-              <div className="text-xs font-bold">{val}</div>
+              <div className="text-sm font-bold text-slate-900">{val}</div>
             </div>
           );
         })}

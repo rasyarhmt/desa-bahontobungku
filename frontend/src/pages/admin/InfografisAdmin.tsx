@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  FaUsers,
-  FaMoneyBillWave,
-  FaChartPie,
-} from "react-icons/fa";
+import { Banknote, PieChart, UsersRound } from "lucide-react";
 import Penduduk from "@/components/admin/Penduduk";
 import APBDes from "@/components/admin/APBDes";
 
@@ -12,46 +8,44 @@ export default function InfografisAdmin() {
 
   return (
     <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <FaChartPie className="text-indigo-500 text-xl" />
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="rounded-xl bg-[#0b6393]/10 p-2">
+            <PieChart aria-hidden="true" className="size-5 text-[#0b6393]" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Infografis Desa</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Infografis Desa</h1>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setActiveTab("penduduk")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-5 font-semibold transition-colors ${
                 activeTab === "penduduk"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaUsers
-                className={
-                  activeTab === "penduduk" ? "text-white" : "text-blue-500"
-                }
+              <UsersRound
+                aria-hidden="true"
+                className={`size-5 ${activeTab === "penduduk" ? "text-white" : "text-[#0b6393]"}`}
               />
               <span>Penduduk</span>
             </button>
             <button
               onClick={() => setActiveTab("apbdes")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-5 font-semibold transition-colors ${
                 activeTab === "apbdes"
-                  ? "bg-yellow-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <FaMoneyBillWave
-                className={
-                  activeTab === "apbdes" ? "text-white" : "text-yellow-500"
-                }
+              <Banknote
+                aria-hidden="true"
+                className={`size-5 ${activeTab === "apbdes" ? "text-white" : "text-[#0b6393]"}`}
               />
               <span>APBDes</span>
             </button>

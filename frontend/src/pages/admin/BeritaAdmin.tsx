@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaNewspaper, FaSpinner } from "react-icons/fa";
+import { LoaderCircle, Newspaper } from "lucide-react";
 import { adminBeritaApi, type BeritaAdminView } from "@/lib/api/admin";
 import { resolveUploadUrl } from "@/lib/api/config";
 import { getAuthState } from "@/lib/auth";
@@ -168,107 +168,101 @@ const BeritaAdmin = () => {
 
   return (
     <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
+      className="min-h-screen bg-[#f6f8fb] p-6"
+     
     >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaNewspaper className="text-purple-500 text-xl" />
+      <div className="mx-auto w-full">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-[#e6f1f7] text-[#0b6393]">
+            <Newspaper className="size-5" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Manajemen Berita</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Manajemen Berita</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Total Berita
               </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaNewspaper className="text-purple-500 text-xl" />
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#e6f1f7] text-[#0b6393]">
+                <Newspaper className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {beritaData.length}
             </div>
-            <p className="text-sm text-gray-600">Berita tersimpan</p>
+            <p className="text-sm text-slate-600">Berita tersimpan</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Dipublikasi
               </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaNewspaper className="text-green-500 text-xl" />
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                <Newspaper className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countPublished}
             </div>
-            <p className="text-sm text-gray-600">Berita dipublikasikan</p>
+            <p className="text-sm text-slate-600">Berita dipublikasikan</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Draft</h3>
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <FaNewspaper className="text-yellow-500 text-xl" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">Draft</h3>
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+                <Newspaper className="size-5" aria-hidden="true" />
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
+            <div className="mb-1 text-3xl font-bold text-slate-900">
               {countDraft}
             </div>
-            <p className="text-sm text-gray-600">Berita dalam draft</p>
+            <p className="text-sm text-slate-600">Berita dalam draft</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <button
+              type="button"
               onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "semua"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "semua"
-                  ? "bg-purple-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[#0b6393] text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaNewspaper
-                className={
-                  activeTab === "semua" ? "text-white" : "text-purple-500"
-                }
-              />
+              <Newspaper className="size-5" aria-hidden="true" />
               <span>Semua Berita</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("dipublikasi")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "dipublikasi"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "dipublikasi"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-emerald-700 text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaNewspaper
-                className={
-                  activeTab === "dipublikasi" ? "text-white" : "text-green-500"
-                }
-              />
+              <Newspaper className="size-5" aria-hidden="true" />
               <span>Dipublikasi</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("draft")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              aria-pressed={activeTab === "draft"}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-base font-semibold transition-colors ${
                 activeTab === "draft"
-                  ? "bg-yellow-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-amber-700 text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <FaNewspaper
-                className={
-                  activeTab === "draft" ? "text-white" : "text-yellow-500"
-                }
-              />
+              <Newspaper className="size-5" aria-hidden="true" />
               <span>Draft</span>
             </button>
           </div>
@@ -310,34 +304,39 @@ const BeritaAdmin = () => {
       />
 
       {deleteModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md border border-gray-200 animate-modalFadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-slate-900">
                 Konfirmasi Hapus
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-base text-slate-600">
                 Apakah Anda yakin ingin menghapus berita &quot;
                 {currentItem?.judul}&quot;? Tindakan ini tidak dapat dibatalkan.
               </p>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
+                type="button"
                 onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-base font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60"
                 disabled={isActionLoading}
               >
                 Batal
               </button>
               <button
+                type="button"
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-700 px-4 text-base font-semibold text-white transition-colors hover:bg-red-800 disabled:opacity-60"
                 disabled={isActionLoading}
               >
                 {isActionLoading ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <LoaderCircle
+                      className="size-5 animate-spin"
+                      aria-hidden="true"
+                    />
                     <span>Menghapus...</span>
                   </>
                 ) : (

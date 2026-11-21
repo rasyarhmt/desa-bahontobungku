@@ -1,10 +1,11 @@
 import {
-  FaNewspaper,
-  FaCalendarAlt,
-  FaUser,
-  FaSpinner,
-  FaTimesCircle,
-} from "react-icons/fa";
+  CalendarDays,
+  CircleX,
+  LoaderCircle,
+  Newspaper,
+  UserRound,
+  X,
+} from "lucide-react";
 
 import { formatDateLong, formatImageUrl } from "@/lib/format";
 
@@ -28,62 +29,65 @@ export default function BeritaPreviewModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-200 animate-modalFadeIn">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-gray-800">
-            <FaNewspaper className="inline-block mr-2 text-purple-500" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900">
+            <Newspaper aria-hidden="true" className="size-5 text-[#0b6393]" />
             Preview Berita
           </h3>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+            aria-label="Tutup preview"
+            title="Tutup preview"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X aria-hidden="true" className="size-5" />
           </button>
         </div>
 
         <div className="mb-6">
           {item?.foto ? (
-            <img
-              src={formatImageUrl(item.foto)}
-              alt={item.judul}
-              className="w-full h-64 object-cover rounded-lg mb-4"
-            />
+            <>
+              <img
+                src={formatImageUrl(item.foto)}
+                alt={item.judul}
+                className="mb-2 h-64 w-full rounded-xl bg-slate-100 object-cover"
+              />
+              <p className="mb-4 text-base font-medium text-slate-600">
+                Gambar: {item.judul}
+              </p>
+            </>
           ) : (
-            <div className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-              <FaNewspaper className="text-gray-300 text-5xl" />
-            </div>
+            <>
+              <div className="mb-2 flex aspect-video items-center justify-center rounded-xl bg-slate-100">
+                <Newspaper
+                  aria-hidden="true"
+                  className="size-12 text-slate-400"
+                />
+              </div>
+              <p className="mb-4 text-base font-medium text-slate-600">
+                Thumbnail belum tersedia.
+              </p>
+            </>
           )}
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="mb-2 text-2xl font-bold text-slate-900">
             {item?.judul}
           </h2>
 
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-              <FaCalendarAlt className="inline-block mr-1" />
+          <div className="mb-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-base font-medium text-slate-700">
+              <CalendarDays aria-hidden="true" className="size-5" />
               {item?.tanggalTerbit && formatDateLong(item.tanggalTerbit)}
             </span>
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-              <FaUser className="inline-block mr-1" />
+            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-base font-medium text-slate-700">
+              <UserRound aria-hidden="true" className="size-5" />
               {item?.penulis}
             </span>
             <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+              className={`rounded-full px-3 py-1.5 text-base font-semibold ${getStatusColor(
                 item?.status,
               )}`}
             >
@@ -91,37 +95,37 @@ export default function BeritaPreviewModal({
             </span>
           </div>
 
-          <div className="text-gray-700 px-4">
-            <p className="font-medium mb-2">Konten Lengkap:</p>
+          <div className="px-4 text-base text-slate-800">
+            <p className="mb-2 font-semibold text-slate-900">Konten Lengkap:</p>
             {item?.isi ? (
-              <div className="prose max-w-none">{item.isi}</div>
+              <div className="prose max-w-none text-base">{item.isi}</div>
             ) : (
-              <p className="text-gray-500 italic">Konten belum tersedia.</p>
+              <p className="italic text-slate-600">Konten belum tersedia.</p>
             )}
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-2">
+        <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="min-h-11 rounded-xl border border-slate-300 bg-white px-5 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-100"
           >
             Tutup
           </button>
           {item?.status === "Draft" ? (
             <button
               onClick={() => item && onToggleStatus(item.id)}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
+              className="flex min-h-11 items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2 font-semibold text-white transition-colors hover:bg-emerald-800"
               disabled={isActionLoading}
             >
               {isActionLoading ? (
                 <>
-                  <FaSpinner className="animate-spin" />
+                  <LoaderCircle aria-hidden="true" className="size-5 animate-spin" />
                   <span>Memproses...</span>
                 </>
               ) : (
                 <>
-                  <FaNewspaper className="text-white" />
+                  <Newspaper aria-hidden="true" className="size-5" />
                   <span>Publikasikan</span>
                 </>
               )}
@@ -129,17 +133,17 @@ export default function BeritaPreviewModal({
           ) : (
             <button
               onClick={() => item && onToggleStatus(item.id)}
-              className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors flex items-center gap-2"
+              className="flex min-h-11 items-center gap-2 rounded-xl bg-amber-700 px-5 py-2 font-semibold text-white transition-colors hover:bg-amber-800"
               disabled={isActionLoading}
             >
               {isActionLoading ? (
                 <>
-                  <FaSpinner className="animate-spin" />
+                  <LoaderCircle aria-hidden="true" className="size-5 animate-spin" />
                   <span>Memproses...</span>
                 </>
               ) : (
                 <>
-                  <FaTimesCircle className="text-white" />
+                  <CircleX aria-hidden="true" className="size-5" />
                   <span>Ubah ke Draft</span>
                 </>
               )}

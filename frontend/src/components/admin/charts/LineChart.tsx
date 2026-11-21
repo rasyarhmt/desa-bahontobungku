@@ -38,18 +38,20 @@ export default function LineChart({
     .join(" ");
 
   return (
-    <div className="w-full h-40 mt-4">
+    <div className="mt-4 h-48 w-full">
       <svg
         viewBox="0 0 100 100"
-        className="w-full h-full"
+        className="h-full w-full"
         preserveAspectRatio="none"
+        role="img"
+        aria-label="Grafik perkembangan bulanan"
       >
         <line
           x1="0"
           y1="0"
           x2="100"
           y2="0"
-          stroke="#e5e7eb"
+          stroke="#cbd5e1"
           strokeWidth="0.5"
         />
         <line
@@ -57,7 +59,7 @@ export default function LineChart({
           y1="25"
           x2="100"
           y2="25"
-          stroke="#e5e7eb"
+          stroke="#cbd5e1"
           strokeWidth="0.5"
         />
         <line
@@ -65,7 +67,7 @@ export default function LineChart({
           y1="50"
           x2="100"
           y2="50"
-          stroke="#e5e7eb"
+          stroke="#cbd5e1"
           strokeWidth="0.5"
         />
         <line
@@ -73,7 +75,7 @@ export default function LineChart({
           y1="75"
           x2="100"
           y2="75"
-          stroke="#e5e7eb"
+          stroke="#cbd5e1"
           strokeWidth="0.5"
         />
         <line
@@ -81,7 +83,7 @@ export default function LineChart({
           y1="100"
           x2="100"
           y2="100"
-          stroke="#e5e7eb"
+          stroke="#cbd5e1"
           strokeWidth="0.5"
         />
 
@@ -101,8 +103,8 @@ export default function LineChart({
               x={point.x}
               y="100"
               textAnchor="middle"
-              fontSize="8"
-              fill="#6b7280"
+              fontSize="10"
+              fill="#475569"
               dy="10"
             >
               {point.label}

@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import { Plus, Save } from "lucide-react";
 
 import { adminMediaUtils } from "@/lib/api/admin";
 
@@ -28,13 +29,11 @@ const getFileHint = (tipe: string) =>
       ? "Format yang didukung: MP4, MKV, WEBM"
       : "Format yang didukung: PDF";
 
-const fileInputClass = (isEdit: boolean) =>
-  isEdit
-    ? "w-full border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-    : "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500";
+const fileInputClass =
+  "min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 file:mr-3 file:min-h-8 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200";
 
 const fieldInputClass =
-  "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500";
+  "min-h-11 w-full rounded-xl border border-slate-300 px-4 py-2 text-base text-slate-900 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/30";
 
 export default function MediaFormModal({
   isOpen,
@@ -50,29 +49,30 @@ export default function MediaFormModal({
   const idPrefix = isEdit ? "edit-" : "";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto py-8">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      onClick={onCancel}
+    >
       <div
-        className="fixed inset-0 backdrop-blur-sm bg-gray-700/30"
-        onClick={onCancel}
-      ></div>
-
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-xl p-6 max-h-[90vh] overflow-y-auto">
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="mb-6">
-          <h3 className="text-xl font-bold text-gray-800">
+          <h3 className="text-xl font-bold text-slate-900">
             {isEdit ? "Edit Media" : "Tambah Media Baru"}
           </h3>
-          <p className="text-gray-600 text-sm">
+          <p className="text-base text-slate-600">
             {isEdit
               ? "Ubah informasi media atau upload media baru"
               : "Masukkan informasi media yang akan ditambahkan"}
           </p>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="mb-6 space-y-4">
           <div>
             <label
               htmlFor={`${idPrefix}nama`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Nama Media
             </label>
@@ -91,7 +91,7 @@ export default function MediaFormModal({
           <div>
             <label
               htmlFor={`${idPrefix}tipe`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Tipe Media
             </label>
@@ -112,7 +112,7 @@ export default function MediaFormModal({
           <div>
             <label
               htmlFor={`${idPrefix}deskripsi`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               Deskripsi
             </label>
@@ -131,7 +131,7 @@ export default function MediaFormModal({
           <div>
             <label
               htmlFor={`${idPrefix}upload-file`}
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="mb-2 block text-base font-semibold text-slate-900"
             >
               {isEdit ? "Upload Media Baru (Opsional)" : "Upload Media"}
             </label>
@@ -142,14 +142,14 @@ export default function MediaFormModal({
               onChange={(e) =>
                 setFormData({ ...formData, file: e.target.files?.[0] ?? null })
               }
-              className={fileInputClass(isEdit)}
+              className={fileInputClass}
             />
             {isEdit ? (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-slate-600">
                 Kosongkan jika tidak ingin mengubah file.
               </p>
             ) : (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-slate-600">
                 {getFileHint(formData.tipe)}
               </p>
             )}
@@ -159,7 +159,7 @@ export default function MediaFormModal({
             <div>
               <label
                 htmlFor={`${idPrefix}upload-thumbnail`}
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-2 block text-base font-semibold text-slate-900"
               >
                 Upload Thumbnail Video (Opsional)
               </label>
@@ -173,30 +173,30 @@ export default function MediaFormModal({
                     thumbnail: e.target.files?.[0] ?? null,
                   })
                 }
-                className={fileInputClass(isEdit)}
+                className={fileInputClass}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-slate-600">
                 {isEdit
                   ? "Kosongkan jika tidak ingin mengubah thumbnail."
                   : "Format yang didukung: JPG, JPEG, PNG, GIF, WEBP"}
               </p>
-              <p className="text-xs text-blue-500 mt-1">
-                <span className="font-medium">Catatan:</span>{" "}
+              <p className="mt-1 text-sm text-[#0b6393]">
+                <span className="font-semibold">Catatan:</span>{" "}
                 {isEdit
                   ? "Jika tidak diisi dan video diubah, sistem akan otomatis mengambil frame pertama dari video sebagai thumbnail."
                   : "Jika tidak diisi, sistem akan otomatis mengambil frame pertama dari video sebagai thumbnail."}
               </p>
               {isEdit && currentItem?.thumbnail && (
                 <div className="mt-2">
-                  <p className="text-xs text-gray-500">Thumbnail saat ini:</p>
-                  <div className="mt-1 w-24 h-24 bg-gray-100 rounded-md overflow-hidden">
+                  <p className="text-sm text-slate-600">Thumbnail saat ini:</p>
+                  <div className="mt-1 h-24 w-24 overflow-hidden rounded-lg bg-slate-100">
                     <img
                       src={
                         adminMediaUtils.getMediaUrl(currentItem.thumbnail) ||
                         "/placeholder.svg"
                       }
                       alt="Thumbnail"
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
                       onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src =
@@ -210,18 +210,23 @@ export default function MediaFormModal({
           )}
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="min-h-11 rounded-xl border border-slate-300 bg-white px-5 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-100"
           >
             Batal
           </button>
           <button
             onClick={onSubmit}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+            className="flex min-h-11 items-center gap-2 rounded-xl bg-[#0b6393] px-5 py-2 font-semibold text-white transition-colors hover:bg-[#0a577f]"
           >
-            {isEdit ? "Simpan Perubahan" : "Simpan"}
+            {isEdit ? (
+              <Save aria-hidden="true" className="size-5" />
+            ) : (
+              <Plus aria-hidden="true" className="size-5" />
+            )}
+            <span>{isEdit ? "Simpan Perubahan" : "Simpan"}</span>
           </button>
         </div>
       </div>

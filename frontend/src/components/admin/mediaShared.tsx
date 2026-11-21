@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { FaImage, FaVideo, FaFileAlt } from "react-icons/fa";
+import { FileText, Image as ImageIcon, Video } from "lucide-react";
 
 import { type Media } from "@/lib/api/schemas";
 
@@ -15,10 +15,18 @@ export interface MediaFormState {
 
 export const getMediaIcon = (type: string): JSX.Element => {
   const iconMap: Record<string, JSX.Element> = {
-    foto: <FaImage className="text-blue-500" />,
-    video: <FaVideo className="text-red-500" />,
-    dokumen: <FaFileAlt className="text-yellow-500" />,
+    foto: (
+      <ImageIcon aria-hidden="true" className="size-5 text-[#0b6393]" />
+    ),
+    video: <Video aria-hidden="true" className="size-5 text-[#0b6393]" />,
+    dokumen: (
+      <FileText aria-hidden="true" className="size-5 text-[#0b6393]" />
+    ),
   };
 
-  return iconMap[type.toLowerCase()] || <FaFileAlt className="text-gray-500" />;
+  return (
+    iconMap[type.toLowerCase()] || (
+      <FileText aria-hidden="true" className="size-5 text-slate-500" />
+    )
+  );
 };

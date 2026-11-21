@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { FaEnvelope, FaEnvelopeOpen } from "react-icons/fa";
+import { Mail, MailOpen } from "lucide-react";
 
 export interface SuratFormData {
   jenis: "Surat Masuk" | "Surat Keluar";
@@ -13,7 +13,12 @@ export interface SuratFormData {
 
 export const getSuratIcon = (type: string): JSX.Element => {
   if (type === "Surat Masuk") {
-    return <FaEnvelopeOpen className="text-blue-500" />;
+    return (
+      <MailOpen
+        className="size-5 text-[#0b6393]"
+        aria-hidden="true"
+      />
+    );
   }
-  return <FaEnvelope className="text-green-500" />;
+  return <Mail className="size-5 text-emerald-700" aria-hidden="true" />;
 };

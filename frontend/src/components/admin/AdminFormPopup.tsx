@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import {
-  FaUserPlus,
-  FaTimes,
-  FaUser,
-  FaEnvelope,
-  FaLock,
-} from "react-icons/fa";
+import { Lock, Mail, UserPlus, UserRound, X } from "lucide-react";
 import { useDisclosure } from "@/hooks";
 
 interface AdminFormPopupProps {
@@ -47,95 +41,122 @@ const AdminFormPopup = ({ isOpen, onClose, onSubmit }: AdminFormPopupProps) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm bg-gray-700/30 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 transition-opacity duration-200 ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
       <div
-        className={`bg-white backdrop-blur-xl rounded-2xl shadow-xl p-6 w-full max-w-md relative transition-transform duration-300 ${
-          isVisible ? "scale-100 translate-y-0" : "scale-95 translate-y-10"
+        className={`relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-transform duration-200 ${
+          isVisible ? "scale-100 translate-y-0" : "scale-95 translate-y-6"
         }`}
       >
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute right-4 top-4 inline-flex min-h-11 min-w-11 font-semibold items-center justify-center rounded-xl text-slate-700 hover:bg-slate-100"
+          aria-label="Tutup formulir"
+          title="Tutup"
         >
-          <FaTimes size={20} />
+          <X className="size-5" aria-hidden="true" />
         </button>
-        <div className="flex items-center gap-3 mb-6 border-b pb-4">
-          <div className="bg-blue-100 p-3 rounded-full">
-            <FaUserPlus className="text-blue-500" size={24} />
+        <div className="mb-6 flex items-center gap-3 border-b border-slate-200 pb-4 pr-12">
+          <div className="rounded-xl bg-slate-100 p-3">
+            <UserPlus
+              className="size-5 text-[#0b6393]"
+              aria-hidden="true"
+            />
           </div>
-          <h2 className="font-bold text-2xl text-gray-800">
-            Tambah Admin Baru
-          </h2>
+          <h2 className="text-xl font-bold text-slate-900">Tambah Admin Baru</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="admin-nama"
+              className="mb-2 block text-base font-semibold text-slate-900"
+            >
               Nama
             </label>
             <div className="relative">
               <input
+                id="admin-nama"
                 type="text"
                 name="nama"
                 value={formData.nama}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none transition-all duration-200"
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-white py-2 pl-11 pr-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 placeholder="Masukkan nama"
               />
-              <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <UserRound
+                className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                aria-hidden="true"
+              />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="admin-email"
+              className="mb-2 block text-base font-semibold text-slate-900"
+            >
               Email
             </label>
             <div className="relative">
               <input
+                id="admin-email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none transition-all duration-200"
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-white py-2 pl-11 pr-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 placeholder="Masukkan email"
               />
-              <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Mail
+                className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                aria-hidden="true"
+              />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="admin-password"
+              className="mb-2 block text-base font-semibold text-slate-900"
+            >
               Password
             </label>
             <div className="relative">
               <input
+                id="admin-password"
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none transition-all duration-200"
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-white py-2 pl-11 pr-4 text-base text-slate-900 placeholder:text-slate-500 focus:border-[#0b6393] focus:ring-2 focus:ring-[#0b6393]/20"
                 placeholder="Masukkan password"
               />
-              <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Lock
+                className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-500"
+                aria-hidden="true"
+              />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors duration-200"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 hover:bg-slate-100"
             >
+              <X className="size-5" aria-hidden="true" />
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-200"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0b6393] px-5 text-base font-semibold text-white hover:bg-[#0b4f75]"
             >
+              <UserPlus className="size-5" aria-hidden="true" />
               Tambah Admin
             </button>
           </div>

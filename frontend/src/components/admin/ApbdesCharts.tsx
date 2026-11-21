@@ -24,9 +24,9 @@ export default function ApbdesCharts({
       datasets: [
         {
           data: [totalPendapatan, totalPengeluaran],
-          backgroundColor: ["#10b981", "#ef4444"],
-          borderColor: ["#10b981", "#ef4444"],
-          borderWidth: 1,
+          backgroundColor: ["#0b6393", "#b91c1c"],
+          borderColor: ["#0b6393", "#b91c1c"],
+          borderWidth: 2,
         },
       ],
     };
@@ -63,28 +63,30 @@ export default function ApbdesCharts({
         {
           label: "Pendapatan",
           data: incomeData,
-          backgroundColor: "rgba(16, 185, 129, 0.7)",
-          borderColor: "rgba(16, 185, 129, 1)",
+          backgroundColor: "rgba(11, 99, 147, 0.85)",
+          borderColor: "#0b6393",
           borderWidth: 1,
+          borderRadius: 4,
         },
         {
           label: "Pengeluaran",
           data: expenseData,
-          backgroundColor: "rgba(239, 68, 68, 0.7)",
-          borderColor: "rgba(239, 68, 68, 1)",
+          backgroundColor: "rgba(185, 28, 28, 0.8)",
+          borderColor: "#b91c1c",
           borderWidth: 1,
+          borderRadius: 4,
         },
       ],
     };
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+    <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-slate-900">
           Perbandingan Pendapatan dan Pengeluaran
         </h3>
-        <div className="h-64">
+        <div className="h-72">
           <Pie
             data={preparePieChartData()}
             options={{
@@ -93,6 +95,12 @@ export default function ApbdesCharts({
               plugins: {
                 legend: {
                   position: "bottom",
+                  labels: {
+                    color: "#0f172a",
+                    font: { size: 14 },
+                    padding: 20,
+                    usePointStyle: true,
+                  },
                 },
                 tooltip: {
                   callbacks: {
@@ -108,11 +116,11 @@ export default function ApbdesCharts({
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-slate-900">
           Pendapatan dan Pengeluaran Bulanan
         </h3>
-        <div className="h-64">
+        <div className="h-72">
           <Bar
             data={prepareBarChartData()}
             options={{
@@ -121,6 +129,12 @@ export default function ApbdesCharts({
               plugins: {
                 legend: {
                   position: "top",
+                  labels: {
+                    color: "#0f172a",
+                    font: { size: 14 },
+                    padding: 16,
+                    usePointStyle: true,
+                  },
                 },
                 tooltip: {
                   callbacks: {
@@ -135,12 +149,19 @@ export default function ApbdesCharts({
                 },
               },
               scales: {
+                x: {
+                  ticks: { color: "#334155", font: { size: 14 } },
+                  grid: { color: "#e2e8f0" },
+                },
                 y: {
                   beginAtZero: true,
                   ticks: {
+                    color: "#334155",
+                    font: { size: 14 },
                     callback: (value: string | number) =>
                       formatCurrency(Number(value)),
                   },
+                  grid: { color: "#e2e8f0" },
                 },
               },
             }}

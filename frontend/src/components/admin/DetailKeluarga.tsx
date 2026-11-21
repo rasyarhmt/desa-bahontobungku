@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import {
-  FaArrowLeft,
-  FaUsers,
-  FaMapMarkerAlt,
-  FaUserTie,
-  FaEdit,
-  FaTrash,
-} from "react-icons/fa";
+  ArrowLeft,
+  UsersRound,
+  MapPin,
+  UserRoundCog,
+  Pencil,
+  Trash2,
+  LoaderCircle,
+} from "lucide-react";
 import { adminPendudukApi, type PendudukAdminView } from "@/lib/api/admin";
 
 interface DetailKeluargaProps {
@@ -113,68 +114,83 @@ const DetailKeluarga = ({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p>Memuat data keluarga...</p>
+          <LoaderCircle
+            aria-hidden="true"
+            className="mx-auto mb-4 size-5 animate-spin text-[#0b6393]"
+          />
+          <p className="text-base text-slate-600">Memuat data keluarga...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" style={{ fontFamily: "poppins" }}>
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-          <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 px-6 py-5">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <button
+                type="button"
                 onClick={onBack}
-                className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors"
+                title="Kembali"
+                aria-label="Kembali"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
               >
-                <FaArrowLeft className="text-white" size={20} />
+                <ArrowLeft aria-hidden="true" className="size-5" />
+                <span>Kembali</span>
               </button>
-              <div className="text-white">
-                <h1 className="text-2xl font-bold">Kartu Keluarga</h1>
-                <p className="text-blue-100">
+              <div>
+                <h1 className="text-xl font-bold text-slate-900">
+                  Kartu Keluarga
+                </h1>
+                <p className="text-sm text-slate-600">
                   {kepalaKeluarga
                     ? `Kepala Keluarga: ${kepalaKeluarga.nama}`
                     : "Detail Keluarga"}
                 </p>
               </div>
             </div>
-            <div className="bg-white/20 p-3 rounded-lg">
-              <FaUsers className="text-white" size={24} />
+            <div className="hidden rounded-xl bg-slate-100 p-2 text-[#0b6393] sm:block">
+              <UsersRound aria-hidden="true" className="size-5" />
             </div>
           </div>
         </div>
 
         {kepalaKeluarga && (
-          <div className="p-6 border-b border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="border-b border-slate-200 p-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-100 p-2 rounded-lg">
-                  <FaUserTie className="text-blue-600" size={20} />
+                <div className="rounded-xl bg-slate-100 p-2 text-[#0b6393]">
+                  <UserRoundCog aria-hidden="true" className="size-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Kepala Keluarga</p>
-                  <p className="font-semibold">{kepalaKeluarga.nama}</p>
+                  <p className="text-sm text-slate-600">Kepala Keluarga</p>
+                  <p className="text-base font-semibold text-slate-900">
+                    {kepalaKeluarga.nama}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <FaMapMarkerAlt className="text-green-600" size={20} />
+                <div className="rounded-xl bg-slate-100 p-2 text-[#0b6393]">
+                  <MapPin aria-hidden="true" className="size-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Alamat</p>
-                  <p className="font-semibold">{kepalaKeluarga.alamat}</p>
+                  <p className="text-sm text-slate-600">Alamat</p>
+                  <p className="text-base font-semibold text-slate-900">
+                    {kepalaKeluarga.alamat}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="bg-purple-100 p-2 rounded-lg">
-                  <FaUsers className="text-purple-600" size={20} />
+                <div className="rounded-xl bg-slate-100 p-2 text-[#0b6393]">
+                  <UsersRound aria-hidden="true" className="size-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Total Anggota</p>
-                  <p className="font-semibold">{keluargaData.length} Orang</p>
+                  <p className="text-sm text-slate-600">Total Anggota</p>
+                  <p className="text-base font-semibold text-slate-900">
+                    {keluargaData.length} Orang
+                  </p>
                 </div>
               </div>
             </div>
@@ -182,103 +198,123 @@ const DetailKeluarga = ({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <FaUsers className="text-blue-500" size={20} />
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-xl bg-slate-100 p-2 text-[#0b6393]">
+              <UsersRound aria-hidden="true" className="size-5" />
             </div>
-            <h2 className="font-semibold text-xl text-gray-800">
+            <h2 className="text-xl font-bold text-slate-900">
               Daftar Anggota Keluarga
             </h2>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-gray-600">
+            <table className="min-w-full text-base text-slate-700">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left font-medium">#</th>
-                  <th className="px-4 py-3 text-left font-medium">Nama</th>
-                  <th className="px-4 py-3 text-left font-medium">Alamat</th>
-                  <th className="px-4 py-3 text-left font-medium">
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    #
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    Nama
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
+                    Alamat
+                  </th>
+                  <th className="px-4 py-4 text-left font-bold text-slate-900">
                     Tempat Lahir
                   </th>
-                  <th className="px-4 py-3 text-center font-medium">Umur</th>
-                  <th className="px-4 py-3 text-center font-medium">
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Umur
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
                     Jenis Kelamin
                   </th>
-                  <th className="px-4 py-3 text-center font-medium">Agama</th>
-                  <th className="px-4 py-3 text-center font-medium">
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Agama
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
                     Pekerjaan
                   </th>
-                  <th className="px-4 py-3 text-center font-medium">Status</th>
-                  <th className="px-4 py-3 text-center font-medium">Aksi</th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Status
+                  </th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-900">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-200">
                 {keluargaData.map((member, index) => (
                   <tr
                     key={member.id || member.nik}
-                    className={`border-b border-gray-100 hover:bg-gray-50 transition ${
+                    className={`transition hover:bg-slate-50 ${
                       member.nik === selectedNik
-                        ? "bg-blue-50 border-l-4 border-l-blue-500"
+                        ? "border-l-4 border-l-[#0b6393] bg-[#0b6393]/5"
                         : ""
                     }`}
                   >
-                    <td className="px-4 py-3">{index + 1}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-4">{index + 1}</td>
+                    <td className="px-4 py-4">
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-medium text-gray-800 break-words">
+                        <span className="break-words font-semibold text-slate-900">
                           {member.nama}
                         </span>
-                        <span className="text-xs text-gray-500 break-all">
+                        <span className="break-all text-sm text-slate-600">
                           NIK: {member.nik}
                         </span>
-                        <span className="text-xs text-gray-500 break-all">
+                        <span className="break-all text-sm text-slate-600">
                           No. KK: {member.nomor_kk || "-"}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 break-words">{member.alamat}</td>
-                    <td className="px-4 py-3 break-words">
+                    <td className="break-words px-4 py-4">{member.alamat}</td>
+                    <td className="break-words px-4 py-4">
                       {member.tempatLahir || "-"}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       {hitungUmur(member.tanggalLahir)}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       {member.jenisKelamin}
                     </td>
-                    <td className="px-4 py-3 text-center">{member.agama}</td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">{member.agama}</td>
+                    <td className="px-4 py-4 text-center">
                       {member.pekerjaan || "-"}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
                           member.status === "Kepala Keluarga"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-slate-100 text-slate-700"
                         }`}
                       >
                         {member.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
+                          type="button"
                           onClick={() => onEdit(member.nik)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-lg transition-colors"
                           title="Edit"
+                          aria-label="Edit anggota keluarga"
+                          className="flex min-h-11 items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-200"
                         >
-                          <FaEdit size={14} />
+                          <Pencil aria-hidden="true" className="size-5" />
+                          <span className="hidden xl:inline">Edit</span>
                         </button>
                         <button
+                          type="button"
                           onClick={() => onDelete(member.nik)}
-                          className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors"
                           title="Hapus"
+                          aria-label="Hapus anggota keluarga"
+                          className="flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
                         >
-                          <FaTrash size={14} />
+                          <Trash2 aria-hidden="true" className="size-5" />
+                          <span className="hidden xl:inline">Hapus</span>
                         </button>
                       </div>
                     </td>
@@ -288,7 +324,7 @@ const DetailKeluarga = ({
                   <tr>
                     <td
                       colSpan={10}
-                      className="px-4 py-6 text-center text-gray-500"
+                      className="px-4 py-8 text-center text-base text-slate-600"
                     >
                       Tidak ada data keluarga ditemukan
                     </td>
