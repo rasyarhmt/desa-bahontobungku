@@ -1,27 +1,181 @@
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import {
-  FaFileAlt,
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaCheck,
   FaBan,
-  FaSpinner,
-  FaUpload,
-  FaListUl,
+  FaCheck,
+  FaEdit,
   FaEye,
+  FaFileAlt,
+  FaListUl,
+  FaPlus,
+  FaSyncAlt,
+  FaTrash,
+  FaUpload,
 } from "react-icons/fa";
+
+import {
+  AdminField,
+  AdminFilterTabs,
+  AdminFormSection,
+  AdminFormView,
+  AdminInput,
+  AdminMetricCard,
+  AdminPageHeader,
+  AdminStatusBadge,
+  AdminTableShell,
+  AdminTextarea,
+  AdminToolbar,
+  adminPrimaryButtonClass,
+} from "@/components/admin/admin-ui";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import TemplateDetailView from "@/components/admin/TemplateDetailView";
 import { type SuratTemplate } from "@/lib/api/schemas";
 import { adminTemplateApi } from "@/lib/api/admin";
 import { useAsyncData, useCrudResource } from "@/hooks";
 import TemplateFieldModal from "./TemplateFieldModal";
-import TemplatePreviewModal from "@/components/admin/TemplatePreviewModal";
 
 interface TemplateFormData {
   kode: string;
   nama_template: string;
   deskripsi: string;
   file_template: File | null;
+}
+
+interface TemplateFormViewProps {
+  isEdit: boolean;
+  formData: TemplateFormData;
+  setFormData: Dispatch<SetStateAction<TemplateFormData>>;
+  isLoading: boolean;
+  onSubmit: () => void;
+  onCancel: () => void;
+}
+
+const thClass =
+  "px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground";
+const tdClass = "px-4 py-3.5 text-sm text-on-surface-variant";
+const iconButtonClass =
+  "rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-60";
+
+function TemplateFormView({
+  isEdit,
+  formData,
+  setFormData,
+  isLoading,
+  onSubmit,
+  onCancel,
+}: TemplateFormViewProps) {
+  return (
+    <AdminFormView
+      eyebrow="Manajemen Template Surat"
+      title={isEdit ? "Edit Template Surat" : "Tambah Template Surat Baru"}
+      description={
+        isEdit
+          ? "Ubah nama, deskripsi, atau ganti file template."
+          : 'Unggah file DOCX template yang berisi placeholder {{ field }}.'
+      }
+      onBack={onCancel}
+    >
+      <AdminFormSection
+        number={1}
+        title="Identitas Template"
+        description="Kode dan nama template yang digunakan warga."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AdminField
+            label="Kode Template"
+            htmlFor="kode"
+            required={!isEdit}
+            hint={isEdit ? "Kode template tidak dapat diubah" : undefined}
+          >
+            <AdminInput
+              id="kode"
+              type="text"
+              value={formData.kode}
+              onChange={(e) =>
+                setFormData({ ...formData, kode: e.target.value })
+              }
+              disabled={isEdit}
+              placeholder="Contoh: SK_DOMISILI"
+            />
+          </AdminField>
+          <AdminField
+            label="Nama Template"
+            htmlFor="nama_template"
+            required
+          >
+            <AdminInput
+              id="nama_template"
+              type="text"
+              value={formData.nama_template}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  nama_template: e.target.value,
+                })
+              }
+              placeholder="Contoh: Surat Keterangan Domisili"
+            />
+          </AdminField>
+          <div className="sm:col-span-2">
+            <AdminField label="Deskripsi" htmlFor="deskripsi">
+              <AdminTextarea
+                id="deskripsi"
+                value={formData.deskripsi}
+                onChange={(e) =>
+                  setFormData({ ...formData, deskripsi: e.target.value })
+                }
+                placeholder="Deskripsi singkat template"
+                rows={2}
+              />
+            </AdminField>
+          </div>
+        </div>
+      </AdminFormSection>
+
+      <AdminFormSection
+        number={2}
+        title="Berkas Template"
+        description="File DOCX dengan placeholder yang akan diisi saat pencetakan."
+      >
+        <AdminField
+          label={isEdit ? "Ganti File Template (.docx)" : "File Template (.docx)"}
+          htmlFor="file_template"
+          hint={
+            formData.file_template
+              ? `${formData.file_template.name} siap diupload`
+              : isEdit
+                ? "Kosongkan jika tidak ingin mengganti file"
+                : "Format yang diterima: DOCX"
+          }
+        >
+          <AdminInput
+            id="file_template"
+            type="file"
+            accept=".docx"
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                file_template: e.target.files?.[0] || null,
+              })
+            }
+            className="file:mr-4 file:rounded-xl file:border-0 file:bg-primary-fixed file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-on-primary-fixed hover:file:bg-primary-fixed-dim"
+          />
+        </AdminField>
+      </AdminFormSection>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={isLoading}
+          className={adminPrimaryButtonClass}
+        >
+          <FaUpload />
+          {isEdit ? "Simpan Perubahan" : "Simpan"}
+        </button>
+      </div>
+    </AdminFormView>
+  );
 }
 
 const TemplateSuratAdmin = () => {
@@ -135,521 +289,234 @@ const TemplateSuratAdmin = () => {
       "Terjadi kesalahan saat mengubah status template.",
     );
 
+  const isFormOpen = addModal.isOpen || editModal.isOpen;
+
   return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <FaFileAlt className="text-indigo-500 text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Manajemen Template Surat
-          </h1>
-        </div>
+    <div className="min-h-screen bg-surface">
+      <div className="w-full space-y-6">
+        {isFormOpen ? (
+          <TemplateFormView
+            isEdit={editModal.isOpen}
+            formData={formData}
+            setFormData={setFormData}
+            isLoading={isActionLoading}
+            onSubmit={() =>
+              void (addModal.isOpen ? saveNewItem() : saveEditedItem())
+            }
+            onCancel={() =>
+              addModal.isOpen ? addModal.close() : editModal.close()
+            }
+          />
+        ) : previewTemplate ? (
+          <TemplateDetailView
+            item={previewTemplate}
+            onBack={() => setPreviewTemplate(null)}
+          />
+        ) : (
+          <>
+            <AdminPageHeader
+              eyebrow="Manajemen Template Surat"
+              title="Manajemen Template Surat"
+              description="Kelola template surat yang digunakan warga untuk mencetak surat."
+              actions={
+                <button
+                  type="button"
+                  onClick={() => void fetchTemplateData()}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-container-lowest px-4 py-2.5 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container"
+                >
+                  <FaSyncAlt />
+                  Muat Ulang
+                </button>
+              }
+            />
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Total Template
-              </h3>
-              <div className="bg-indigo-100 p-2 rounded-lg">
-                <FaFileAlt className="text-indigo-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {templates.length}
-            </div>
-            <p className="text-sm text-gray-600">Jumlah template tersedia</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Template Aktif
-              </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaCheck className="text-green-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countAktif}
-            </div>
-            <p className="text-sm text-gray-600">Siap digunakan warga</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Template Nonaktif
-              </h3>
-              <div className="bg-gray-100 p-2 rounded-lg">
-                <FaBan className="text-gray-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countNonaktif}
-            </div>
-            <p className="text-sm text-gray-600">Template yang nonaktif</p>
-          </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "semua"
-                  ? "bg-indigo-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaFileAlt
-                className={
-                  activeTab === "semua" ? "text-white" : "text-indigo-500"
-                }
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <AdminMetricCard
+                label="Total Template"
+                value={templates.length}
+                icon={<FaFileAlt />}
+                tone="primary"
+                hint="Jumlah template tersedia"
               />
-              <span>Semua Template</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("aktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "aktif"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaCheck
-                className={
-                  activeTab === "aktif" ? "text-white" : "text-green-500"
-                }
+              <AdminMetricCard
+                label="Template Aktif"
+                value={countAktif}
+                icon={<FaCheck />}
+                tone="info"
+                hint="Siap digunakan warga"
               />
-              <span>Aktif</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("nonaktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "nonaktif"
-                  ? "bg-gray-600 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaBan
-                className={
-                  activeTab === "nonaktif" ? "text-white" : "text-gray-500"
-                }
+              <AdminMetricCard
+                label="Template Nonaktif"
+                value={countNonaktif}
+                icon={<FaBan />}
+                tone="neutral"
+                hint="Template yang nonaktif"
               />
-              <span>Nonaktif</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Templates Table */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Daftar Template
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Template HTML dengan placeholder {"{{ field }}"} untuk surat
-                yang dicetak warga
-              </p>
             </div>
-            <button
-              onClick={handleAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+
+            <AdminToolbar>
+              <AdminFilterTabs
+                tabs={[
+                  {
+                    value: "semua",
+                    label: "Semua Template",
+                    count: templates.length,
+                  },
+                  { value: "aktif", label: "Aktif", count: countAktif },
+                  {
+                    value: "nonaktif",
+                    label: "Nonaktif",
+                    count: countNonaktif,
+                  },
+                ]}
+                value={activeTab}
+                onChange={setActiveTab}
+              />
+            </AdminToolbar>
+
+            <AdminTableShell
+              loading={isLoading}
+              error={error}
+              onRetry={() => void fetchTemplateData()}
+              empty={filteredData.length === 0}
+              emptyLabel="Tidak ada template surat yang ditemukan."
             >
-              <FaPlus className="text-white" />
-              <span>Tambah Template</span>
-            </button>
-          </div>
-
-          {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-indigo-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data template...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
-              <button
-                onClick={fetchTemplateData}
-                className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
-              >
-                Coba Lagi
-              </button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
-                      ID
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Kode
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Nama Template
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Deskripsi
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      File
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredData.length > 0 ? (
-                    filteredData.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          {item.id}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md text-xs font-mono font-medium">
+              <div className="flex flex-col gap-4 border-b border-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-base font-semibold text-on-surface">
+                    Daftar Template
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    Template DOCX dengan placeholder {"{{ field }}"} untuk
+                    surat yang dicetak warga
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  className={adminPrimaryButtonClass}
+                >
+                  <FaPlus />
+                  Tambah Template
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-surface-container-low">
+                      <th className={thClass}>ID</th>
+                      <th className={thClass}>Kode</th>
+                      <th className={thClass}>Nama Template</th>
+                      <th className={thClass}>Deskripsi</th>
+                      <th className={thClass}>File</th>
+                      <th className={thClass}>Status</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                        Aksi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredData.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="transition-colors hover:bg-surface-container-low/60"
+                      >
+                        <td className={tdClass}>{item.id}</td>
+                        <td className={tdClass}>
+                          <span className="rounded-lg bg-secondary-container px-2 py-1 font-mono text-xs font-medium text-on-secondary-container">
                             {item.kode}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                        <td className={`${tdClass} font-medium text-on-surface`}>
                           {item.nama_template}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 max-w-xs">
+                        <td className={`${tdClass} max-w-xs`}>
                           {item.deskripsi || "-"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                        <td className={tdClass}>
                           {item.file_template
                             ? item.file_template.split("/").pop()
                             : "-"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              item.status === "aktif"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {item.status === "aktif" ? "Aktif" : "Nonaktif"}
-                          </span>
+                        <td className={tdClass}>
+                          <AdminStatusBadge
+                            label={item.status === "aktif" ? "Aktif" : "Nonaktif"}
+                            tone={item.status === "aktif" ? "primary" : "neutral"}
+                          />
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-2">
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex justify-end gap-1">
                             <button
+                              type="button"
                               onClick={() => setPreviewTemplate(item)}
-                              className="p-1.5 bg-purple-100 rounded-md hover:bg-purple-200 transition-colors"
+                              className={iconButtonClass}
                               title="Lihat Template"
+                              aria-label={`Lihat template ${item.nama_template}`}
                             >
-                              <FaEye className="text-purple-600" />
+                              <FaEye className="text-primary" />
                             </button>
                             <button
+                              type="button"
                               onClick={() => setFieldModalTemplate(item)}
-                              className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                              className={iconButtonClass}
                               title="Atur Field"
+                              aria-label={`Atur field template ${item.nama_template}`}
                             >
-                              <FaListUl className="text-blue-600" />
+                              <FaListUl className="text-primary" />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleEdit(item.id)}
-                              className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                              className={iconButtonClass}
                               title="Edit"
+                              aria-label={`Edit template ${item.nama_template}`}
                             >
-                              <FaEdit className="text-gray-600" />
+                              <FaEdit />
                             </button>
                             <button
-                              onClick={() => handleToggleStatus(item.id)}
-                              className="p-1.5 bg-yellow-100 rounded-md hover:bg-yellow-200 transition-colors"
+                              type="button"
+                              onClick={() => void handleToggleStatus(item.id)}
+                              className={iconButtonClass}
                               title={
                                 item.status === "aktif"
                                   ? "Nonaktifkan"
                                   : "Aktifkan"
                               }
+                              aria-label={`Ubah status template ${item.nama_template}`}
                               disabled={isActionLoading}
                             >
-                              <FaBan className="text-yellow-600" />
+                              <FaBan className="text-[var(--warning-fg)]" />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleDelete(item.id)}
-                              className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                              className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-destructive/10 hover:text-destructive"
                               title="Hapus"
+                              aria-label={`Hapus template ${item.nama_template}`}
                             >
-                              <FaTrash className="text-red-600" />
+                              <FaTrash />
                             </button>
                           </div>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={7}
-                        className="px-4 py-8 text-center text-gray-500"
-                      >
-                        Tidak ada template surat yang ditemukan.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </AdminTableShell>
+          </>
+        )}
       </div>
 
-      {/* Add Modal */}
-      {addModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Tambah Template Surat Baru
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Unggah file HTML template yang berisi placeholder{" "}
-                {"{{ field }}"}
-              </p>
-            </div>
+      <ConfirmDialog
+        isOpen={deleteModal.isOpen}
+        title="Hapus template surat?"
+        description={`Template "${currentItem?.nama_template ?? ""}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`}
+        isLoading={isActionLoading}
+        onConfirm={() => void confirmDelete()}
+        onCancel={deleteModal.close}
+      />
 
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kode Template
-                </label>
-                <input
-                  type="text"
-                  value={formData.kode}
-                  onChange={(e) =>
-                    setFormData({ ...formData, kode: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Contoh: SK_DOMISILI"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nama Template
-                </label>
-                <input
-                  type="text"
-                  value={formData.nama_template}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      nama_template: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Contoh: Surat Keterangan Domisili"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Deskripsi
-                </label>
-                <textarea
-                  value={formData.deskripsi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, deskripsi: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Deskripsi singkat template"
-                  rows={2}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  File Template (.docx)
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept=".docx"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        file_template: e.target.files?.[0] || null,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                {formData.file_template && (
-                  <p className="mt-1 text-xs text-green-600 flex items-center gap-1">
-                    <FaCheck size={10} /> {formData.file_template.name} siap
-                    diupload
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => addModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={saveNewItem}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
-              >
-                <FaUpload size={12} />
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {editModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Edit Template Surat
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Ubah nama, deskripsi, atau ganti file template
-              </p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kode Template
-                </label>
-                <input
-                  type="text"
-                  value={formData.kode}
-                  disabled
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-500"
-                />
-                <p className="mt-1 text-xs text-gray-400">
-                  Kode template tidak dapat diubah
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nama Template
-                </label>
-                <input
-                  type="text"
-                  value={formData.nama_template}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      nama_template: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Deskripsi
-                </label>
-                <textarea
-                  value={formData.deskripsi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, deskripsi: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  rows={2}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ganti File Template (.docx)
-                </label>
-                <input
-                  type="file"
-                  accept=".docx"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      file_template: e.target.files?.[0] || null,
-                    })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-                {formData.file_template ? (
-                  <p className="mt-1 text-xs text-green-600 flex items-center gap-1">
-                    <FaCheck size={10} /> {formData.file_template.name} siap
-                    diupload
-                  </p>
-                ) : (
-                  <p className="mt-1 text-xs text-gray-400">
-                    Kosongkan jika tidak ingin mengganti file
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => editModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={saveEditedItem}
-                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
-              >
-                Simpan Perubahan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {deleteModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Hapus
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin menghapus template "
-                {currentItem?.nama_template}"? Tindakan ini tidak dapat
-                dibatalkan.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {fieldModalTemplate && (
         <TemplateFieldModal
           templateId={fieldModalTemplate.id}
@@ -657,11 +524,6 @@ const TemplateSuratAdmin = () => {
           onClose={() => setFieldModalTemplate(null)}
         />
       )}
-      <TemplatePreviewModal
-        isOpen={!!previewTemplate}
-        item={previewTemplate}
-        onClose={() => setPreviewTemplate(null)}
-      />
     </div>
   );
 };

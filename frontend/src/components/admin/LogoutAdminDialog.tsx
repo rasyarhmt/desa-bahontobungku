@@ -2,6 +2,13 @@ import { useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { authApi } from "@/lib/api/auth";
 
+import {
+  adminCardClass,
+  adminDangerButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
+import ModalPortal from "./ModalPortal";
+
 interface LogoutAdminDialogProps {
   onClose: () => void;
 }
@@ -21,42 +28,50 @@ const LogoutAdminDialog = ({ onClose }: LogoutAdminDialogProps) => {
   };
 
   return (
-    <div
-      className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-gray-800">Konfirmasi Logout</h3>
-          <p className="text-gray-600 text-sm">
-            Apakah Anda yakin ingin keluar dari dashboard admin?
-          </p>
-        </div>
+    <ModalPortal>
+      <div className="fixed inset-0 z-[80] flex items-center justify-center bg-inverse-surface/50 p-4 backdrop-blur-sm">
+        <div className={`${adminCardClass} w-full max-w-md p-6`}>
+          <div className="mb-6 flex items-start gap-4">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+              <FaSignOutAlt />
+            </span>
+            <div>
+              <h3 className="text-lg font-semibold text-on-surface">
+                Konfirmasi Logout
+              </h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Apakah Anda yakin ingin keluar dari dashboard admin?
+              </p>
+            </div>
+          </div>
 
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            Batal
-          </button>
-          <button
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            {isLoggingOut ? (
-              "Proses..."
-            ) : (
-              <>
-                <FaSignOutAlt />
-                <span>Ya, Logout</span>
-              </>
-            )}
-          </button>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className={adminSecondaryButtonClass}
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className={adminDangerButtonClass}
+            >
+              {isLoggingOut ? (
+                "Proses..."
+              ) : (
+                <>
+                  <FaSignOutAlt />
+                  <span>Ya, Logout</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };
 

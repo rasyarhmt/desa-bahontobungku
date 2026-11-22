@@ -1,15 +1,17 @@
 import { useState } from "react";
+import { FaCalendarAlt } from "react-icons/fa";
+
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import {
-  FaMoneyBillWave,
-  FaMoneyCheckAlt,
-  FaChartPie,
-  FaCalendarAlt,
-  FaSpinner,
-  FaExclamationTriangle,
-} from "react-icons/fa";
+  AdminFilterTabs,
+  AdminPageHeader,
+  AdminSelect,
+  AdminTableShell,
+  AdminToolbar,
+} from "@/components/admin/admin-ui";
 import { adminApbdesApi } from "@/lib/api/admin";
 import { getErrorMessage } from "@/lib/errors";
-import { useAsyncData, useDisclosure } from "@/hooks";
+import { useAsyncData } from "@/hooks";
 import DanaForm from "./DanaForm";
 import ApbdesSummaryCards from "./ApbdesSummaryCards";
 import ApbdesCharts from "./ApbdesCharts";
@@ -23,20 +25,23 @@ import type {
 } from "./apbdesShared";
 import { toast } from "@/lib/toast";
 
+type DanaType = "masuk" | "keluar";
+type ApbdesTab = "summary" | "income" | "expense";
+
 export default function APBDes() {
   const [selectedYear, setSelectedYear] = useState(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [availableYears, setAvailableYears] = useState<number[]>([]);
   const [editingItem, setEditingItem] = useState<
     DanaMasukDisplay | DanaKeluarDisplay | null
   >(null);
-  const [activeTab, setActiveTab] = useState("summary");
-
-  const { isOpen: showDanaMasukForm, setOpen: setShowDanaMasukForm } =
-    useDisclosure();
-  const { isOpen: showDanaKeluarForm, setOpen: setShowDanaKeluarForm } =
-    useDisclosure();
+  const [formType, setFormType] = useState<DanaType | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    type: DanaType;
+  } | null>(null);
+  const [activeTab, setActiveTab] = useState<ApbdesTab>("summary");
 
   const {
     data,
@@ -95,319 +100,267 @@ export default function APBDes() {
   const danaKeluar = data.keluar;
 
   const filteredDanaMasuk = danaMasuk.filter(
-    (item) => item.tahun.toString() === selectedYear
+    (item) => item.tahun.toString() === selectedYear,
   );
   const filteredDanaKeluar = danaKeluar.filter(
-    (item) => item.tahun.toString() === selectedYear
+    (item) => item.tahun.toString() === selectedYear,
   );
 
   const totalPendapatan = filteredDanaMasuk.reduce(
     (sum, item) => sum + Number.parseInt(String(item.jumlah ?? 0)),
-    0
+    0,
   );
   const totalPengeluaran = filteredDanaKeluar.reduce(
     (sum, item) => sum + Number.parseInt(String(item.jumlah ?? 0)),
-    0
+    0,
   );
   const saldo = totalPendapatan - totalPengeluaran;
+
+  const closeForm = () => {
+    setFormType(null);
+    setEditingItem(null);
+  };
 
   const handleAddDanaMasuk = async (formData: DanaMasukFormPayload) => {
     try {
       await adminApbdesApi.addDanaMasuk(formData);
-      setShowDanaMasukForm(false);
+      closeForm();
       fetchData();
     } catch (error) {
       console.error("Error adding dana masuk:", error);
       toast.error(
-        getErrorMessage(error, "Terjadi kesalahan saat menyimpan data")
+        getErrorMessage(error, "Terjadi kesalahan saat menyimpan data"),
       );
     }
   };
 
   const handleUpdateDanaMasuk = async (
     id: number,
-    formData: DanaMasukFormPayload
+    formData: DanaMasukFormPayload,
   ) => {
     try {
       await adminApbdesApi.updateDanaMasuk(id, formData);
-      setShowDanaMasukForm(false);
-      setEditingItem(null);
+      closeForm();
       fetchData();
     } catch (error) {
       console.error("Error updating dana masuk:", error);
       toast.error(
-        getErrorMessage(error, "Terjadi kesalahan saat memperbarui data")
+        getErrorMessage(error, "Terjadi kesalahan saat memperbarui data"),
       );
-    }
-  };
-
-  const handleDeleteDanaMasuk = async (id: number) => {
-    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      try {
-        await adminApbdesApi.deleteDanaMasuk(id);
-        fetchData();
-      } catch (error) {
-        console.error("Error deleting dana masuk:", error);
-        toast.error(
-          getErrorMessage(error, "Terjadi kesalahan saat menghapus data")
-        );
-      }
     }
   };
 
   const handleAddDanaKeluar = async (formData: DanaKeluarFormPayload) => {
     try {
       await adminApbdesApi.addDanaKeluar(formData);
-      setShowDanaKeluarForm(false);
+      closeForm();
       fetchData();
     } catch (error) {
       console.error("Error adding dana keluar:", error);
       toast.error(
-        getErrorMessage(error, "Terjadi kesalahan saat menyimpan data")
+        getErrorMessage(error, "Terjadi kesalahan saat menyimpan data"),
       );
     }
   };
 
   const handleUpdateDanaKeluar = async (
     id: number,
-    formData: DanaKeluarFormPayload
+    formData: DanaKeluarFormPayload,
   ) => {
     try {
       await adminApbdesApi.updateDanaKeluar(id, formData);
-      setShowDanaKeluarForm(false);
-      setEditingItem(null);
+      closeForm();
       fetchData();
     } catch (error) {
       console.error("Error updating dana keluar:", error);
       toast.error(
-        getErrorMessage(error, "Terjadi kesalahan saat memperbarui data")
+        getErrorMessage(error, "Terjadi kesalahan saat memperbarui data"),
       );
     }
   };
 
-  const handleDeleteDanaKeluar = async (id: number) => {
-    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      try {
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, type } = deleteTarget;
+
+    try {
+      if (type === "masuk") {
+        await adminApbdesApi.deleteDanaMasuk(id);
+      } else {
         await adminApbdesApi.deleteDanaKeluar(id);
-        fetchData();
-      } catch (error) {
-        console.error("Error deleting dana keluar:", error);
-        toast.error(
-          getErrorMessage(error, "Terjadi kesalahan saat menghapus data")
-        );
       }
+      fetchData();
+    } catch (error) {
+      console.error(
+        `Error deleting dana ${type}:`,
+        error,
+      );
+      toast.error(
+        getErrorMessage(error, "Terjadi kesalahan saat menghapus data"),
+      );
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
   const handleEditDanaMasuk = (item: DanaMasukDisplay) => {
     setEditingItem(item);
-    setShowDanaMasukForm(true);
+    setFormType("masuk");
   };
 
   const handleEditDanaKeluar = (item: DanaKeluarDisplay) => {
     setEditingItem(item);
-    setShowDanaKeluarForm(true);
+    setFormType("keluar");
+  };
+
+  const openForm = (type: DanaType) => {
+    setEditingItem(null);
+    setFormType(type);
   };
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
-        <span className="ml-2">Memuat data...</span>
+      <div className="p-6">
+        <AdminTableShell loading>
+          <div />
+        </AdminTableShell>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <FaExclamationTriangle className="text-4xl text-yellow-500 mx-auto mb-4" />
-        <p className="text-red-500 mb-4">{error}</p>
-        <button
-          onClick={fetchData}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Coba Lagi
-        </button>
+      <div className="p-6">
+        <AdminTableShell error={error} onRetry={() => void fetchData()}>
+          <div />
+        </AdminTableShell>
       </div>
     );
   }
 
   return (
-    <div
-      className="space-y-8 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Manajemen APBDes</h1>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <FaCalendarAlt className="text-gray-500" />
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {availableYears.length > 0 ? (
-                  availableYears.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))
-                ) : (
-                  <option value={new Date().getFullYear()}>
-                    {new Date().getFullYear()}
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Keuangan Desa"
+        title="Manajemen APBDes"
+        description="Pantau pendapatan, pengeluaran, dan saldo anggaran desa."
+        actions={
+          <div className="flex items-center gap-2">
+            <FaCalendarAlt className="text-muted-foreground" />
+            <AdminSelect
+              aria-label="Tahun anggaran"
+              value={selectedYear}
+              onChange={(event) => setSelectedYear(event.target.value)}
+              className="w-36"
+            >
+              {availableYears.length > 0 ? (
+                availableYears.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
                   </option>
-                )}
-              </select>
+                ))
+              ) : (
+                <option value={new Date().getFullYear()}>
+                  {new Date().getFullYear()}
+                </option>
+              )}
+            </AdminSelect>
+          </div>
+        }
+      />
+
+      <AdminToolbar>
+        <AdminFilterTabs
+          tabs={[
+            { value: "summary", label: "Ringkasan" },
+            { value: "income", label: "Pendapatan" },
+            { value: "expense", label: "Pengeluaran" },
+          ]}
+          value={activeTab}
+          onChange={setActiveTab}
+        />
+      </AdminToolbar>
+
+      {formType === "masuk" && (
+        <DanaForm
+          mode="masuk"
+          onSubmit={
+            editingItem
+              ? (formData) =>
+                  handleUpdateDanaMasuk(editingItem.id, formData)
+              : handleAddDanaMasuk
+          }
+          onCancel={closeForm}
+          initialData={editingItem as DanaMasukDisplay | null}
+          isEditing={Boolean(editingItem)}
+        />
+      )}
+
+      {formType === "keluar" && (
+        <DanaForm
+          mode="keluar"
+          onSubmit={
+            editingItem
+              ? (formData) =>
+                  handleUpdateDanaKeluar(editingItem.id, formData)
+              : handleAddDanaKeluar
+          }
+          onCancel={closeForm}
+          initialData={editingItem as DanaKeluarDisplay | null}
+          isEditing={Boolean(editingItem)}
+        />
+      )}
+
+      {!formType && (
+        <>
+          {activeTab === "summary" && (
+            <div className="space-y-6">
+              <ApbdesSummaryCards
+                totalPendapatan={totalPendapatan}
+                totalPengeluaran={totalPengeluaran}
+                saldo={saldo}
+                selectedYear={selectedYear}
+              />
+              <ApbdesCharts
+                totalPendapatan={totalPendapatan}
+                totalPengeluaran={totalPengeluaran}
+                filteredDanaMasuk={filteredDanaMasuk}
+                filteredDanaKeluar={filteredDanaKeluar}
+              />
             </div>
-          </div>
-        </div>
+          )}
 
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveTab("summary")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "summary"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaChartPie
-                className={
-                  activeTab === "summary" ? "text-white" : "text-blue-500"
-                }
-              />
-              <span>Ringkasan</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("income")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "income"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaMoneyBillWave
-                className={
-                  activeTab === "income" ? "text-white" : "text-green-500"
-                }
-              />
-              <span>Pendapatan</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("expense")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "expense"
-                  ? "bg-red-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaMoneyCheckAlt
-                className={
-                  activeTab === "expense" ? "text-white" : "text-red-500"
-                }
-              />
-              <span>Pengeluaran</span>
-            </button>
-          </div>
-        </div>
-
-        {activeTab === "summary" && (
-          <div className="space-y-6">
-            <ApbdesSummaryCards
-              totalPendapatan={totalPendapatan}
-              totalPengeluaran={totalPengeluaran}
-              saldo={saldo}
-              selectedYear={selectedYear}
-            />
-            <ApbdesCharts
-              totalPendapatan={totalPendapatan}
-              totalPengeluaran={totalPengeluaran}
-              filteredDanaMasuk={filteredDanaMasuk}
-              filteredDanaKeluar={filteredDanaKeluar}
-            />
-          </div>
-        )}
-
-        {activeTab === "income" && (
-          <div className="space-y-6">
+          {activeTab === "income" && (
             <DanaMasukTable
               items={filteredDanaMasuk}
               totalPendapatan={totalPendapatan}
               selectedYear={selectedYear}
-              onAdd={() => {
-                setEditingItem(null);
-                setShowDanaMasukForm(true);
-              }}
+              onAdd={() => openForm("masuk")}
               onEdit={handleEditDanaMasuk}
-              onDelete={handleDeleteDanaMasuk}
+              onDelete={(id) => setDeleteTarget({ id, type: "masuk" })}
             />
-          </div>
-        )}
+          )}
 
-        {activeTab === "expense" && (
-          <div className="space-y-6">
+          {activeTab === "expense" && (
             <DanaKeluarTable
               items={filteredDanaKeluar}
               totalPengeluaran={totalPengeluaran}
               selectedYear={selectedYear}
-              onAdd={() => {
-                setEditingItem(null);
-                setShowDanaKeluarForm(true);
-              }}
+              onAdd={() => openForm("keluar")}
               onEdit={handleEditDanaKeluar}
-              onDelete={handleDeleteDanaKeluar}
-            />
-          </div>
-        )}
-
-        <div
-          className={`${
-            showDanaMasukForm || showDanaKeluarForm
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          } transition-opacity duration-300`}
-        >
-          {showDanaMasukForm && (
-            <DanaForm
-              mode="masuk"
-              onSubmit={
-                editingItem
-                  ? (formData) =>
-                      handleUpdateDanaMasuk(editingItem.id, formData)
-                  : handleAddDanaMasuk
-              }
-              onCancel={() => {
-                setShowDanaMasukForm(false);
-                setEditingItem(null);
-              }}
-              initialData={editingItem as DanaMasukDisplay | null}
-              isEditing={!!editingItem}
+              onDelete={(id) => setDeleteTarget({ id, type: "keluar" })}
             />
           )}
+        </>
+      )}
 
-          {showDanaKeluarForm && (
-            <DanaForm
-              mode="keluar"
-              onSubmit={
-                editingItem
-                  ? (formData) =>
-                      handleUpdateDanaKeluar(editingItem.id, formData)
-                  : handleAddDanaKeluar
-              }
-              onCancel={() => {
-                setShowDanaKeluarForm(false);
-                setEditingItem(null);
-              }}
-              initialData={editingItem as DanaKeluarDisplay | null}
-              isEditing={!!editingItem}
-            />
-          )}
-        </div>
-      </div>
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        title="Hapus Data APBDes"
+        description="Apakah Anda yakin ingin menghapus data ini?"
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

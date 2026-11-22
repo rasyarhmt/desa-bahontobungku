@@ -1,25 +1,175 @@
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import {
+  FaBan,
+  FaCheck,
+  FaEdit,
+  FaEye,
+  FaFileSignature,
   FaLink,
   FaPlus,
-  FaEdit,
+  FaSyncAlt,
   FaTrash,
-  FaCheck,
-  FaBan,
-  FaSpinner,
-  FaFileSignature,
-  FaEye,
 } from "react-icons/fa";
+
+import {
+  AdminField,
+  AdminFilterTabs,
+  AdminFormSection,
+  AdminFormView,
+  AdminInput,
+  AdminMetricCard,
+  AdminPageHeader,
+  AdminSelect,
+  AdminStatusBadge,
+  AdminTableShell,
+  AdminTextarea,
+  AdminToolbar,
+  adminPrimaryButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
+import BuatSuratModal from "@/components/admin/BuatSuratModal";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import TemplateDetailView from "@/components/admin/TemplateDetailView";
 import { type Pelayanan, type SuratTemplate } from "@/lib/api/schemas";
 import { adminPelayananApi, adminTemplateApi } from "@/lib/api/admin";
 import { useAsyncData, useCrudResource } from "@/hooks";
-import BuatSuratModal from "@/components/admin/BuatSuratModal";
-import TemplatePreviewModal from "@/components/admin/TemplatePreviewModal";
 
 interface PelayananFormData {
   nama_layanan: string;
   deskripsi: string;
   id_surat_template: number | null;
+}
+
+interface PelayananFormViewProps {
+  isEdit: boolean;
+  formData: PelayananFormData;
+  setFormData: Dispatch<SetStateAction<PelayananFormData>>;
+  templates: SuratTemplate[];
+  isLoading: boolean;
+  onSubmit: () => void;
+  onCancel: () => void;
+}
+
+const thClass =
+  "px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground";
+const tdClass = "px-4 py-3.5 text-sm text-on-surface-variant";
+const iconButtonClass =
+  "rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-60";
+
+function PelayananFormView({
+  isEdit,
+  formData,
+  setFormData,
+  templates,
+  isLoading,
+  onSubmit,
+  onCancel,
+}: PelayananFormViewProps) {
+  return (
+    <AdminFormView
+      eyebrow="Manajemen Pelayanan"
+      title={isEdit ? "Edit Layanan" : "Tambah Layanan Baru"}
+      description={
+        isEdit
+          ? "Perbarui informasi layanan administrasi desa."
+          : "Masukkan informasi layanan yang akan ditambahkan."
+      }
+      onBack={onCancel}
+    >
+      <AdminFormSection
+        number={1}
+        title="Informasi Layanan"
+        description="Nama layanan dan penjelasan singkat untuk warga."
+      >
+        <div className="grid gap-4">
+          <AdminField
+            label="Nama Layanan"
+            htmlFor={isEdit ? "edit-nama_layanan" : "nama_layanan"}
+            required
+          >
+            <AdminInput
+              id={isEdit ? "edit-nama_layanan" : "nama_layanan"}
+              type="text"
+              value={formData.nama_layanan}
+              onChange={(e) =>
+                setFormData({ ...formData, nama_layanan: e.target.value })
+              }
+              placeholder="Nama layanan"
+            />
+          </AdminField>
+          <AdminField
+            label="Deskripsi"
+            htmlFor={isEdit ? "edit-deskripsi" : "deskripsi"}
+            required
+          >
+            <AdminTextarea
+              id={isEdit ? "edit-deskripsi" : "deskripsi"}
+              value={formData.deskripsi}
+              onChange={(e) =>
+                setFormData({ ...formData, deskripsi: e.target.value })
+              }
+              placeholder="Deskripsi singkat layanan"
+              rows={3}
+            />
+          </AdminField>
+        </div>
+      </AdminFormSection>
+
+      <AdminFormSection
+        number={2}
+        title="Template Surat"
+        description="Template yang dipakai saat warga mencetak surat melalui layanan ini."
+      >
+        <AdminField
+          label="Template Surat (opsional)"
+          htmlFor={isEdit ? "edit-id_surat_template" : "add-id_surat_template"}
+          hint={
+            isEdit
+              ? "Kosongkan jika ingin mempertahankan template saat ini"
+              : "Template yang digunakan saat warga mencetak surat lewat layanan ini"
+          }
+        >
+          <AdminSelect
+            id={isEdit ? "edit-id_surat_template" : "add-id_surat_template"}
+            value={formData.id_surat_template || ""}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                id_surat_template: e.target.value
+                  ? Number(e.target.value)
+                  : null,
+              })
+            }
+          >
+            <option value="">Tidak ada template</option>
+            {templates.length > 0 ? (
+              templates.map((tpl) => (
+                <option key={tpl.id} value={tpl.id}>
+                  {tpl.kode} - {tpl.nama_template}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                Belum ada template surat
+              </option>
+            )}
+          </AdminSelect>
+        </AdminField>
+      </AdminFormSection>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={isLoading}
+          className={adminPrimaryButtonClass}
+        >
+          {isEdit ? "Simpan Perubahan" : "Simpan"}
+        </button>
+      </div>
+    </AdminFormView>
+  );
 }
 
 const PelayananAdmin = () => {
@@ -125,550 +275,248 @@ const PelayananAdmin = () => {
       "Terjadi kesalahan saat mengubah status layanan.",
     );
 
+  const isFormOpen = addModal.isOpen || editModal.isOpen;
+
   return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <FaLink className="text-blue-500 text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Manajemen Pelayanan
-          </h1>
-        </div>
+    <div className="min-h-screen bg-surface">
+      <div className="w-full space-y-6">
+        {isFormOpen ? (
+          <PelayananFormView
+            isEdit={editModal.isOpen}
+            formData={formData}
+            setFormData={setFormData}
+            templates={templates}
+            isLoading={isActionLoading}
+            onSubmit={() =>
+              void (addModal.isOpen ? saveNewItem() : saveEditedItem())
+            }
+            onCancel={() =>
+              addModal.isOpen ? addModal.close() : editModal.close()
+            }
+          />
+        ) : previewTemplate ? (
+          <TemplateDetailView
+            item={previewTemplate}
+            onBack={() => setPreviewTemplate(null)}
+          />
+        ) : (
+          <>
+            <AdminPageHeader
+              eyebrow="Manajemen Pelayanan"
+              title="Manajemen Pelayanan"
+              description="Kelola layanan administrasi desa yang tersedia untuk warga."
+              actions={
+                <button
+                  type="button"
+                  onClick={() => void fetchPelayananData()}
+                  className={adminSecondaryButtonClass}
+                >
+                  <FaSyncAlt />
+                  Muat Ulang
+                </button>
+              }
+            />
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Total Layanan
-              </h3>
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaLink className="text-blue-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {layananData.length}
-            </div>
-            <p className="text-sm text-gray-600">Jenis layanan tersedia</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Layanan Aktif
-              </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaCheck className="text-green-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countAktif}
-            </div>
-            <p className="text-sm text-gray-600">Layanan yang aktif</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Layanan Nonaktif
-              </h3>
-              <div className="bg-gray-100 p-2 rounded-lg">
-                <FaBan className="text-gray-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countNonaktif}
-            </div>
-            <p className="text-sm text-gray-600">Layanan yang dinonaktifkan</p>
-          </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "semua"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaLink
-                className={
-                  activeTab === "semua" ? "text-white" : "text-blue-500"
-                }
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <AdminMetricCard
+                label="Total Layanan"
+                value={layananData.length}
+                icon={<FaLink />}
+                tone="primary"
+                hint="Jenis layanan tersedia"
               />
-              <span>Semua Layanan</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("aktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "aktif"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaCheck
-                className={
-                  activeTab === "aktif" ? "text-white" : "text-green-500"
-                }
+              <AdminMetricCard
+                label="Layanan Aktif"
+                value={countAktif}
+                icon={<FaCheck />}
+                tone="info"
+                hint="Layanan yang aktif"
               />
-              <span>Aktif</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("nonaktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "nonaktif"
-                  ? "bg-gray-600 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaBan
-                className={
-                  activeTab === "nonaktif" ? "text-white" : "text-gray-500"
-                }
+              <AdminMetricCard
+                label="Layanan Nonaktif"
+                value={countNonaktif}
+                icon={<FaBan />}
+                tone="neutral"
+                hint="Layanan yang dinonaktifkan"
               />
-              <span>Nonaktif</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Services Table */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Daftar Layanan
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Kelola layanan administrasi desa yang tersedia untuk warga
-              </p>
             </div>
-            <button
-              onClick={handleAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+
+            <AdminToolbar>
+              <AdminFilterTabs
+                tabs={[
+                  {
+                    value: "semua",
+                    label: "Semua Layanan",
+                    count: layananData.length,
+                  },
+                  { value: "aktif", label: "Aktif", count: countAktif },
+                  { value: "nonaktif", label: "Nonaktif", count: countNonaktif },
+                ]}
+                value={activeTab}
+                onChange={setActiveTab}
+              />
+            </AdminToolbar>
+
+            <AdminTableShell
+              loading={isLoading}
+              error={error}
+              onRetry={() => void fetchPelayananData()}
+              empty={filteredData.length === 0}
+              emptyLabel="Tidak ada data layanan yang ditemukan."
             >
-              <FaPlus className="text-white" />
-              <span>Tambah Layanan</span>
-            </button>
-          </div>
-
-          {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-blue-500 text-4xl mx-auto mb-4" />
-              <p className="text-gray-600">Memuat data layanan...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
-              <button
-                onClick={fetchPelayananData}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Coba Lagi
-              </button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
-                      ID
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Nama Layanan
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Deskripsi
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Template Surat
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredData.length > 0 ? (
-                    filteredData.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          {item.id}
+              <div className="flex flex-col gap-4 border-b border-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-base font-semibold text-on-surface">
+                    Daftar Layanan
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    Kelola layanan administrasi desa yang tersedia untuk warga
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  className={adminPrimaryButtonClass}
+                >
+                  <FaPlus />
+                  Tambah Layanan
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-surface-container-low">
+                      <th className={thClass}>ID</th>
+                      <th className={thClass}>Nama Layanan</th>
+                      <th className={thClass}>Deskripsi</th>
+                      <th className={thClass}>Template Surat</th>
+                      <th className={thClass}>Status</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                        Aksi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredData.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="transition-colors hover:bg-surface-container-low/60"
+                      >
+                        <td className={tdClass}>{item.id}</td>
+                        <td className={`${tdClass} font-medium text-on-surface`}>
+                          {item.nama_layanan}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          <div className="flex flex-col">
-                            <div className="font-medium">
-                              {item.nama_layanan}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 max-w-xs">
+                        <td className={`${tdClass} max-w-xs`}>
                           {item.deskripsi}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
+                        <td className={tdClass}>
                           {item.id_surat_template ? (
                             <button
+                              type="button"
                               onClick={() =>
                                 handlePreviewTemplate(item.id_surat_template!)
                               }
-                              className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md text-xs font-medium hover:bg-indigo-100 transition-colors"
+                              className="rounded-lg bg-primary-fixed px-2 py-1 text-xs font-medium text-on-primary-fixed transition-colors hover:bg-primary-fixed-dim"
                               title="Lihat Template Surat"
                             >
                               {getTemplateName(item.id_surat_template)}
                             </button>
                           ) : (
-                            <span className="text-gray-400">-</span>
+                            <span className="text-muted-foreground">-</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              item.status === "aktif"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {item.status === "aktif" ? "Aktif" : "Nonaktif"}
-                          </span>
+                        <td className={tdClass}>
+                          <AdminStatusBadge
+                            label={item.status === "aktif" ? "Aktif" : "Nonaktif"}
+                            tone={item.status === "aktif" ? "primary" : "neutral"}
+                          />
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-2">
-                            {/* Tombol Buat Surat (Hanya muncul jika layanan aktif dan punya template) */}
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex justify-end gap-1">
                             {item.status === "aktif" &&
                               item.id_surat_template && (
                                 <button
+                                  type="button"
                                   onClick={() =>
                                     setSelectedPelayananForSurat(item)
                                   }
-                                  className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                                  className={iconButtonClass}
                                   title="Buatkan Surat untuk Warga"
+                                  aria-label={`Buat surat untuk ${item.nama_layanan}`}
                                 >
-                                  <FaFileSignature className="text-blue-600" />
+                                  <FaFileSignature className="text-primary" />
                                 </button>
                               )}
-
                             {item.id_surat_template && (
                               <button
+                                type="button"
                                 onClick={() =>
-                                  handlePreviewTemplate(
-                                    item.id_surat_template!,
-                                  )
+                                  handlePreviewTemplate(item.id_surat_template!)
                                 }
-                                className="p-1.5 bg-purple-100 rounded-md hover:bg-purple-200 transition-colors"
+                                className={iconButtonClass}
                                 title="Lihat Template Surat"
+                                aria-label={`Lihat template surat ${item.nama_layanan}`}
                               >
-                                <FaEye className="text-purple-600" />
+                                <FaEye className="text-primary" />
                               </button>
                             )}
-
                             <button
+                              type="button"
                               onClick={() => handleEdit(item.id)}
-                              className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                              className={iconButtonClass}
                               title="Edit"
+                              aria-label={`Edit layanan ${item.nama_layanan}`}
                             >
-                              <FaEdit className="text-gray-600" />
+                              <FaEdit />
                             </button>
                             <button
-                              onClick={() => handleToggleStatus(item.id)}
-                              className="p-1.5 bg-yellow-100 rounded-md hover:bg-yellow-200 transition-colors"
+                              type="button"
+                              onClick={() => void handleToggleStatus(item.id)}
+                              className={iconButtonClass}
                               title={
                                 item.status === "aktif"
                                   ? "Nonaktifkan"
                                   : "Aktifkan"
                               }
+                              aria-label={`Ubah status layanan ${item.nama_layanan}`}
                               disabled={isActionLoading}
                             >
-                              <FaBan className="text-yellow-600" />
+                              <FaBan className="text-[var(--warning-fg)]" />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleDelete(item.id)}
-                              className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                              className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-destructive/10 hover:text-destructive"
                               title="Hapus"
+                              aria-label={`Hapus layanan ${item.nama_layanan}`}
                             >
-                              <FaTrash className="text-red-600" />
+                              <FaTrash />
                             </button>
                           </div>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={6}
-                        className="px-4 py-8 text-center text-gray-500"
-                      >
-                        Tidak ada data layanan yang ditemukan.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </AdminTableShell>
+          </>
+        )}
       </div>
 
-      {/* Add Modal */}
-      {addModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Tambah Layanan Baru
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Masukkan informasi layanan yang akan ditambahkan
-              </p>
-            </div>
+      <ConfirmDialog
+        isOpen={deleteModal.isOpen}
+        title="Hapus layanan?"
+        description={`Layanan "${currentItem?.nama_layanan ?? ""}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`}
+        isLoading={isActionLoading}
+        onConfirm={() => void confirmDelete()}
+        onCancel={deleteModal.close}
+      />
 
-            <div className="space-y-4 mb-6">
-              <div>
-                <label
-                  htmlFor="nama_layanan"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Nama Layanan
-                </label>
-                <input
-                  id="nama_layanan"
-                  type="text"
-                  value={formData.nama_layanan}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nama_layanan: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Nama layanan"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="deskripsi"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Deskripsi
-                </label>
-                <textarea
-                  id="deskripsi"
-                  value={formData.deskripsi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, deskripsi: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Deskripsi singkat layanan"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="add-id_surat_template"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Template Surat (opsional)
-                </label>
-                <select
-                  id="add-id_surat_template"
-                  value={formData.id_surat_template || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      id_surat_template: e.target.value
-                        ? Number(e.target.value)
-                        : null,
-                    })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Tidak ada template</option>
-                  {templates.length > 0 ? (
-                    templates.map((tpl) => (
-                      <option key={tpl.id} value={tpl.id}>
-                        {tpl.kode} - {tpl.nama_template}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Belum ada template surat
-                    </option>
-                  )}
-                </select>
-                <p className="mt-1 text-xs text-gray-400">
-                  Template yang digunakan saat warga mencetak surat lewat
-                  layanan ini
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => addModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={saveNewItem}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {editModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">Edit Layanan</h3>
-              <p className="text-gray-600 text-sm">Ubah informasi layanan</p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <label
-                  htmlFor="edit-nama_layanan"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Nama Layanan
-                </label>
-                <input
-                  id="edit-nama_layanan"
-                  type="text"
-                  value={formData.nama_layanan}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nama_layanan: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="edit-deskripsi"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Deskripsi
-                </label>
-                <textarea
-                  id="edit-deskripsi"
-                  value={formData.deskripsi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, deskripsi: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="edit-id_surat_template"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Template Surat (opsional)
-                </label>
-                <select
-                  id="edit-id_surat_template"
-                  value={formData.id_surat_template || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      id_surat_template: e.target.value
-                        ? Number(e.target.value)
-                        : null,
-                    })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Tidak ada template</option>
-                  {templates.length > 0 ? (
-                    templates.map((tpl) => (
-                      <option key={tpl.id} value={tpl.id}>
-                        {tpl.kode} - {tpl.nama_template}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Belum ada template surat
-                    </option>
-                  )}
-                </select>
-                <p className="mt-1 text-xs text-gray-400">
-                  Kosongkan jika ingin mempertahankan template saat ini
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => editModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={saveEditedItem}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Simpan Perubahan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {deleteModal.isOpen && (
-        <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Hapus
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin menghapus layanan "
-                {currentItem?.nama_layanan}"? Tindakan ini tidak dapat
-                dibatalkan.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <BuatSuratModal
         isOpen={!!selectedPelayananForSurat}
         onClose={() => setSelectedPelayananForSurat(null)}
         pelayanan={selectedPelayananForSurat}
-      />
-      <TemplatePreviewModal
-        isOpen={!!previewTemplate}
-        item={previewTemplate}
-        onClose={() => setPreviewTemplate(null)}
       />
     </div>
   );

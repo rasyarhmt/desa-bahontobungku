@@ -1,146 +1,83 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  FaArrowLeft,
-  FaCalendarAlt,
-  FaExclamationTriangle,
-  FaNewspaper,
-  FaSpinner,
-  FaUser,
-} from "react-icons/fa";
+import { Newspaper } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import BeritaDetailView from "@/components/Berita/BeritaDetailView";
+import { BeritaError, BeritaLoading } from "@/components/Berita/BeritaStates";
+import { sortBerita } from "@/components/Berita/beritaView";
+import HomeFooter from "@/components/home/HomeFooter";
+import HomeHeader from "@/components/home/HomeHeader";
+import { useAsyncData } from "@/hooks";
 import { beritaApi } from "@/lib/api/berita";
-import { type Berita } from "@/lib/api/schemas";
-import { formatDateLong, formatImageUrl } from "@/lib/format";
-import { getSelectedBerita } from "@/lib/storage";
+import type { Berita } from "@/lib/api/schemas";
+import { CONTAINER_CLASS } from "@/lib/utils";
 
-const BeritaDetail = () => {
+interface BeritaDetailPayload {
+  item: Berita | null;
+  related: Berita[];
+}
+
+const EMPTY_PAYLOAD: BeritaDetailPayload = { item: null, related: [] };
+
+export default function BeritaDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [berita, setBerita] = useState<Berita | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBerita = async () => {
-      setIsLoading(true);
-      setError(null);
+  const { data, isLoading, error, refetch } = useAsyncData<BeritaDetailPayload>(
+    async () => {
+      if (!id) return EMPTY_PAYLOAD;
 
-      try {
-        // First try to get from localStorage (if navigated from Information page)
-        const storedBerita = getSelectedBerita();
+      const beritaId = Number(id);
+      if (!Number.isFinite(beritaId)) return EMPTY_PAYLOAD;
 
-        if (storedBerita) {
-          if (storedBerita.id.toString() === id) {
-            setBerita(storedBerita);
-            setIsLoading(false);
-            return;
-          }
-        }
+      const [item, published] = await Promise.all([
+        beritaApi.getBeritaById(beritaId),
+        beritaApi.getPublishedBerita().catch(() => []),
+      ]);
 
-        // If not in localStorage or ID doesn't match, fetch from API
-        const data = await beritaApi.getBeritaById(Number(id));
-        if (!data) {
-          setError("Berita tidak ditemukan");
-        } else {
-          setBerita(data);
-        }
-      } catch (err) {
-        console.error("Error fetching berita:", err);
-        setError("Gagal memuat data berita. Silakan coba lagi nanti.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchBerita();
-    } else {
-      // If no ID is provided, try to get from localStorage
-      const storedBerita = getSelectedBerita();
-      if (storedBerita) {
-        setBerita(storedBerita);
-        setIsLoading(false);
-      } else {
-        setError("Berita tidak ditemukan");
-        setIsLoading(false);
-      }
-    }
-  }, [id]);
+      return {
+        item,
+        related: sortBerita(
+          published.filter((berita) => berita.id !== beritaId),
+          "terbaru",
+        ).slice(0, 3),
+      };
+    },
+    EMPTY_PAYLOAD,
+    { errorMessage: "Gagal memuat berita. Silakan coba lagi nanti." },
+  );
 
   return (
-    <div
-      className="flex flex-col min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <Navbar />
-      <main className="flex-grow my-4 md:mx-40 pt-20 px-4 md:px-0">
-        <div className="mb-6">
-          <button
-            onClick={() => navigate("/Information")}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800"
-          >
-            <FaArrowLeft className="mr-2" /> Kembali ke daftar berita
-          </button>
-        </div>
+    <div className="home-theme min-h-screen bg-surface font-sans text-on-surface antialiased">
+      <HomeHeader />
 
+      <main className="min-h-screen w-full pt-28">
         {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <FaSpinner className="animate-spin text-4xl text-gray-500" />
-          </div>
+          <BeritaLoading />
         ) : error ? (
-          <div className="flex flex-col justify-center items-center py-20">
-            <FaExclamationTriangle className="text-4xl text-yellow-500 mb-2" />
-            <p className="text-gray-600">{error}</p>
-          </div>
-        ) : berita ? (
-          <div>
-            <div className="mb-6">
-              <h1 className="text-3xl md:text-4xl font-bold">{berita.judul}</h1>
-
-              <div className="flex flex-wrap gap-3 mt-4">
-                <span className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
-                  <FaCalendarAlt className="inline mr-2" />
-                  {formatDateLong(berita.tanggal_terbit)}
-                </span>
-                {berita.penulis && berita.penulis.length > 0 && (
-                  <span className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
-                    <FaUser className="inline mr-2" />
-                    {berita.penulis}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="mb-8">
-              {berita.foto ? (
-                <img
-                  src={formatImageUrl(berita.foto)}
-                  alt={berita.judul || "Gambar Berita"}
-                  className="w-full h-64 md:h-96 object-cover rounded-xl"
-                />
-              ) : (
-                <div className="w-full h-64 md:h-96 bg-gray-200 rounded-xl flex items-center justify-center">
-                  <FaNewspaper className="text-gray-400 text-5xl" />
-                </div>
-              )}
-            </div>
-
-            <div className="prose max-w-none">
-              <p className="whitespace-pre-line">{berita.isi}</p>
-            </div>
-          </div>
+          <BeritaError message={error} onRetry={() => void refetch()} />
+        ) : data.item ? (
+          <BeritaDetailView item={data.item} related={data.related} />
         ) : (
-          <div className="flex justify-center items-center py-20">
-            <p className="text-gray-500">Berita tidak ditemukan</p>
+          <div className={`mx-auto ${CONTAINER_CLASS} max-w-3xl py-20`}>
+            <div className="rounded-3xl bg-surface-container-lowest p-12 text-center shadow-sm">
+              <Newspaper className="mx-auto mb-4 size-12 text-outline-variant" />
+              <p className="text-sm font-semibold text-on-surface">
+                Berita tidak ditemukan.
+              </p>
+              <p className="mt-1 text-xs text-on-surface-variant">
+                Tautan mungkin tidak valid atau berita sudah tidak dipublikasikan.
+              </p>
+              <Link
+                to="/Information"
+                className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-xs font-semibold text-on-primary transition-colors hover:bg-tertiary-container"
+              >
+                Kembali ke Daftar Berita
+              </Link>
+            </div>
           </div>
         )}
       </main>
-      <Footer />
+
+      <HomeFooter />
     </div>
   );
-};
-
-export default BeritaDetail;
+}

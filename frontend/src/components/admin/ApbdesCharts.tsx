@@ -1,6 +1,7 @@
 import { Bar, Pie } from "react-chartjs-2";
 import "@/lib/chartjs";
 
+import { AdminCard, AdminSectionHeader } from "@/components/admin/admin-ui";
 import { formatCurrency, getMonthName } from "@/lib/format";
 
 import type { DanaMasukDisplay, DanaKeluarDisplay } from "./apbdesShared";
@@ -12,20 +13,31 @@ interface ApbdesChartsProps {
   filteredDanaKeluar: DanaKeluarDisplay[];
 }
 
+const chartColor = (variable: string, fallback: string) => {
+  if (typeof window === "undefined") return fallback;
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue(variable).trim() ||
+    fallback
+  );
+};
+
 export default function ApbdesCharts({
   totalPendapatan,
   totalPengeluaran,
   filteredDanaMasuk,
   filteredDanaKeluar,
 }: ApbdesChartsProps) {
+  const primary = chartColor("--primary-container", "#006948");
+  const danger = chartColor("--destructive", "#ef4444");
+
   const preparePieChartData = () => {
     return {
       labels: ["Pendapatan", "Pengeluaran"],
       datasets: [
         {
           data: [totalPendapatan, totalPengeluaran],
-          backgroundColor: ["#10b981", "#ef4444"],
-          borderColor: ["#10b981", "#ef4444"],
+          backgroundColor: [primary, danger],
+          borderColor: [primary, danger],
           borderWidth: 1,
         },
       ],
@@ -63,15 +75,15 @@ export default function ApbdesCharts({
         {
           label: "Pendapatan",
           data: incomeData,
-          backgroundColor: "rgba(16, 185, 129, 0.7)",
-          borderColor: "rgba(16, 185, 129, 1)",
+          backgroundColor: primary,
+          borderColor: primary,
           borderWidth: 1,
         },
         {
           label: "Pengeluaran",
           data: expenseData,
-          backgroundColor: "rgba(239, 68, 68, 0.7)",
-          borderColor: "rgba(239, 68, 68, 1)",
+          backgroundColor: danger,
+          borderColor: danger,
           borderWidth: 1,
         },
       ],
@@ -79,11 +91,9 @@ export default function ApbdesCharts({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Perbandingan Pendapatan dan Pengeluaran
-        </h3>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <AdminCard className="p-6">
+        <AdminSectionHeader title="Perbandingan Pendapatan dan Pengeluaran" />
         <div className="h-64">
           <Pie
             data={preparePieChartData()}
@@ -106,12 +116,10 @@ export default function ApbdesCharts({
             }}
           />
         </div>
-      </div>
+      </AdminCard>
 
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Pendapatan dan Pengeluaran Bulanan
-        </h3>
+      <AdminCard className="p-6">
+        <AdminSectionHeader title="Pendapatan dan Pengeluaran Bulanan" />
         <div className="h-64">
           <Bar
             data={prepareBarChartData()}
@@ -146,7 +154,7 @@ export default function ApbdesCharts({
             }}
           />
         </div>
-      </div>
+      </AdminCard>
     </div>
   );
 }

@@ -1,6 +1,17 @@
-import { FaUserPlus, FaTimes, FaPlus, FaSpinner } from "react-icons/fa";
+import { FaPlus, FaSpinner } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
+
+import {
+  AdminField,
+  AdminFormSection,
+  AdminFormView,
+  AdminInput,
+  AdminSelect,
+  adminFieldClass,
+  adminPrimaryButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
 import { useDisclosure } from "@/hooks";
 import { toDateInputValue } from "@/lib/format";
 import { toast } from "@/lib/toast";
@@ -145,81 +156,139 @@ const PopupForm = ({
     handleInputChange,
   ]);
 
-  return (
-    <div
-      className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 mb-6"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <FaUserPlus className="text-blue-500" size={20} />
-            </div>
-            <h2 className="font-semibold text-xl text-gray-800">
-              {isEditing ? "Edit Data Penduduk" : "Tambah Data Penduduk"}
-            </h2>
-          </div>
-          <button
-            onClick={resetForm}
-            className="text-gray-500 hover:text-gray-700"
-            title="Tutup"
-          >
-            <FaTimes size={20} />
-          </button>
-        </div>
+  const filteredKK = kepalaKeluargaList
+    .filter((kk) => kk.id !== formData.id)
+    .filter((kk) => {
+      const q = searchKK.toLowerCase();
+      return (
+        kk.nama.toLowerCase().includes(q) || kk.nik.toLowerCase().includes(q)
+      );
+    });
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nama Lengkap
-              </label>
-              <input
+  return (
+    <AdminFormView
+      eyebrow="Kependudukan"
+      title={isEditing ? "Edit Data Penduduk" : "Tambah Data Penduduk"}
+      description="Lengkapi data penduduk dan hubungan keluarganya."
+      onBack={resetForm}
+    >
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <AdminFormSection
+          number={1}
+          title="Data Pribadi"
+          description="Identitas dan data dasar penduduk."
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Nama Lengkap" htmlFor="penduduk-nama" required>
+              <AdminInput
+                id="penduduk-nama"
                 type="text"
                 name="nama"
                 value={formData.nama}
                 onChange={handleInputChange}
                 required
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                NIK
-              </label>
-              <input
+            </AdminField>
+
+            <AdminField label="NIK" htmlFor="penduduk-nik" required>
+              <AdminInput
+                id="penduduk-nik"
                 type="text"
                 name="nik"
                 value={formData.nik}
                 onChange={handleInputChange}
                 required
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Agama
-              </label>
-              <select
+            </AdminField>
+
+            <AdminField label="Agama" htmlFor="penduduk-agama" required>
+              <AdminSelect
+                id="penduduk-agama"
                 name="agama"
                 value={formData.agama}
                 onChange={handleInputChange}
                 required
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
               >
                 <option value="Islam">Islam</option>
                 <option value="Kristen">Kristen</option>
                 <option value="Hindu">Hindu</option>
                 <option value="Budha">Budha</option>
                 <option value="Lainnya">Lainnya</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
+              </AdminSelect>
+            </AdminField>
+
+            <AdminField label="Jenis Kelamin" htmlFor="penduduk-jk" required>
+              <AdminSelect
+                id="penduduk-jk"
+                name="jenisKelamin"
+                value={formData.jenisKelamin}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </AdminSelect>
+            </AdminField>
+
+            <AdminField label="Alamat" htmlFor="penduduk-alamat" required>
+              <AdminInput
+                id="penduduk-alamat"
+                type="text"
+                name="alamat"
+                value={formData.alamat}
+                onChange={handleInputChange}
+                required
+              />
+            </AdminField>
+
+            <AdminField label="Pekerjaan" htmlFor="penduduk-pekerjaan">
+              <AdminInput
+                id="penduduk-pekerjaan"
+                type="text"
+                name="pekerjaan"
+                value={formData.pekerjaan}
+                onChange={handleInputChange}
+                placeholder="Contoh: Petani"
+              />
+            </AdminField>
+
+            <AdminField
+              label="Tanggal Lahir"
+              htmlFor="penduduk-tanggal-lahir"
+              required
+            >
+              <AdminInput
+                id="penduduk-tanggal-lahir"
+                type="date"
+                name="tanggalLahir"
+                value={toDateInputValue(formData.tanggalLahir) || ""}
+                onChange={handleInputChange}
+                required
+              />
+            </AdminField>
+
+            <AdminField label="Tempat Lahir" htmlFor="penduduk-tempat-lahir">
+              <AdminInput
+                id="penduduk-tempat-lahir"
+                type="text"
+                name="tempatLahir"
+                value={formData.tempatLahir}
+                onChange={handleInputChange}
+                placeholder="Contoh: Palu"
+              />
+            </AdminField>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection
+          number={2}
+          title="Status & Keluarga"
+          description="Status keluarga menentukan apakah kepala keluarga perlu dipilih."
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Status" htmlFor="penduduk-status" required>
+              <AdminSelect
+                id="penduduk-status"
                 name="status"
                 value={formData.id_status_keluarga ?? ""}
                 onChange={(e) => {
@@ -237,7 +306,6 @@ const PopupForm = ({
                   });
                 }}
                 required
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
               >
                 <option value="" disabled>
                   {statusKeluargaList.length === 0
@@ -250,10 +318,11 @@ const PopupForm = ({
                   </option>
                 ))}
                 <option value={ADD_STATUS_VALUE}>+ Tambah status baru</option>
-              </select>
+              </AdminSelect>
+
               {isAddingStatus && (
                 <div className="mt-2 flex items-center gap-2">
-                  <input
+                  <AdminInput
                     type="text"
                     value={newStatusName}
                     onChange={(e) => setNewStatusName(e.target.value)}
@@ -265,13 +334,13 @@ const PopupForm = ({
                     }}
                     placeholder="Nama status baru..."
                     autoFocus
-                    className="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                    className="flex-1"
                   />
                   <button
                     type="button"
                     onClick={() => void saveNewStatus()}
                     disabled={isSavingStatus}
-                    className="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 disabled:opacity-60"
+                    className={adminPrimaryButtonClass}
                   >
                     {isSavingStatus ? (
                       <FaSpinner className="animate-spin" />
@@ -286,74 +355,17 @@ const PopupForm = ({
                       setIsAddingStatus(false);
                       setNewStatusName("");
                     }}
-                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200"
+                    className={adminSecondaryButtonClass}
                   >
                     Batal
                   </button>
                 </div>
               )}
-            </div>
+            </AdminField>
 
-            {/* Alamat & Pekerjaan sekarang sejajar */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Alamat
-              </label>
-              <input
-                type="text"
-                name="alamat"
-                value={formData.alamat}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pekerjaan
-              </label>
-              <input
-                type="text"
-                name="pekerjaan"
-                value={formData.pekerjaan}
-                onChange={handleInputChange}
-                placeholder="Contoh: Petani"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tanggal Lahir
-              </label>
-              <input
-                type="date"
-                id="tanggalLahir"
-                name="tanggalLahir"
-                value={toDateInputValue(formData.tanggalLahir) || ""}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tempat Lahir
-              </label>
-              <input
-                type="text"
-                name="tempatLahir"
-                value={formData.tempatLahir}
-                onChange={handleInputChange}
-                placeholder="Contoh: Palu"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                No. KK
-              </label>
-              <input
+            <AdminField label="No. KK" htmlFor="penduduk-nomor-kk" required>
+              <AdminInput
+                id="penduduk-nomor-kk"
                 type="text"
                 name="nomor_kk"
                 value={formData.nomor_kk}
@@ -362,10 +374,9 @@ const PopupForm = ({
                 maxLength={16}
                 required
                 disabled={!isKepalaKeluarga && !useOwnKK}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               {!isKepalaKeluarga && (
-                <label className="mt-1.5 flex items-start gap-2 text-xs text-gray-500 cursor-pointer">
+                <label className="mt-1.5 flex cursor-pointer items-start gap-2 text-xs text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={useOwnKK}
@@ -388,7 +399,7 @@ const PopupForm = ({
                         }
                       }
                     }}
-                    className="accent-blue-500 mt-0.5"
+                    className="mt-0.5 accent-primary"
                   />
                   <span>
                     Gunakan No. KK sendiri (mis. tinggal sendiri / membentuk KK
@@ -396,88 +407,56 @@ const PopupForm = ({
                   </span>
                 </label>
               )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Jenis Kelamin
-              </label>
-              <select
-                name="jenisKelamin"
-                value={formData.jenisKelamin}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              >
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-              </select>
-            </div>
+            </AdminField>
           </div>
 
           {!isKepalaKeluarga && (
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pilih Kepala Keluarga
-              </label>
-              <input
-                type="text"
-                ref={inputRef}
-                placeholder="Cari nama/NIK kepala keluarga..."
-                value={searchKK}
-                onChange={(e) => {
-                  setSearchKK(e.target.value);
-                  setIsFocused(true);
-                }}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => {
-                  setTimeout(() => setIsFocused(false), 100);
-                }}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              />
+            <div className="relative mt-4">
+              <AdminField label="Pilih Kepala Keluarga" htmlFor="penduduk-kk-search">
+                <input
+                  id="penduduk-kk-search"
+                  type="text"
+                  ref={inputRef}
+                  placeholder="Cari nama/NIK kepala keluarga..."
+                  value={searchKK}
+                  onChange={(e) => {
+                    setSearchKK(e.target.value);
+                    setIsFocused(true);
+                  }}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => {
+                    setTimeout(() => setIsFocused(false), 100);
+                  }}
+                  className={adminFieldClass}
+                />
+              </AdminField>
 
               {isFocused && (
-                <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-lg">
-                  {kepalaKeluargaList
-                    .filter((kk) => kk.id !== formData.id)
-                    .filter((kk) => {
-                      const q = searchKK.toLowerCase();
-                      return (
-                        kk.nama.toLowerCase().includes(q) ||
-                        kk.nik.toLowerCase().includes(q)
-                      );
-                    })
-                    .map((kk) => (
-                      <li
-                        key={kk.id}
-                        onMouseDown={() => {
-                          handleInputChange({
-                            target: { name: "id_kepalakeluarga", value: kk.id },
-                          });
-                          handleInputChange({
-                            target: {
-                              name: "nomor_kk",
-                              value: kk.nomor_kk || "",
-                            },
-                          });
-                          setUseOwnKK(false);
-                          setSearchKK(`${kk.nama} (${kk.nik})`);
-                          setIsFocused(false);
-                        }}
-                        className="p-2 cursor-pointer hover:bg-gray-100"
-                      >
-                        {kk.nama} ({kk.nik})
-                      </li>
-                    ))}
-                  {kepalaKeluargaList
-                    .filter((kk) => kk.id !== formData.id)
-                    .filter((kk) => {
-                      const q = searchKK.toLowerCase();
-                      return (
-                        kk.nama.toLowerCase().includes(q) ||
-                        kk.nik.toLowerCase().includes(q)
-                      );
-                    }).length === 0 && (
-                    <li className="p-2 text-gray-500">
+                <ul className="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-border bg-surface-container-lowest shadow-lg">
+                  {filteredKK.map((kk) => (
+                    <li
+                      key={kk.id}
+                      onMouseDown={() => {
+                        handleInputChange({
+                          target: { name: "id_kepalakeluarga", value: kk.id },
+                        });
+                        handleInputChange({
+                          target: {
+                            name: "nomor_kk",
+                            value: kk.nomor_kk || "",
+                          },
+                        });
+                        setUseOwnKK(false);
+                        setSearchKK(`${kk.nama} (${kk.nik})`);
+                        setIsFocused(false);
+                      }}
+                      className="cursor-pointer px-4 py-2 text-sm text-on-surface transition-colors hover:bg-surface-container"
+                    >
+                      {kk.nama} ({kk.nik})
+                    </li>
+                  ))}
+                  {filteredKK.length === 0 && (
+                    <li className="px-4 py-2 text-sm text-muted-foreground">
                       Tidak ada hasil ditemukan
                     </li>
                   )}
@@ -485,25 +464,15 @@ const PopupForm = ({
               )}
             </div>
           )}
+        </AdminFormSection>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={() => resetForm()}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              {isEditing ? "Update" : "Simpan"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex justify-end gap-2">
+          <button type="submit" className={adminPrimaryButtonClass}>
+            {isEditing ? "Update" : "Simpan"}
+          </button>
+        </div>
+      </form>
+    </AdminFormView>
   );
 };
 

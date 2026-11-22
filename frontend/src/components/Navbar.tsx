@@ -5,12 +5,12 @@ import { Menu, X } from "lucide-react";
 import Logo from "@/assets/ico-morowali.png";
 import { useDisclosure } from "@/hooks";
 
-interface NavLink {
+export interface NavLink {
   name: string;
   path: string;
 }
 
-const NAV_LINKS: NavLink[] = [
+export const NAV_LINKS: NavLink[] = [
   { name: "Home", path: "/" },
   { name: "Profil Desa", path: "/ProfilDesa" },
   { name: "Infografis", path: "/Infografis" },

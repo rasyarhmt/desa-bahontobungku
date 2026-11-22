@@ -1,16 +1,34 @@
 import { useState } from "react";
 import {
   FaBullhorn,
-  FaCalendarAlt,
   FaCheck,
   FaClock,
   FaEdit,
   FaEye,
   FaPlus,
-  FaSearch,
-  FaSpinner,
   FaTrash,
 } from "react-icons/fa";
+
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import {
+  AdminDetailGrid,
+  AdminDetailItem,
+  AdminDetailView,
+  AdminField,
+  AdminFilterTabs,
+  AdminFormSection,
+  AdminFormView,
+  AdminInput,
+  AdminMetricCard,
+  AdminPageHeader,
+  AdminSearchInput,
+  AdminStatusBadge,
+  AdminTableShell,
+  AdminTextarea,
+  AdminToolbar,
+  adminPrimaryButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
 import { adminPengumumanApi } from "@/lib/api/admin";
 import { getAuthState } from "@/lib/auth";
 import { formatDateLong, formatDateShort, toDateInputValue } from "@/lib/format";
@@ -158,17 +176,6 @@ const PengumumanAdmin = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Aktif":
-        return "bg-green-100 text-green-800";
-      case "Kadaluarsa":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const handleReactivate = async (id: number) => {
     const ok = await runAction(
       () => {
@@ -192,595 +199,324 @@ const PengumumanAdmin = () => {
     if (ok) setShowPreviewModal(false);
   };
 
-  return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaBullhorn className="text-purple-500 text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Manajemen Pengumuman
-          </h1>
-        </div>
+  const renderForm = (isEdit: boolean) => {
+    const judulId = isEdit ? "edit-judul" : "judul";
+    const mulaiId = isEdit ? "edit-tanggalMulai" : "tanggal_mulai";
+    const selesaiId = isEdit ? "edit-tanggalSelesai" : "tanggal_selesai";
+    const isiId = isEdit ? "edit-isi" : "isi";
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Total Pengumuman
-              </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaBullhorn className="text-purple-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {pengumumanData.length}
-            </div>
-            <p className="text-sm text-gray-600">Pengumuman tersimpan</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Pengumuman Aktif
-              </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaCheck className="text-green-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countAktif}
-            </div>
-            <p className="text-sm text-gray-600">Pengumuman aktif</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Pengumuman Kadaluarsa
-              </h3>
-              <div className="bg-gray-100 p-2 rounded-lg">
-                <FaClock className="text-gray-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countKadaluarsa}
-            </div>
-            <p className="text-sm text-gray-600">Pengumuman kadaluarsa</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
+    return (
+      <AdminFormView
+        eyebrow="Manajemen Pengumuman"
+        title={isEdit ? "Edit Pengumuman" : "Tambah Pengumuman Baru"}
+        description={
+          isEdit
+            ? "Ubah informasi pengumuman"
+            : "Masukkan informasi pengumuman yang akan ditambahkan"
+        }
+        onBack={isEdit ? editModal.close : addModal.close}
+        actions={
+          <>
             <button
-              onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "semua"
-                  ? "bg-purple-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              type="button"
+              onClick={isEdit ? editModal.close : addModal.close}
+              className={adminSecondaryButtonClass}
             >
-              <FaBullhorn
-                className={
-                  activeTab === "semua" ? "text-white" : "text-purple-500"
-                }
-              />
-              <span>Semua Pengumuman</span>
+              Batal
             </button>
             <button
-              onClick={() => setActiveTab("aktif")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "aktif"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              type="button"
+              onClick={isEdit ? () => void saveEditedItem() : () => void saveNewItem()}
+              className={adminPrimaryButtonClass}
             >
-              <FaCheck
-                className={
-                  activeTab === "aktif" ? "text-white" : "text-green-500"
-                }
-              />
-              <span>Aktif</span>
+              {isEdit ? "Simpan Perubahan" : "Simpan"}
             </button>
-            <button
-              onClick={() => setActiveTab("kadaluarsa")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "kadaluarsa"
-                  ? "bg-gray-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaClock
-                className={
-                  activeTab === "kadaluarsa" ? "text-white" : "text-gray-500"
+          </>
+        }
+      >
+        <AdminFormSection number={1} title="Informasi Pengumuman">
+          <div className="grid gap-4">
+            <AdminField label="Judul Pengumuman" htmlFor={judulId} required>
+              <AdminInput
+                id={judulId}
+                type="text"
+                value={formData.judul}
+                onChange={(event) =>
+                  setFormData({ ...formData, judul: event.target.value })
                 }
+                placeholder="Masukkan judul pengumuman"
               />
-              <span>Kadaluarsa</span>
-            </button>
-          </div>
-        </div>
+            </AdminField>
 
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Daftar Pengumuman
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Kelola pengumuman dan informasi penting
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Cari pengumuman..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 w-64"
+            <div className="grid gap-4 sm:grid-cols-2">
+              <AdminField label="Tanggal Mulai" htmlFor={mulaiId} required>
+                <AdminInput
+                  id={mulaiId}
+                  type="date"
+                  value={formData.tanggalMulai}
+                  onChange={(event) =>
+                    setFormData({
+                      ...formData,
+                      tanggalMulai: event.target.value,
+                    })
+                  }
                 />
-              </div>
-              <button
-                onClick={handleAdd}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                <FaPlus className="text-white" />
-                <span>Tambah Pengumuman</span>
-              </button>
+              </AdminField>
+
+              <AdminField label="Tanggal Berakhir" htmlFor={selesaiId} required>
+                <AdminInput
+                  id={selesaiId}
+                  type="date"
+                  value={formData.tanggalSelesai}
+                  onChange={(event) =>
+                    setFormData({
+                      ...formData,
+                      tanggalSelesai: event.target.value,
+                    })
+                  }
+                />
+              </AdminField>
             </div>
           </div>
+        </AdminFormSection>
 
-          {isLoading ? (
-            <div className="text-center py-8">
-              <FaSpinner className="animate-spin text-4xl text-purple-500 mx-auto mb-4" />
-              <p className="mt-2 text-gray-600">Memuat data...</p>
+        <AdminFormSection number={2} title="Isi Pengumuman">
+          <AdminField label="Isi Pengumuman" htmlFor={isiId} required>
+            <AdminTextarea
+              id={isiId}
+              value={formData.isi}
+              onChange={(event) =>
+                setFormData({ ...formData, isi: event.target.value })
+              }
+              className="min-h-44"
+              placeholder="Isi pengumuman lengkap"
+            />
+          </AdminField>
+        </AdminFormSection>
+      </AdminFormView>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-surface">
+      <div className="w-full space-y-6">
+        {addModal.isOpen ? (
+          renderForm(false)
+        ) : editModal.isOpen ? (
+          renderForm(true)
+        ) : showPreviewModal && previewItem ? (
+          <AdminDetailView
+            eyebrow="Detail Pengumuman"
+            title={previewItem.judul}
+            description="Informasi lengkap pengumuman."
+            onBack={() => setShowPreviewModal(false)}
+            actions={
+              previewItem.status === "Kadaluarsa" ? (
+                <button
+                  type="button"
+                  onClick={() => void handleReactivate(previewItem.id)}
+                  className={adminPrimaryButtonClass}
+                >
+                  <FaCheck />
+                  Aktifkan Kembali
+                </button>
+              ) : undefined
+            }
+          >
+            <AdminDetailGrid>
+              <AdminDetailItem label="Tanggal Mulai">
+                {previewItem.tanggal
+                  ? formatDateLong(previewItem.tanggal)
+                  : null}
+              </AdminDetailItem>
+              <AdminDetailItem label="Tanggal Berakhir">
+                {previewItem.tanggalBerakhir
+                  ? formatDateLong(previewItem.tanggalBerakhir)
+                  : null}
+              </AdminDetailItem>
+              <AdminDetailItem label="Status">
+                <AdminStatusBadge
+                  label={previewItem.status}
+                  tone={
+                    previewItem.status === "Aktif" ? "success" : "neutral"
+                  }
+                />
+              </AdminDetailItem>
+            </AdminDetailGrid>
+
+            <section className="mt-6 border-t border-border pt-6">
+              <h2 className="mb-2 text-sm font-semibold text-on-surface">
+                Isi Pengumuman
+              </h2>
+              <div className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
+                {previewItem.isi}
+              </div>
+            </section>
+          </AdminDetailView>
+        ) : (
+          <>
+            <AdminPageHeader
+              eyebrow="Manajemen Konten"
+              title="Manajemen Pengumuman"
+              description="Kelola pengumuman dan informasi penting desa."
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <AdminMetricCard
+                label="Total Pengumuman"
+                value={pengumumanData.length}
+                icon={<FaBullhorn />}
+                hint="Pengumuman tersimpan"
+              />
+              <AdminMetricCard
+                label="Pengumuman Aktif"
+                value={countAktif}
+                icon={<FaCheck />}
+                tone="success"
+                hint="Pengumuman aktif"
+              />
+              <AdminMetricCard
+                label="Pengumuman Kadaluarsa"
+                value={countKadaluarsa}
+                icon={<FaClock />}
+                tone="neutral"
+                hint="Pengumuman kadaluarsa"
+              />
             </div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
-              <button
-                onClick={fetchAllPengumuman}
-                className="mt-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                Coba Lagi
-              </button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 rounded-tl-lg">
-                      ID
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Judul
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Tanggal Mulai
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Tanggal Selesai
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-600 rounded-tr-lg">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredData.length > 0 ? (
-                    filteredData.map((pengumuman) => (
-                      <tr key={pengumuman.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-800">
+
+            <AdminToolbar>
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                <AdminFilterTabs<string>
+                  tabs={[
+                    {
+                      value: "semua",
+                      label: "Semua Pengumuman",
+                      count: pengumumanData.length,
+                    },
+                    { value: "aktif", label: "Aktif", count: countAktif },
+                    {
+                      value: "kadaluarsa",
+                      label: "Kadaluarsa",
+                      count: countKadaluarsa,
+                    },
+                  ]}
+                  value={activeTab}
+                  onChange={setActiveTab}
+                />
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <AdminSearchInput
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder="Cari pengumuman..."
+                    className="sm:w-72"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAdd}
+                    className={adminPrimaryButtonClass}
+                  >
+                    <FaPlus />
+                    Tambah Pengumuman
+                  </button>
+                </div>
+              </div>
+            </AdminToolbar>
+
+            <AdminTableShell
+              loading={isLoading}
+              error={error}
+              onRetry={() => void fetchAllPengumuman()}
+              empty={filteredData.length === 0}
+              emptyLabel="Tidak ada data pengumuman yang ditemukan."
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[860px] text-left">
+                  <thead className="bg-surface-container-low text-xs uppercase tracking-wide text-muted-foreground">
+                    <tr>
+                      <th className="px-6 py-3 font-medium">ID</th>
+                      <th className="px-3 py-3 font-medium">Judul</th>
+                      <th className="px-3 py-3 font-medium">Tanggal Mulai</th>
+                      <th className="px-3 py-3 font-medium">Tanggal Selesai</th>
+                      <th className="px-3 py-3 font-medium">Status</th>
+                      <th className="px-6 py-3 text-right font-medium">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredData.map((pengumuman) => (
+                      <tr
+                        key={pengumuman.id}
+                        className="transition-colors hover:bg-surface-container-low"
+                      >
+                        <td className="px-6 py-4 text-sm text-on-surface-variant">
                           {pengumuman.id}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                        <td className="px-3 py-4 text-sm font-medium text-on-surface">
                           {pengumuman.judul}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          <div className="flex items-center gap-2">
-                            <FaCalendarAlt className="text-gray-400" />
-                            {formatDateShort(pengumuman.tanggalMulai)}
-                          </div>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-on-surface-variant">
+                          {formatDateShort(pengumuman.tanggalMulai)}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                          <div className="flex items-center gap-2">
-                            <FaCalendarAlt className="text-gray-400" />
-                            {formatDateShort(pengumuman.tanggalSelesai)}
-                          </div>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-on-surface-variant">
+                          {formatDateShort(pengumuman.tanggalSelesai)}
                         </td>
-                        <td className="px-4 py-3 text-sm">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                              pengumuman.status,
-                            )}`}
-                          >
-                            {pengumuman.status}
-                          </span>
+                        <td className="px-3 py-4">
+                          <AdminStatusBadge
+                            label={pengumuman.status}
+                            tone={
+                              pengumuman.status === "Aktif"
+                                ? "success"
+                                : "neutral"
+                            }
+                          />
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-2">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
+                              type="button"
                               onClick={() => handlePreview(pengumuman.id)}
-                              className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                              aria-label={`Lihat detail ${pengumuman.judul}`}
                               title="Lihat Detail"
+                              className="rounded-xl p-2 text-primary transition-colors hover:bg-primary-fixed"
                             >
-                              <FaEye className="text-blue-600" />
+                              <FaEye />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleEdit(pengumuman.id)}
-                              className="p-1.5 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                              aria-label={`Edit ${pengumuman.judul}`}
                               title="Edit"
+                              className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
                             >
-                              <FaEdit className="text-gray-600" />
+                              <FaEdit />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleDelete(pengumuman.id)}
-                              className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
+                              aria-label={`Hapus ${pengumuman.judul}`}
                               title="Hapus"
+                              className="rounded-xl p-2 text-destructive transition-colors hover:bg-destructive/10"
                             >
-                              <FaTrash className="text-red-600" />
+                              <FaTrash />
                             </button>
                           </div>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={7}
-                        className="px-4 py-8 text-center text-gray-500"
-                      >
-                        Tidak ada data pengumuman yang ditemukan.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </AdminTableShell>
+          </>
+        )}
       </div>
 
-      {addModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Tambah Pengumuman Baru
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Masukkan informasi pengumuman yang akan ditambahkan
-              </p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <label
-                  htmlFor="judul"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Judul Pengumuman
-                </label>
-                <input
-                  id="judul"
-                  type="text"
-                  value={formData.judul}
-                  onChange={(e) =>
-                    setFormData({ ...formData, judul: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Masukkan judul pengumuman"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="tanggal_mulai"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Tanggal Mulai
-                  </label>
-                  <input
-                    id="tanggal_mulai"
-                    type="date"
-                    value={formData.tanggalMulai}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tanggalMulai: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="tanggal_selesai"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Tanggal Berakhir
-                  </label>
-                  <input
-                    id="tanggal_selesai"
-                    type="date"
-                    value={formData.tanggalSelesai}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        tanggalSelesai: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="isi"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Isi Pengumuman
-                </label>
-                <textarea
-                  id="isi"
-                  value={formData.isi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isi: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-[150px]"
-                  placeholder="Isi pengumuman lengkap"
-                ></textarea>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={addModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={saveNewItem}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {editModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Edit Pengumuman
-              </h3>
-              <p className="text-gray-600 text-sm">Ubah informasi pengumuman</p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <label
-                  htmlFor="edit-judul"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Judul Pengumuman
-                </label>
-                <input
-                  id="edit-judul"
-                  type="text"
-                  value={formData.judul}
-                  onChange={(e) =>
-                    setFormData({ ...formData, judul: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="edit-tanggalMulai"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Tanggal Mulai
-                  </label>
-                  <input
-                    id="edit-tanggalMulai"
-                    type="date"
-                    value={formData.tanggalMulai}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tanggalMulai: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="edit-tanggalSelesai"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Tanggal Berakhir
-                  </label>
-                  <input
-                    id="edit-tanggalSelesai"
-                    type="date"
-                    value={formData.tanggalSelesai}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        tanggalSelesai: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="edit-isi"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Isi Pengumuman
-                </label>
-                <textarea
-                  id="edit-isi"
-                  value={formData.isi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isi: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-[150px]"
-                ></textarea>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={editModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={saveEditedItem}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                Simpan Perubahan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {deleteModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Hapus
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin menghapus pengumuman "
-                {currentItem?.judul}"? Tindakan ini tidak dapat dibatalkan.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={deleteModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showPreviewModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-800">
-                <FaBullhorn className="inline-block mr-2 text-purple-500" />
-                Detail Pengumuman
-              </h3>
-              <button
-                onClick={() => setShowPreviewModal(false)}
-                className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className="mb-6">
-              <div className="bg-purple-50 p-4 rounded-lg mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  {previewItem?.judul}
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-500">Tanggal Mulai</p>
-                    <p className="font-medium flex items-center gap-1">
-                      <FaCalendarAlt className="text-gray-400" />
-                      {previewItem?.tanggal && formatDateLong(previewItem.tanggal)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Tanggal Berakhir</p>
-                    <p className="font-medium flex items-center gap-1">
-                      <FaCalendarAlt className="text-gray-400" />
-                      {previewItem?.tanggalBerakhir &&
-                        formatDateLong(previewItem.tanggalBerakhir)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-lg p-4">
-                <h4 className="text-lg font-medium text-gray-800 mb-2">
-                  Isi Pengumuman
-                </h4>
-                <div className="text-gray-700 whitespace-pre-line">
-                  {previewItem?.isi}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                onClick={() => setShowPreviewModal(false)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Tutup
-              </button>
-              {previewItem?.status === "Kadaluarsa" && (
-                <button
-                  onClick={() => handleReactivate(previewItem.id)}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
-                >
-                  <FaCheck className="text-white" />
-                  <span>Aktifkan Kembali</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={deleteModal.isOpen}
+        title="Hapus pengumuman?"
+        description={`Apakah Anda yakin ingin menghapus pengumuman "${currentItem?.judul}"? Tindakan ini tidak dapat dibatalkan.`}
+        onConfirm={() => void confirmDelete()}
+        onCancel={deleteModal.close}
+      />
     </div>
   );
 };

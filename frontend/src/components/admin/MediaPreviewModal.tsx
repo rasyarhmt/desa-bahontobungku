@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import {
-  FaSpinner,
   FaDownload,
-  FaTimesCircle,
   FaExclamationTriangle,
+  FaExternalLinkAlt,
+  FaSpinner,
+  FaTimes,
 } from "react-icons/fa";
 
 import { adminMediaUtils } from "@/lib/api/admin";
 import { formatDateLong } from "@/lib/format";
-import { toast } from "@/lib/toast";
 
+import ModalPortal from "./ModalPortal";
 import { getMediaIcon, type MediaItem } from "./mediaShared";
 
 interface MediaPreviewModalProps {
@@ -17,6 +18,9 @@ interface MediaPreviewModalProps {
   item: MediaItem | null;
   onClose: () => void;
 }
+
+const fieldClass =
+  "rounded-2xl border border-border bg-surface-container-low px-4 py-3";
 
 export default function MediaPreviewModal({
   isOpen,
@@ -33,68 +37,62 @@ export default function MediaPreviewModal({
     }
   }, [isOpen, item]);
 
-  const handleDownload = (
-    e: React.MouseEvent,
-    fileUrl: string,
-    filename?: string,
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
+  useEffect(() => {
+    if (!isOpen) return;
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !item) return null;
+
+  const mediaUrl = adminMediaUtils.getMediaUrl(item.file);
+  const thumbnailUrl = adminMediaUtils.getVideoThumbnail(item);
+
+  const handleDownload = (event: MouseEvent) => {
+    event.preventDefault();
     try {
       const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download = filename || "download";
-
+      link.href = mediaUrl;
+      link.download = item.file.split("/").pop() || item.nama;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (err) {
-      console.error("Download error:", err);
-      toast.info("Gagal mengunduh file. Silakan coba lagi.");
+    } catch {
+      window.open(mediaUrl, "_blank");
     }
   };
 
   const renderMediaContent = () => {
-    if (!item) return null;
-
-    const mediaUrl = adminMediaUtils.getMediaUrl(item.file);
-
-    const mediaTypeMap: Record<string, React.JSX.Element> = {
-      foto: (
-        <div className="flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
-          {mediaLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-10">
-              <FaSpinner className="animate-spin text-4xl text-white" />
-            </div>
-          )}
-          <img
-            src={mediaUrl || "/placeholder.svg?height=600&width=800"}
-            alt={item.nama}
-            className="max-w-full max-h-[70vh] object-contain"
-            onLoad={() => setMediaLoading(false)}
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              setMediaLoading(false);
-              setMediaError(true);
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/placeholder.svg?height=600&width=800";
-            }}
-          />
+    if (!mediaUrl) {
+      return (
+        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl bg-surface-container text-center">
+          <FaExclamationTriangle className="mb-3 text-2xl text-muted-foreground" />
+          <p className="text-sm font-medium text-on-surface">
+            Berkas media tidak tersedia.
+          </p>
         </div>
-      ),
-      video: (
-        <div className="relative bg-black rounded-lg overflow-hidden">
-          {mediaLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-10">
-              <FaSpinner className="animate-spin text-4xl text-white" />
+      );
+    }
+
+    if (item.tipe === "video") {
+      return (
+        <div className="relative overflow-hidden rounded-2xl bg-black">
+          {mediaLoading && !mediaError && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-inverse-surface/50">
+              <FaSpinner className="animate-spin text-3xl text-white" />
             </div>
           )}
           <video
             src={mediaUrl}
+            poster={thumbnailUrl || undefined}
             controls
             autoPlay
-            className="w-full max-h-[70vh]"
-            poster={adminMediaUtils.getVideoThumbnail(item)}
+            className="max-h-[55vh] w-full"
             onLoadedData={() => setMediaLoading(false)}
             onError={() => {
               setMediaLoading(false);
@@ -104,32 +102,37 @@ export default function MediaPreviewModal({
             Browser Anda tidak mendukung pemutaran video.
           </video>
           {mediaError && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
-              <FaExclamationTriangle className="text-red-500 text-5xl mb-4" />
-              <p className="text-gray-700 mb-4">Video tidak dapat dimuat</p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => window.open(mediaUrl, "_blank")}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Buka di Tab Baru
-                </button>
-              </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface-container text-center">
+              <FaExclamationTriangle className="text-3xl text-destructive" />
+              <p className="text-sm font-medium text-on-surface">
+                Video tidak dapat dimuat.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.open(mediaUrl, "_blank")}
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary"
+              >
+                <FaExternalLinkAlt />
+                Buka di Tab Baru
+              </button>
             </div>
           )}
         </div>
-      ),
-      dokumen: (
-        <div className="relative bg-gray-100 rounded-lg overflow-hidden">
-          {mediaLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-10">
-              <FaSpinner className="animate-spin text-4xl text-white" />
+      );
+    }
+
+    if (item.tipe === "dokumen") {
+      return (
+        <div className="relative overflow-hidden rounded-2xl bg-surface-container-low">
+          {mediaLoading && !mediaError && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-inverse-surface/50">
+              <FaSpinner className="animate-spin text-3xl text-white" />
             </div>
           )}
           <iframe
             src={mediaUrl}
-            className="w-full h-[70vh]"
             title={item.nama}
+            className="h-[55vh] w-full"
             onLoad={() => setMediaLoading(false)}
             onError={() => {
               setMediaLoading(false);
@@ -137,102 +140,162 @@ export default function MediaPreviewModal({
             }}
           />
           {mediaError && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
-              <FaExclamationTriangle className="text-red-500 text-5xl mb-4" />
-              <p className="text-gray-700 mb-4">Dokumen tidak dapat dimuat</p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => window.open(mediaUrl, "_blank")}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Buka di Tab Baru
-                </button>
-              </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface-container text-center">
+              <FaExclamationTriangle className="text-3xl text-destructive" />
+              <p className="text-sm font-medium text-on-surface">
+                Dokumen tidak dapat dimuat.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.open(mediaUrl, "_blank")}
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary"
+              >
+                <FaExternalLinkAlt />
+                Buka di Tab Baru
+              </button>
             </div>
           )}
         </div>
-      ),
-    };
+      );
+    }
 
     return (
-      mediaTypeMap[item.tipe ?? ""] || (
-        <div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg">
-          <FaExclamationTriangle className="text-yellow-500 text-5xl mb-4" />
-          <p className="text-gray-700">Format media tidak didukung</p>
-        </div>
-      )
+      <div className="flex min-h-[280px] items-center justify-center overflow-hidden rounded-2xl bg-surface-container p-4">
+        {mediaLoading && (
+          <div className="absolute flex items-center justify-center">
+            <FaSpinner className="animate-spin text-3xl text-primary" />
+          </div>
+        )}
+        <img
+          src={mediaUrl}
+          alt={item.nama}
+          className="max-h-[55vh] w-full object-contain"
+          onLoad={() => setMediaLoading(false)}
+          onError={() => {
+            setMediaLoading(false);
+            setMediaError(true);
+          }}
+        />
+        {mediaError && (
+          <div className="absolute flex flex-col items-center gap-2 rounded-2xl bg-surface-container-lowest px-6 py-4 text-center shadow-lg">
+            <FaExclamationTriangle className="text-2xl text-destructive" />
+            <p className="text-sm font-medium text-on-surface">
+              Gambar tidak dapat dimuat.
+            </p>
+          </div>
+        )}
+      </div>
     );
   };
 
-  if (!isOpen || !item) return null;
+  const metadata = [
+    { label: "ID Media", value: `#${item.id}` },
+    {
+      label: "Tipe",
+      value: item.tipe
+        ? item.tipe.charAt(0).toUpperCase() + item.tipe.slice(1)
+        : "-",
+    },
+    { label: "Dibuat", value: formatDateLong(item.created_at) },
+    ...(item.updated_at
+      ? [{ label: "Diperbarui", value: formatDateLong(item.updated_at) }]
+      : []),
+  ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto py-8">
+    <ModalPortal>
       <div
-        className="fixed inset-0 backdrop-blur-sm bg-gray-700/30"
+        aria-hidden="true"
         onClick={onClose}
-      ></div>
+        className="fixed inset-0 z-[70] bg-inverse-surface/50 backdrop-blur-sm"
+      />
 
-      <div
-        className="relative w-full max-w-5xl mx-4 bg-white rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="media-preview-title"
+        className="fixed left-1/2 top-1/2 z-[80] flex max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-border bg-surface-container-lowest shadow-2xl"
       >
-        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
-          <h3 className="text-xl font-bold text-gray-800 truncate">
-            {getMediaIcon(item.tipe ?? "")} {item.nama}
-          </h3>
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Detail Media
+            </p>
+            <h2
+              id="media-preview-title"
+              className="mt-1 truncate text-xl font-semibold text-on-surface"
+            >
+              {item.nama}
+            </h2>
+            <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+              {getMediaIcon(item.tipe ?? "")}
+              <span className="capitalize">{item.tipe || "-"}</span>
+            </div>
+          </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+            aria-label="Tutup"
+            className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           >
-            <FaTimesCircle className="h-5 w-5 text-gray-600" />
+            <FaTimes />
           </button>
         </div>
 
-        <div className="p-6 overflow-auto">
-          <div className="mb-4">{renderMediaContent()}</div>
+        <div className="scrollbar-hide flex-1 space-y-6 overflow-y-auto px-6 py-6">
+          {renderMediaContent()}
 
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-gray-700 mb-4">{item.deskripsi}</p>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-500">Tipe</p>
-                <p className="font-medium">{item.tipe}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Tanggal Dibuat</p>
-                <p className="font-medium">
-                  {item.created_at ? formatDateLong(item.created_at) : "-"}
-                </p>
-              </div>
-            </div>
-          </div>
+          {item.deskripsi && (
+            <section>
+              <h3 className="mb-2 text-sm font-semibold text-on-surface">
+                Deskripsi
+              </h3>
+              <p className="whitespace-pre-line rounded-2xl border border-border bg-surface-container-low px-4 py-3 text-sm leading-relaxed text-on-surface-variant">
+                {item.deskripsi}
+              </p>
+            </section>
+          )}
+
+          <section>
+            <h3 className="mb-3 text-sm font-semibold text-on-surface">
+              Informasi Berkas
+            </h3>
+            <dl className="grid gap-3 sm:grid-cols-2">
+              {metadata.map((row) => (
+                <div key={row.label} className={fieldClass}>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {row.label}
+                  </dt>
+                  <dd className="mt-1 truncate text-sm font-medium text-on-surface">
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         </div>
 
-        <div className="mt-auto p-4 border-t bg-white sticky bottom-0">
+        <footer className="shrink-0 border-t border-border bg-surface-container-lowest px-6 py-4">
           <div className="flex justify-end gap-2">
             <button
+              type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
             >
               Tutup
             </button>
             <button
-              onClick={(e) =>
-                handleDownload(
-                  e,
-                  adminMediaUtils.getMediaUrl(item.file),
-                  item.file.split("/").pop(),
-                )
-              }
-              className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
+              type="button"
+              onClick={handleDownload}
+              disabled={!mediaUrl}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FaDownload />
-              <span>Unduh</span>
+              Unduh Berkas
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </footer>
+      </aside>
+    </ModalPortal>
   );
 }

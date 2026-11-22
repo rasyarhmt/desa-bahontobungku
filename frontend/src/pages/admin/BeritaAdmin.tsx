@@ -1,16 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { FaNewspaper, FaSpinner } from "react-icons/fa";
+import { FaCheck, FaClock, FaNewspaper, FaPlus } from "react-icons/fa";
+
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import BeritaDetailView from "@/components/admin/BeritaDetailView";
+import BeritaFormView from "@/components/admin/BeritaFormView";
+import BeritaTable from "@/components/admin/BeritaTable";
+import {
+  AdminFilterTabs,
+  AdminMetricCard,
+  AdminPageHeader,
+  AdminToolbar,
+  adminPrimaryButtonClass,
+} from "@/components/admin/admin-ui";
+import type { BeritaForm } from "@/components/admin/beritaShared";
+import { useAsyncData, useCrudResource, useDisclosure, useSearchFilter } from "@/hooks";
 import { adminBeritaApi, type BeritaAdminView } from "@/lib/api/admin";
 import { resolveUploadUrl } from "@/lib/api/config";
 import { getAuthState } from "@/lib/auth";
 import { toDateInputValue } from "@/lib/format";
-import { useAsyncData, useCrudResource, useDisclosure, useSearchFilter } from "@/hooks";
-import BeritaTable from "@/components/admin/BeritaTable";
-import BeritaFormModal from "@/components/admin/BeritaFormModal";
-import BeritaPreviewModal from "@/components/admin/BeritaPreviewModal";
-import type { BeritaForm } from "@/components/admin/beritaShared";
 
 const BeritaAdmin = () => {
   const { token } = getAuthState();
@@ -167,194 +176,118 @@ const BeritaAdmin = () => {
   };
 
   return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaNewspaper className="text-purple-500 text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">Manajemen Berita</h1>
-        </div>
+    <div className="min-h-screen bg-surface">
+      <div className="w-full space-y-6">
+        {addModal.isOpen ? (
+          <BeritaFormView
+            isEdit={false}
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={() => void saveNewItem()}
+            onCancel={addModal.close}
+            isActionLoading={isActionLoading}
+          />
+        ) : editModal.isOpen ? (
+          <BeritaFormView
+            isEdit
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={() => void saveEditedItem()}
+            onCancel={editModal.close}
+            isActionLoading={isActionLoading}
+          />
+        ) : previewModal.isOpen && previewItem ? (
+          <BeritaDetailView
+            item={previewItem}
+            onBack={previewModal.close}
+            onToggleStatus={(id) => void togglePublishStatus(id)}
+            isActionLoading={isActionLoading}
+          />
+        ) : (
+          <>
+            <AdminPageHeader
+              eyebrow="Manajemen Konten"
+              title="Manajemen Berita"
+              description="Kelola berita dan artikel website desa."
+              actions={
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  className={adminPrimaryButtonClass}
+                >
+                  <FaPlus />
+                  Tambah Berita
+                </button>
+              }
+            />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Total Berita
-              </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaNewspaper className="text-purple-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {beritaData.length}
-            </div>
-            <p className="text-sm text-gray-600">Berita tersimpan</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Dipublikasi
-              </h3>
-              <div className="bg-green-100 p-2 rounded-lg">
-                <FaNewspaper className="text-green-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countPublished}
-            </div>
-            <p className="text-sm text-gray-600">Berita dipublikasikan</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Draft</h3>
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <FaNewspaper className="text-yellow-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countDraft}
-            </div>
-            <p className="text-sm text-gray-600">Berita dalam draft</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "semua"
-                  ? "bg-purple-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaNewspaper
-                className={
-                  activeTab === "semua" ? "text-white" : "text-purple-500"
-                }
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <AdminMetricCard
+                label="Total Berita"
+                value={beritaData.length}
+                icon={<FaNewspaper />}
+                hint="Berita tersimpan"
               />
-              <span>Semua Berita</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("dipublikasi")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "dipublikasi"
-                  ? "bg-green-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaNewspaper
-                className={
-                  activeTab === "dipublikasi" ? "text-white" : "text-green-500"
-                }
+              <AdminMetricCard
+                label="Dipublikasi"
+                value={countPublished}
+                icon={<FaCheck />}
+                tone="success"
+                hint="Berita dipublikasikan"
               />
-              <span>Dipublikasi</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("draft")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "draft"
-                  ? "bg-yellow-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaNewspaper
-                className={
-                  activeTab === "draft" ? "text-white" : "text-yellow-500"
-                }
+              <AdminMetricCard
+                label="Draft"
+                value={countDraft}
+                icon={<FaClock />}
+                tone="warning"
+                hint="Berita dalam draft"
               />
-              <span>Draft</span>
-            </button>
-          </div>
-        </div>
+            </div>
 
-        <BeritaTable
-          items={filteredData}
-          isLoading={isLoading}
-          error={error}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onRetry={fetchBeritaData}
-          onAdd={handleAdd}
-          onPreview={handlePreview}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onToggleStatus={togglePublishStatus}
-        />
+            <AdminToolbar>
+              <AdminFilterTabs<string>
+                tabs={[
+                  {
+                    value: "semua",
+                    label: "Semua Berita",
+                    count: beritaData.length,
+                  },
+                  {
+                    value: "dipublikasi",
+                    label: "Dipublikasi",
+                    count: countPublished,
+                  },
+                  { value: "draft", label: "Draft", count: countDraft },
+                ]}
+                value={activeTab}
+                onChange={setActiveTab}
+              />
+            </AdminToolbar>
+
+            <BeritaTable
+              items={filteredData}
+              isLoading={isLoading}
+              error={error}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onRetry={() => void fetchBeritaData()}
+              onAdd={handleAdd}
+              onPreview={handlePreview}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleStatus={(id) => void togglePublishStatus(id)}
+            />
+          </>
+        )}
       </div>
 
-      <BeritaFormModal
-        isOpen={addModal.isOpen}
-        isEdit={false}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={saveNewItem}
-        onCancel={addModal.close}
-        isActionLoading={isActionLoading}
-      />
-
-      <BeritaFormModal
-        isOpen={editModal.isOpen}
-        isEdit={true}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={saveEditedItem}
-        onCancel={editModal.close}
-        isActionLoading={isActionLoading}
-      />
-
-      {deleteModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md border border-gray-200 animate-modalFadeIn">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Hapus
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin menghapus berita &quot;
-                {currentItem?.judul}&quot;? Tindakan ini tidak dapat dibatalkan.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                disabled={isActionLoading}
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
-                disabled={isActionLoading}
-              >
-                {isActionLoading ? (
-                  <>
-                    <FaSpinner className="animate-spin" />
-                    <span>Menghapus...</span>
-                  </>
-                ) : (
-                  <span>Hapus</span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <BeritaPreviewModal
-        isOpen={previewModal.isOpen}
-        item={previewItem}
-        onClose={previewModal.close}
-        onToggleStatus={togglePublishStatus}
-        isActionLoading={isActionLoading}
+      <ConfirmDialog
+        isOpen={deleteModal.isOpen}
+        title="Hapus berita?"
+        description={`Apakah Anda yakin ingin menghapus berita "${currentItem?.judul}"? Tindakan ini tidak dapat dibatalkan.`}
+        isLoading={isActionLoading}
+        onConfirm={() => void confirmDelete()}
+        onCancel={deleteModal.close}
       />
     </div>
   );

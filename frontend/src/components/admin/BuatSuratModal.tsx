@@ -1,22 +1,32 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  FaTimes,
-  FaSpinner,
-  FaExclamationTriangle,
-  FaDownload,
   FaCheckCircle,
+  FaDownload,
+  FaExclamationTriangle,
   FaFileSignature,
+  FaSpinner,
+  FaTimes,
 } from "react-icons/fa";
-import { pelayananApi } from "@/lib/api/pelayanan";
+
+import {
+  AdminField,
+  AdminInput,
+  AdminSelect,
+  AdminTextarea,
+  adminPrimaryButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
+import ModalPortal from "@/components/admin/ModalPortal";
 import { resolveFileUrl } from "@/lib/api/config";
-import { getErrorMessage } from "@/lib/errors";
-import { useAsyncData } from "@/hooks";
+import { pelayananApi } from "@/lib/api/pelayanan";
 import type {
-  AjukanSuratResponse,
   AjukanSuratRequest,
+  AjukanSuratResponse,
   Pelayanan,
   TemplateField,
 } from "@/lib/api/schemas";
+import { getErrorMessage } from "@/lib/errors";
+import { useAsyncData } from "@/hooks";
 
 interface BuatSuratModalProps {
   isOpen: boolean;
@@ -34,7 +44,6 @@ export default function BuatSuratModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<AjukanSuratResponse | null>(null);
 
-  // Ambil field template
   const {
     data: fields,
     isLoading: fieldsLoading,
@@ -54,18 +63,16 @@ export default function BuatSuratModal({
     { errorMessage: "Gagal memuat field form surat." },
   );
 
-  // 1. Reset state & Triger fetch data field saat Modal dibuka untuk layanan tertentu
   useEffect(() => {
     if (isOpen && pelayanan?.id) {
       setSubmitting(false);
       setSubmitError(null);
       setResult(null);
-      setValues({}); // Kosongkan inputan
-      void fetchFields(); // Ambil field dinamis dari API
+      setValues({});
+      void fetchFields();
     }
   }, [isOpen, pelayanan?.id]);
 
-  // 2. Siapkan state form (values) begitu data fields selesai di-fetch
   useEffect(() => {
     if (isOpen && fields && fields.length > 0) {
       setValues((prev) => {
@@ -77,6 +84,17 @@ export default function BuatSuratModal({
       });
     }
   }, [isOpen, fields]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !submitting) onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, submitting, onClose]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -98,7 +116,6 @@ export default function BuatSuratModal({
     if (!/^[0-9]{16}$/.test(nik))
       return setSubmitError("NIK harus 16 digit angka.");
 
-    // Validasi field dinamis
     const missing = fields.filter((f) => !String(values[f.key] || "").trim());
     if (missing.length > 0) {
       return setSubmitError(
@@ -137,76 +154,95 @@ export default function BuatSuratModal({
   const qrUrl = result ? resolveFileUrl(result.qr_url) : "";
 
   return (
-    <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 font-['poppins']">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-        {/* Header Modal */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <div>
-            <h3 className="text-xl font-bold text-gray-800">
+    <ModalPortal>
+      <div
+        aria-hidden="true"
+        onClick={submitting ? undefined : onClose}
+        className="fixed inset-0 z-[70] bg-inverse-surface/50 backdrop-blur-sm"
+      />
+
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="buat-surat-title"
+        className="fixed left-1/2 top-1/2 z-[80] flex max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-border bg-surface-container-lowest shadow-2xl"
+      >
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Buatkan Surat
+            </p>
+            <h2
+              id="buat-surat-title"
+              className="mt-1 text-xl font-semibold text-on-surface"
+            >
               Buatkan Surat (Admin)
-            </h3>
-            <p className="text-sm text-gray-500">
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Layanan: {pelayanan.nama_layanan}
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            aria-label="Tutup"
+            className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           >
-            <FaTimes size={20} />
+            <FaTimes />
           </button>
         </div>
 
-        {/* Body Modal */}
-        <div className="p-6 overflow-y-auto custom-scrollbar">
+        <div className="scrollbar-hide flex-1 overflow-y-auto px-6 py-6">
           {fieldsLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <FaSpinner className="animate-spin text-4xl text-blue-500 mb-4" />
-              <p className="text-gray-500">Memuat formulir...</p>
+            <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
+              <FaSpinner className="animate-spin text-3xl text-primary" />
+              Memuat formulir...
             </div>
           ) : fieldsError ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <FaExclamationTriangle className="text-4xl text-yellow-500 mb-2" />
-              <p className="text-gray-600">{fieldsError}</p>
+            <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-center">
+              <FaExclamationTriangle className="text-3xl text-destructive" />
+              <p className="text-sm text-on-surface-variant">{fieldsError}</p>
             </div>
           ) : result ? (
-            <div className="text-center py-4">
-              <FaCheckCircle className="text-5xl text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            <div className="py-4 text-center">
+              <FaCheckCircle className="mx-auto mb-4 text-5xl text-[var(--success-fg)]" />
+              <h3 className="mb-2 text-xl font-semibold text-on-surface">
                 Surat Berhasil Dibuat
-              </h2>
+              </h3>
 
-              <div className="bg-gray-50 rounded-xl p-4 mb-6 inline-block">
-                <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+              <div className="mb-6 inline-block rounded-2xl border border-border bg-surface-container-low px-6 py-4">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Kode Unik Surat
                 </p>
-                <p className="text-2xl font-mono font-bold text-blue-600 tracking-widest">
+                <p className="font-mono text-2xl font-semibold tracking-widest text-primary">
                   {result.kode_unik}
                 </p>
               </div>
 
-              <div className="flex justify-center mb-6">
-                <div className="bg-white border rounded-xl p-4 shadow-sm">
+              <div className="mb-6 flex justify-center">
+                <div className="rounded-2xl border border-border bg-surface-container-lowest p-4 shadow-sm">
                   <img
                     src={qrUrl}
                     alt="QR verifikasi surat"
-                    className="w-32 h-32"
+                    className="h-32 w-32"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <a
                   href={downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+                  className={adminPrimaryButtonClass}
                 >
-                  <FaDownload /> Unduh PDF
+                  <FaDownload />
+                  Unduh PDF
                 </a>
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+                  className={adminSecondaryButtonClass}
                 >
                   Tutup
                 </button>
@@ -216,127 +252,137 @@ export default function BuatSuratModal({
             <form
               id="buat-surat-form"
               onSubmit={handleSubmit}
-              className="space-y-4"
+              className="space-y-5"
             >
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nama Lengkap Pemohon <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    name="nama"
-                    type="text"
-                    value={values.nama || ""}
-                    onChange={handleChange}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <AdminField
+                    label="Nama Lengkap Pemohon"
+                    htmlFor="nama"
                     required
-                    placeholder="Sesuai KTP"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  >
+                    <AdminInput
+                      id="nama"
+                      name="nama"
+                      type="text"
+                      value={values.nama || ""}
+                      onChange={handleChange}
+                      required
+                      placeholder="Sesuai KTP"
+                    />
+                  </AdminField>
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    NIK Pemohon <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    name="nik"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]{16}"
-                    value={values.nik || ""}
-                    onChange={handleChange}
-                    required
-                    maxLength={16}
-                    placeholder="16 digit NIK"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                <div className="sm:col-span-2">
+                  <AdminField label="NIK Pemohon" htmlFor="nik" required>
+                    <AdminInput
+                      id="nik"
+                      name="nik"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]{16}"
+                      value={values.nik || ""}
+                      onChange={handleChange}
+                      required
+                      maxLength={16}
+                      placeholder="16 digit NIK"
+                    />
+                  </AdminField>
                 </div>
 
-                {/* LOOPING UNTUK MERENDER FIELD DINAMIS (Keperluan, Tempat Lahir, dll) */}
                 {fields.map((field) => (
                   <div
                     key={field.key}
-                    className={field.tipe === "textarea" ? "md:col-span-2" : ""}
+                    className={field.tipe === "textarea" ? "sm:col-span-2" : ""}
                   >
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {field.label} <span className="text-red-500">*</span>
-                    </label>
-                    {field.tipe === "select" ? (
-                      <select
-                        name={field.key}
-                        value={values[field.key] || ""}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      >
-                        <option value="">Pilih {field.label}</option>
-                        {field.options.map((opt) => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    ) : field.tipe === "textarea" ? (
-                      <textarea
-                        name={field.key}
-                        value={values[field.key] || ""}
-                        onChange={handleChange}
-                        rows={3}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    ) : (
-                      <input
-                        name={field.key}
-                        type={field.tipe}
-                        value={values[field.key] || ""}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    )}
+                    <AdminField
+                      label={field.label}
+                      htmlFor={`field-${field.key}`}
+                      required
+                    >
+                      {field.tipe === "select" ? (
+                        <AdminSelect
+                          id={`field-${field.key}`}
+                          name={field.key}
+                          value={values[field.key] || ""}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Pilih {field.label}</option>
+                          {field.options.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </AdminSelect>
+                      ) : field.tipe === "textarea" ? (
+                        <AdminTextarea
+                          id={`field-${field.key}`}
+                          name={field.key}
+                          value={values[field.key] || ""}
+                          onChange={handleChange}
+                          rows={3}
+                          required
+                        />
+                      ) : (
+                        <AdminInput
+                          id={`field-${field.key}`}
+                          name={field.key}
+                          type={field.tipe}
+                          value={values[field.key] || ""}
+                          onChange={handleChange}
+                          required
+                        />
+                      )}
+                    </AdminField>
                   </div>
                 ))}
               </div>
 
               {submitError && (
-                <div className="mt-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3">
+                <p
+                  role="alert"
+                  className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                >
                   {submitError}
-                </div>
+                </p>
               )}
             </form>
           )}
         </div>
 
-        {/* Footer Modal */}
         {!result && (
-          <div className="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              form="buat-surat-form"
-              disabled={submitting || fieldsLoading || !!fieldsError}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {submitting ? (
-                <>
-                  <FaSpinner className="animate-spin" /> Memproses...
-                </>
-              ) : (
-                <>
-                  <FaFileSignature /> Cetak Surat
-                </>
-              )}
-            </button>
-          </div>
+          <footer className="shrink-0 border-t border-border bg-surface-container-low px-6 py-4">
+            <div className="flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={submitting}
+                className={adminSecondaryButtonClass}
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                form="buat-surat-form"
+                disabled={submitting || fieldsLoading || !!fieldsError}
+                className={adminPrimaryButtonClass}
+              >
+                {submitting ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    <FaFileSignature />
+                    Cetak Surat
+                  </>
+                )}
+              </button>
+            </div>
+          </footer>
         )}
-      </div>
-    </div>
+      </aside>
+    </ModalPortal>
   );
 }
