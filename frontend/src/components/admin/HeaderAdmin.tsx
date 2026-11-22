@@ -3,7 +3,6 @@ import {
   FaBell,
   FaBars,
   FaCog,
-  FaExternalLinkAlt,
   FaSignOutAlt,
   FaUser,
 } from "react-icons/fa";
@@ -12,6 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDisclosure } from "@/hooks";
 import { getAuthState } from "@/lib/auth";
 import LogoutAdminDialog from "./LogoutAdminDialog";
+import PortalWargaLink from "./PortalWargaLink";
 
 interface HeaderAdminProps {
   onOpenSidebar: () => void;
@@ -109,13 +109,7 @@ export default function HeaderAdmin({ onOpenSidebar }: HeaderAdminProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <a
-          href="/"
-          className="hidden items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface md:flex"
-        >
-          <FaExternalLinkAlt className="text-xs" />
-          <span>Lihat Portal Warga</span>
-        </a>
+        <PortalWargaLink className="hidden items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface md:flex" />
 
         <button
           type="button"

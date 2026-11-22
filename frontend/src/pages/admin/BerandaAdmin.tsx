@@ -11,7 +11,6 @@ import {
   FaEnvelope,
   FaEnvelopeOpen,
   FaExclamationTriangle,
-  FaExternalLinkAlt,
   FaFileAlt,
   FaHome,
   FaLink,
@@ -26,6 +25,7 @@ import { Link } from "react-router-dom";
 import { BarChart, DonutChart, LineChart } from "@/components/admin/charts";
 import type { BarChartItem } from "@/components/admin/charts";
 import { AdminPageHeader, adminCardClass } from "@/components/admin/admin-ui";
+import PortalWargaLink from "@/components/admin/PortalWargaLink";
 import { useAsyncData } from "@/hooks";
 import { adminDashboardApi } from "@/lib/api/admin";
 import { formatDateShort } from "@/lib/format";
@@ -283,13 +283,7 @@ const BerandaAdmin = () => {
         title="Dashboard Admin"
         description="Pantau aktivitas dan data desa dari satu tempat."
         actions={
-          <a
-            href="/"
-            className="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-surface-container-lowest px-4 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
-          >
-            <FaExternalLinkAlt className="text-xs" />
-            Lihat Portal Warga
-          </a>
+          <PortalWargaLink className="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-surface-container-lowest px-4 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface" />
         }
       />
 
