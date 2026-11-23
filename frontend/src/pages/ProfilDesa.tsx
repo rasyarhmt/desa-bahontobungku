@@ -1,79 +1,52 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import CarouselVisiMisi from "@/components/ProfilDesa/CarouselVisiMisi";
+import { UsersRound } from "lucide-react";
+
 import CarouselAparatur from "@/components/ProfilDesa/CarouselProfil";
-import Bg from "@/assets/Background.jpg";
-import placeholder from "@/assets/ph.jpg";
+import CarouselVisiMisi from "@/components/ProfilDesa/CarouselVisiMisi";
+import GeographySection from "@/components/ProfilDesa/GeographySection";
+import ProfileHero from "@/components/ProfilDesa/ProfileHero";
+import ProfileTabs from "@/components/ProfilDesa/ProfileTabs";
+import HomeFooter from "@/components/home/HomeFooter";
+import HomeHeader from "@/components/home/HomeHeader";
+import { SectionHeading } from "@/components/home/shared";
+import { useProfileData } from "@/hooks/useProfileData";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 export default function ProfilDesa() {
+  const { data, isLoading, error } = useProfileData();
+
   return (
-    <div>
-      <Navbar />
-      <InformasiWilayah />
-      <CarouselVisiMisi />
-      <CarouselAparatur />
-      <Footer />
+    <div className="home-theme min-h-screen bg-surface font-sans text-on-surface antialiased">
+      <HomeHeader />
+
+      <main className="w-full pt-28">
+        <ProfileHero />
+        <ProfileTabs />
+
+        <div id="visi-misi" className="scroll-mt-40">
+          <CarouselVisiMisi />
+        </div>
+
+        <section
+          id="struktur-aparatur"
+          className={`scroll-mt-40 border-t border-surface-container bg-surface ${SECTION_CLASS}`}
+        >
+          <div className={`${CONTAINER_CLASS}`}>
+            <SectionHeading
+              eyebrow="Pemerintahan Desa"
+              icon={UsersRound}
+              title="Struktur Organisasi & Aparatur"
+              description="Kenali perangkat pemerintahan desa yang melayani masyarakat Bahontobungku."
+            />
+            <div className="mt-10 md:mt-12">
+              <CarouselAparatur />
+            </div>
+          </div>
+        </section>
+
+        <GeographySection summary={data} isLoading={isLoading} error={error} />
+      </main>
+
+      <HomeFooter />
     </div>
   );
-
-  function InformasiWilayah() {
-    const [index, setIndex] = useState(0);
-    const images = [Bg, placeholder];
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }, []);
-
-    return (
-      <section className="relative min-h-[20rem] sm:min-h-[30rem] md:min-h-[45rem] overflow-hidden">
-        <AnimatePresence>
-          <motion.div
-            key={index}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${images[index]})` }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-          />
-        </AnimatePresence>
-
-        <div className="absolute inset-0 bg-black/70 md:bg-black/30 flex flex-col justify-center text-white px-4 sm:px-8">
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl space-y-3 md:space-y-6">
-            <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold leading-tight">
-              Informasi Wilayah
-            </h1>
-
-            <p className="text-sm sm:text-base md:text-lg text-justify leading-relaxed">
-              Secara Geografis Desa Bahontobungku terletak pada wilayah
-              administrasi Kecamatan Bungku Tengah, dengan perkiraan titik
-              kordinat berada pada:
-            </p>
-
-            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-              <p className="bg-black/30 px-3 py-1 rounded-md text-sm sm:text-base">
-                <span className="font-medium">Bujur Timur:</span> 121° 956690"
-              </p>
-              <p className="bg-black/30 px-3 py-1 rounded-md text-sm sm:text-base">
-                <span className="font-medium">Lintang Selatan:</span> -2,649603"
-              </p>
-            </div>
-
-            <Link
-              to="/Map"
-              className="inline-block bg-[#16BE27] text-sm sm:text-lg md:text-xl rounded-lg px-4 py-2 md:px-6 md:py-3 font-bold text-gray-700 hover:bg-[#14a924] transition-colors"
-            >
-              Lihat Selengkapnya
-            </Link>
-          </div>
-        </div>
-      </section>
-    );
-  }
 }

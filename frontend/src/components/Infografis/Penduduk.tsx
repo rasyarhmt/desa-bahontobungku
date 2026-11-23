@@ -1,8 +1,47 @@
-import { Bar, Pie, Doughnut } from "react-chartjs-2";
-import Ilustrasi from "../../assets/Ilustrasi.png";
-import "@/lib/chartjs";
+import { useMemo } from "react";
+import { IdCard, Loader2, TriangleAlert, UserRound, Users, UsersRound } from "lucide-react";
+
+import DonutChart from "@/components/Infografis/DonutChart";
+import ProgressRow from "@/components/Infografis/ProgressRow";
+import StatCard from "@/components/Infografis/StatCard";
+import {
+  formatNumber,
+  formatPercent,
+} from "@/components/Infografis/infografisView";
 import { pendudukApi, type PendudukStatsAll } from "@/lib/api/penduduk";
+import type { StatsCategory } from "@/lib/api/schemas";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 import { useAsyncData } from "@/hooks";
+
+type StatsItem = StatsCategory[number];
+
+const categoryLabel = (item: StatsItem): string => {
+  const candidate = [item.label, item.nama, item.kategori, item.agama, item.rentang, item.title]
+    .map((value) => (value == null ? "" : String(value).trim()))
+    .find(Boolean);
+  return candidate || "Tanpa label";
+};
+
+const categoryValue = (item: StatsItem): number =>
+  Number(item.jumlah ?? item.count ?? item.total ?? 0);
+
+const toSegments = (items: StatsCategory) =>
+  items.map((item, index) => ({
+    label: categoryLabel(item),
+    value: categoryValue(item),
+    colorIndex: index,
+  }));
+
+const sumValues = (values: { value: number }[]): number =>
+  values.reduce((sum, item) => sum + item.value, 0);
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="rounded-xl bg-surface-container px-5 py-8 text-center text-sm text-on-surface-variant">
+      {message}
+    </div>
+  );
+}
 
 export default function Penduduk() {
   const {
@@ -11,10 +50,7 @@ export default function Penduduk() {
     error,
     refetch: fetchData,
   } = useAsyncData<PendudukStatsAll>(
-    async () => {
-      const data = await pendudukApi.getAllStats();
-      return data;
-    },
+    () => pendudukApi.getAllStats(),
     {
       summary: {
         totalPenduduk: 0,
@@ -28,264 +64,210 @@ export default function Penduduk() {
     { errorMessage: "Gagal memuat data penduduk. Silakan coba lagi nanti." },
   );
 
-  const infoCards = [
-    {
-      title: "Total Penduduk",
-      count: stats.summary.totalPenduduk,
-      color: "#6CABCA",
-    },
-    {
-      title: "Kepala Keluarga",
-      count: stats.summary.totalKepalaKeluarga,
-      color: "#FE7C66",
-    },
-    {
-      title: "Laki-laki",
-      count: stats.summary.totalLakiLaki,
-      color: "#5DE1C4",
-    },
-    {
-      title: "Perempuan",
-      count: stats.summary.totalPerempuan,
-      color: "#13D813",
-    },
-  ];
+  const ageSegments = useMemo(() => toSegments(stats.byUmur), [stats.byUmur]);
+  const religionSegments = useMemo(
+    () => toSegments(stats.byAgama),
+    [stats.byAgama],
+  );
+  const genderSegments = useMemo(
+    () => [
+      { label: "Laki-laki", value: stats.summary.totalLakiLaki, colorIndex: 0 },
+      { label: "Perempuan", value: stats.summary.totalPerempuan, colorIndex: 1 },
+    ],
+    [stats.summary.totalLakiLaki, stats.summary.totalPerempuan],
+  );
 
-  const prepareUmurData = () => {
-    if (!stats.byUmur || stats.byUmur.length === 0) {
-      return {
-        labels: ["Belum ada data"],
-        datasets: [
-          {
-            label: "Jumlah",
-            data: [0],
-            backgroundColor: "rgba(54, 162, 235, 0.7)",
-          },
-        ],
-      };
-    }
-
-    return {
-      labels: stats.byUmur.map((item) => item.rentang || item.kategori),
-      datasets: [
-        {
-          label: "Jumlah",
-          data: stats.byUmur.map((item) => Number(item.jumlah ?? item.total ?? 0)),
-          backgroundColor: "rgba(54, 162, 235, 0.7)",
-        },
-      ],
-    };
-  };
-
-  const prepareAgamaData = () => {
-    if (!stats.byAgama || stats.byAgama.length === 0) {
-      return {
-        labels: ["Belum ada data"],
-        datasets: [
-          {
-            data: [0],
-            backgroundColor: ["#B9FF66"],
-          },
-        ],
-      };
-    }
-
-    const colors = ["#B9FF66", "#FE7C66", "#5DE1C4", "#6CABCA", "#FFCE56"];
-
-    return {
-      labels: stats.byAgama.map((item) => item.agama),
-      datasets: [
-        {
-          data: stats.byAgama.map((item) => Number(item.jumlah ?? item.total ?? 0)),
-          backgroundColor: stats.byAgama.map(
-            (_, index) => colors[index % colors.length]
-          ),
-        },
-      ],
-    };
-  };
-
-  const prepareJenisKelaminData = () => {
-    return {
-      labels: ["Laki-laki", "Perempuan"],
-      datasets: [
-        {
-          data: [stats.summary.totalLakiLaki, stats.summary.totalPerempuan],
-          backgroundColor: ["#5DE1C4", "#FE7C66"],
-        },
-      ],
-    };
-  };
+  const ageTotal = sumValues(ageSegments);
+  const religionTotal = sumValues(religionSegments);
+  const genderTotal = sumValues(genderSegments);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-300"></div>
+      <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-36 animate-pulse rounded-2xl bg-surface-container/70"
+            />
+          ))}
+        </div>
+        <div className="mt-6 grid h-80 animate-pulse place-items-center rounded-2xl bg-surface-container/50">
+          <Loader2 className="size-8 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-500">
-        <p>{error}</p>
-        <button
-          onClick={fetchData}
-          className="mt-4 px-4 py-2 bg-yellow-300 text-black rounded-lg hover:bg-yellow-400 transition-colors"
-        >
-          Coba Lagi
-        </button>
+      <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+          <TriangleAlert className="mx-auto size-8 text-destructive" />
+          <p className="mt-3 text-sm text-destructive">{error}</p>
+          <button
+            type="button"
+            onClick={() => void fetchData()}
+            className="mt-4 rounded-full bg-primary px-5 py-2 text-xs font-semibold text-on-primary hover:bg-primary-container"
+          >
+            Coba Lagi
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <section className="relative space-y-10 z-10">
-      {/* Deskripsi dan Kartu Total Penduduk */}
-      <div>
-        {/* Deskripsi */}
-        <h2 className="text-lg md:text-2xl m-5 max-w-200">
-          <span className="font-bold bg-yellow-300 px-1 rounded md:flex flex-col w-fit hidden">
-            Demografi Penduduk.
+    <section
+      id="demografi"
+      className={`${SECTION_CLASS} scroll-mt-28 space-y-10 md:space-y-12 ${CONTAINER_CLASS}`}
+    >
+      <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+            01 / Kependudukan
           </span>
-          <span
-            className="text-gray-700 md:flex hidden"
-            style={{ fontFamily: "poppins" }}
-          >
-            Memberikan informasi lengkap mengenai karakteristik demografi
-            penduduk desa Bahontobungku.
-          </span>
-        </h2>
-
-        {/* Kartu */}
-        <div className="bg-white rounded-3xl p-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {infoCards.map((item, idx) => (
-              <div
-                key={idx}
-                className={`
-                  rounded-3xl
-                  p-4
-                  flex
-                  flex-col
-                  justify-between
-                  relative
-                  overflow-hidden
-                  shadow-md
-                  transition-all
-                  duration-300
-                  ease-in-out
-                  border-2
-                  border-black
-                  hover:shadow-[5px_5px_0px_black]
-                  hover:-translate-x-1
-                  hover:-translate-y-1
-                `}
-                style={{ backgroundColor: item.color }}
-              >
-                {/* Content */}
-                <div className="z-10 space-y-3">
-                  <div
-                    className="bg-white inline-block px-3 py-1 rounded-lg text-lg md:text-3xl font-semibold"
-                    style={{ fontFamily: "Space Grotesk" }}
-                  >
-                    {item.title}
-                  </div>
-                  <div className="text-white font-bold text-2xl">
-                    {item.count} Orang
-                  </div>
-                </div>
-
-                {/* Background Illustration */}
-                <div className="absolute top-0 right-0 opacity-40">
-                  <img
-                    src={Ilustrasi || "/placeholder.svg"}
-                    alt="Icon Infografis"
-                    className="w-40 h-40 object-contain"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="font-display text-2xl font-bold text-on-surface md:text-3xl">
+            Demografi Penduduk
+          </h2>
+          <p className="text-sm text-on-surface-variant md:text-base">
+            Karakteristik penduduk yang bersumber dari sistem kependudukan desa.
+          </p>
         </div>
+        <span className="self-start rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant md:self-auto">
+          Sumber: Sistem Kependudukan
+        </span>
+      </header>
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Total Penduduk"
+          value={formatNumber(stats.summary.totalPenduduk)}
+          unit="Jiwa"
+          icon={UsersRound}
+          note="Total"
+        />
+        <StatCard
+          label="Kepala Keluarga"
+          value={formatNumber(stats.summary.totalKepalaKeluarga)}
+          unit="KK"
+          icon={IdCard}
+          colorIndex={1}
+        />
+        <StatCard
+          label="Penduduk Laki-laki"
+          value={formatNumber(stats.summary.totalLakiLaki)}
+          unit="Jiwa"
+          icon={UserRound}
+          colorIndex={2}
+          note={formatPercent(stats.summary.totalLakiLaki, genderTotal)}
+        />
+        <StatCard
+          label="Penduduk Perempuan"
+          value={formatNumber(stats.summary.totalPerempuan)}
+          unit="Jiwa"
+          icon={Users}
+          colorIndex={3}
+          note={formatPercent(stats.summary.totalPerempuan, genderTotal)}
+        />
       </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Chart 1 - Kelompok Umur */}
-        <div className="bg-white shadow-lg rounded-3xl p-5 border border-gray-300">
-          <h3
-            className="font-bold text-xl bg-yellow-300 px-1 rounded mb-4"
-            style={{ fontFamily: "Poppins" }}
-          >
-            Berdasarkan Kelompok Umur
-          </h3>
-          <div className="w-full max-w-4xl mx-auto">
-            <Bar
-              data={prepareUmurData()}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-              }}
-              height={250}
-            />
+      <div className="grid gap-6 lg:grid-cols-12">
+        <article className="rounded-2xl bg-surface-container-lowest p-6 shadow-sm lg:col-span-5 lg:p-8">
+          <div className="space-y-1">
+            <h3 className="font-display text-lg font-semibold text-on-surface">
+              Struktur Kelompok Usia
+            </h3>
+            <p className="text-sm text-on-surface-variant">
+              Distribusi penduduk berdasarkan rentang usia yang tercatat.
+            </p>
           </div>
+
+          {ageSegments.length > 0 ? (
+            <div className="mt-6 flex flex-col items-center gap-8 sm:flex-row">
+              <DonutChart
+                segments={ageSegments}
+                centerLabel="Jiwa"
+                centerValue={formatNumber(ageTotal)}
+              />
+              <div className="w-full space-y-4">
+                {ageSegments.map((segment, index) => (
+                  <ProgressRow
+                    key={`${segment.label}-${index}`}
+                    label={segment.label}
+                    value={segment.value}
+                    total={ageTotal}
+                    colorIndex={segment.colorIndex}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <EmptyState message="Belum ada data kelompok usia dari sistem." />
+            </div>
+          )}
+        </article>
+
+        <article className="rounded-2xl bg-surface-container-lowest p-6 shadow-sm lg:col-span-7 lg:p-8">
+          <div className="space-y-1">
+            <h3 className="font-display text-lg font-semibold text-on-surface">
+              Komposisi Jenis Kelamin
+            </h3>
+            <p className="text-sm text-on-surface-variant">
+              Perbandingan jumlah penduduk laki-laki dan perempuan.
+            </p>
+          </div>
+
+          <div className="mt-6 flex flex-col items-center gap-8 sm:flex-row">
+            <DonutChart
+              segments={genderSegments}
+              centerLabel="Jiwa"
+              centerValue={formatNumber(genderTotal)}
+            />
+            <div className="w-full space-y-4">
+              {genderSegments.map((segment) => (
+                <ProgressRow
+                  key={segment.label}
+                  label={segment.label}
+                  value={segment.value}
+                  total={genderTotal}
+                  colorIndex={segment.colorIndex ?? 0}
+                />
+              ))}
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article className="rounded-2xl bg-surface-container-lowest p-6 shadow-sm lg:p-8">
+        <div className="space-y-1">
+          <h3 className="font-display text-lg font-semibold text-on-surface">
+            Distribusi Keyakinan
+          </h3>
+          <p className="text-sm text-on-surface-variant">
+            Jumlah penduduk berdasarkan keyakinan yang tercatat di sistem.
+          </p>
         </div>
 
-        {/* Chart 2 - Jenis Kelamin (Menggantikan Pekerjaan) */}
-        <div className="bg-white shadow-lg rounded-3xl p-5 border border-gray-300">
-          <h3
-            className="font-bold text-xl bg-yellow-300 px-1 rounded mb-4"
-            style={{ fontFamily: "Poppins" }}
-          >
-            Berdasarkan Jenis Kelamin
-          </h3>
-          <div className="w-full max-w-3xl mx-auto">
-            <Doughnut
-              data={prepareJenisKelaminData()}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                  },
-                },
-              }}
-              height={250}
-            />
-          </div>
+        <div className="mt-6">
+          {religionSegments.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2">
+              {religionSegments.map((segment, index) => (
+                <ProgressRow
+                  key={`${segment.label}-${index}`}
+                  label={segment.label}
+                  value={segment.value}
+                  total={religionTotal}
+                  colorIndex={segment.colorIndex}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="Belum ada data keyakinan dari sistem." />
+          )}
         </div>
-
-        {/* Chart 3 - Keyakinan */}
-        <div className="bg-white shadow-lg rounded-3xl p-5 border border-gray-300">
-          <h3
-            className="font-bold text-xl bg-yellow-300 px-1 rounded mb-4"
-            style={{ fontFamily: "Poppins" }}
-          >
-            Berdasarkan Keyakinan
-          </h3>
-          <div className="w-full max-w-3xl mx-auto">
-            <Pie
-              data={prepareAgamaData()}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                  },
-                },
-              }}
-              height={250}
-            />
-          </div>
-        </div>
-      </section>
+      </article>
     </section>
   );
 }

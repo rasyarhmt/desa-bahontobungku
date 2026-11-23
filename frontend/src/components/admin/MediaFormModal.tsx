@@ -1,7 +1,25 @@
-import type { Dispatch, SetStateAction } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type DragEvent,
+  type SetStateAction,
+} from "react";
+import {
+  FaCloudUploadAlt,
+  FaFileAlt,
+  FaFileImage,
+  FaFileVideo,
+  FaImage,
+  FaInfoCircle,
+  FaTimes,
+  FaVideo,
+} from "react-icons/fa";
 
 import { adminMediaUtils } from "@/lib/api/admin";
 
+import ModalPortal from "./ModalPortal";
 import type { MediaFormState, MediaItem } from "./mediaShared";
 
 interface MediaFormModalProps {
@@ -12,29 +30,39 @@ interface MediaFormModalProps {
   onSubmit: () => void;
   onCancel: () => void;
   currentItem: MediaItem | null;
+  isLoading?: boolean;
 }
 
-const getAccept = (tipe: string) =>
-  tipe === "foto"
-    ? "image/jpeg,image/png,image/jpg"
-    : tipe === "video"
-      ? "video/mp4,video/mkv,video/webm"
-      : "application/pdf";
+const MEDIA_TYPES = [
+  { value: "foto", label: "Foto", hint: "JPG, JPEG, PNG, GIF, WEBP", icon: FaImage },
+  { value: "video", label: "Video", hint: "MP4, MKV, WEBM, OGG", icon: FaVideo },
+  { value: "dokumen", label: "Dokumen", hint: "PDF", icon: FaFileAlt },
+] as const;
 
-const getFileHint = (tipe: string) =>
-  tipe === "foto"
-    ? "Format yang didukung: JPG, JPEG, PNG"
-    : tipe === "video"
-      ? "Format yang didukung: MP4, MKV, WEBM"
-      : "Format yang didukung: PDF";
+const fieldClass =
+  "w-full rounded-xl border border-border bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20";
 
-const fileInputClass = (isEdit: boolean) =>
-  isEdit
-    ? "w-full border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-    : "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500";
+const getAccept = (tipe: string) => {
+  if (tipe === "foto") return "image/jpeg,image/png,image/gif,image/webp";
+  if (tipe === "video") return "video/mp4,video/mkv,video/webm,video/ogg";
+  return "application/pdf";
+};
 
-const fieldInputClass =
-  "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500";
+const getFileHint = (tipe: string) => {
+  const selected = MEDIA_TYPES.find((option) => option.value === tipe);
+  return selected ? `Format didukung: ${selected.hint}` : "Pilih tipe media terlebih dahulu.";
+};
+
+const formatBytes = (bytes: number) => {
+  if (bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const index = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1,
+  );
+  const value = bytes / 1024 ** index;
+  return `${value.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+};
 
 export default function MediaFormModal({
   isOpen,
@@ -44,187 +72,350 @@ export default function MediaFormModal({
   onSubmit,
   onCancel,
   currentItem,
+  isLoading = false,
 }: MediaFormModalProps) {
-  if (!isOpen) return null;
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setDragging] = useState(false);
   const idPrefix = isEdit ? "edit-" : "";
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto py-8">
-      <div
-        className="fixed inset-0 backdrop-blur-sm bg-gray-700/30"
-        onClick={onCancel}
-      ></div>
+  useEffect(() => {
+    if (isOpen && !formData.file && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (isOpen && !formData.thumbnail && thumbnailInputRef.current) {
+      thumbnailInputRef.current.value = "";
+    }
+  }, [isOpen, formData.file, formData.thumbnail]);
 
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-xl p-6 max-h-[90vh] overflow-y-auto">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-gray-800">
-            {isEdit ? "Edit Media" : "Tambah Media Baru"}
-          </h3>
-          <p className="text-gray-600 text-sm">
-            {isEdit
-              ? "Ubah informasi media atau upload media baru"
-              : "Masukkan informasi media yang akan ditambahkan"}
-          </p>
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isLoading) onCancel();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isLoading, onCancel]);
+
+  if (!isOpen) return null;
+
+  const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    setDragging(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) setFormData((previous) => ({ ...previous, file }));
+  };
+
+  const removeFile = () => {
+    setFormData((previous) => ({ ...previous, file: null }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeThumbnail = () => {
+    setFormData((previous) => ({ ...previous, thumbnail: null }));
+    if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
+  };
+
+  const currentThumbnailUrl =
+    isEdit && currentItem?.thumbnail
+      ? adminMediaUtils.getMediaUrl(currentItem.thumbnail)
+      : null;
+
+  return (
+    <ModalPortal>
+      <div
+        aria-hidden="true"
+        onClick={isLoading ? undefined : onCancel}
+        className="fixed inset-0 z-[70] bg-inverse-surface/50 backdrop-blur-sm"
+      />
+
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="media-form-title"
+        className="fixed left-1/2 top-1/2 z-[80] flex max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-[640px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-border bg-surface-container-lowest shadow-2xl"
+      >
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5">
+          <div>
+            <div className="mb-1 flex items-center gap-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                Form Media Terpadu
+              </p>
+              <span className="rounded-full bg-secondary-container px-2 py-0.5 text-[11px] font-medium text-on-secondary-container">
+                {isEdit ? "Edit" : "Tambah"}
+              </span>
+            </div>
+            <h2 id="media-form-title" className="text-xl font-semibold text-on-surface">
+              {isEdit ? "Perbarui Media" : "Tambah Media Baru"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {isEdit
+                ? "Ubah informasi media atau unggah berkas pengganti."
+                : "Lengkapi detail media sebelum menyimpannya."}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isLoading}
+            aria-label="Tutup"
+            className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface disabled:opacity-50"
+          >
+            <FaTimes />
+          </button>
         </div>
 
-        <div className="space-y-4 mb-6">
-          <div>
-            <label
-              htmlFor={`${idPrefix}nama`}
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Nama Media
-            </label>
-            <input
-              id={`${idPrefix}nama`}
-              type="text"
-              value={formData.nama}
-              onChange={(e) =>
-                setFormData({ ...formData, nama: e.target.value })
-              }
-              className={fieldInputClass}
-              placeholder={isEdit ? undefined : "Nama media"}
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor={`${idPrefix}tipe`}
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Tipe Media
-            </label>
-            <select
-              id={`${idPrefix}tipe`}
-              value={formData.tipe}
-              onChange={(e) =>
-                setFormData({ ...formData, tipe: e.target.value })
-              }
-              className={fieldInputClass}
-            >
-              <option value="foto">Foto</option>
-              <option value="video">Video</option>
-              <option value="dokumen">Dokumen</option>
-            </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor={`${idPrefix}deskripsi`}
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Deskripsi
-            </label>
-            <textarea
-              id={`${idPrefix}deskripsi`}
-              value={formData.deskripsi}
-              onChange={(e) =>
-                setFormData({ ...formData, deskripsi: e.target.value })
-              }
-              className={fieldInputClass}
-              placeholder={isEdit ? undefined : "Deskripsi media"}
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor={`${idPrefix}upload-file`}
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              {isEdit ? "Upload Media Baru (Opsional)" : "Upload Media"}
-            </label>
-            <input
-              id={`${idPrefix}upload-file`}
-              type="file"
-              accept={getAccept(formData.tipe)}
-              onChange={(e) =>
-                setFormData({ ...formData, file: e.target.files?.[0] ?? null })
-              }
-              className={fileInputClass(isEdit)}
-            />
-            {isEdit ? (
-              <p className="text-xs text-gray-500 mt-1">
-                Kosongkan jika tidak ingin mengubah file.
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSubmit();
+          }}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <div className="scrollbar-hide flex-1 space-y-7 overflow-y-auto px-6 py-6">
+            <section>
+              <p className="mb-3 text-sm font-semibold text-on-surface">
+                1. Berkas Media
               </p>
-            ) : (
-              <p className="text-xs text-gray-500 mt-1">
-                {getFileHint(formData.tipe)}
-              </p>
-            )}
-          </div>
-
-          {formData.tipe === "video" && (
-            <div>
               <label
-                htmlFor={`${idPrefix}upload-thumbnail`}
-                className="block text-sm font-medium text-gray-700 mb-1"
+                htmlFor={`${idPrefix}file`}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={handleDrop}
+                className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
+                  isDragging
+                    ? "border-primary bg-primary-fixed/40"
+                    : "border-border bg-surface-container-low hover:border-primary/50 hover:bg-surface-container"
+                }`}
               >
-                Upload Thumbnail Video (Opsional)
+                <input
+                  ref={fileInputRef}
+                  id={`${idPrefix}file`}
+                  type="file"
+                  accept={getAccept(formData.tipe)}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      file: event.target.files?.[0] ?? null,
+                    }))
+                  }
+                  className="sr-only"
+                />
+                <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed text-on-primary-fixed">
+                  <FaCloudUploadAlt className="text-xl" />
+                </span>
+                <span className="text-sm font-medium text-on-surface">
+                  Klik untuk memilih atau seret file ke sini
+                </span>
+                <span className="mt-1 text-xs text-muted-foreground">
+                  {getFileHint(formData.tipe)}
+                  {isEdit ? " · Kosongkan jika tidak mengganti berkas" : ""}
+                </span>
               </label>
-              <input
-                id={`${idPrefix}upload-thumbnail`}
-                type="file"
-                accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    thumbnail: e.target.files?.[0] ?? null,
-                  })
-                }
-                className={fileInputClass(isEdit)}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                {isEdit
-                  ? "Kosongkan jika tidak ingin mengubah thumbnail."
-                  : "Format yang didukung: JPG, JPEG, PNG, GIF, WEBP"}
+
+              {formData.file && (
+                <div className="mt-3 flex items-center gap-3 rounded-2xl border border-border bg-surface p-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary-container text-on-secondary-container">
+                    <FaFileImage />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-on-surface">
+                      {formData.file.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatBytes(formData.file.size)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeFile}
+                    aria-label="Hapus berkas terpilih"
+                    className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+              )}
+            </section>
+
+            <section>
+              <p className="mb-3 text-sm font-semibold text-on-surface">
+                2. Tipe Media
               </p>
-              <p className="text-xs text-blue-500 mt-1">
-                <span className="font-medium">Catatan:</span>{" "}
-                {isEdit
-                  ? "Jika tidak diisi dan video diubah, sistem akan otomatis mengambil frame pertama dari video sebagai thumbnail."
-                  : "Jika tidak diisi, sistem akan otomatis mengambil frame pertama dari video sebagai thumbnail."}
-              </p>
-              {isEdit && currentItem?.thumbnail && (
-                <div className="mt-2">
-                  <p className="text-xs text-gray-500">Thumbnail saat ini:</p>
-                  <div className="mt-1 w-24 h-24 bg-gray-100 rounded-md overflow-hidden">
-                    <img
-                      src={
-                        adminMediaUtils.getMediaUrl(currentItem.thumbnail) ||
-                        "/placeholder.svg"
+              <div className="grid grid-cols-3 gap-2">
+                {MEDIA_TYPES.map((option) => {
+                  const Icon = option.icon;
+                  const isSelected = formData.tipe === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() =>
+                        setFormData((previous) => ({
+                          ...previous,
+                          tipe: option.value,
+                          file: null,
+                          thumbnail: null,
+                        }))
                       }
-                      alt="Thumbnail"
-                      className="w-full h-full object-cover"
-                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          "/placeholder.svg?height=96&width=96";
+                      className={`flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 text-sm font-medium transition-colors ${
+                        isSelected
+                          ? "border-primary bg-primary-fixed text-on-primary-fixed"
+                          : "border-border bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container"
+                      }`}
+                    >
+                      <Icon className="text-lg" />
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <p className="text-sm font-semibold text-on-surface">
+                3. Informasi Media
+              </p>
+
+              <div>
+                <label
+                  htmlFor={`${idPrefix}nama`}
+                  className="mb-1.5 block text-sm font-medium text-on-surface-variant"
+                >
+                  Nama / Judul Media
+                </label>
+                <input
+                  id={`${idPrefix}nama`}
+                  type="text"
+                  value={formData.nama}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      nama: event.target.value,
+                    }))
+                  }
+                  className={fieldClass}
+                  placeholder="Contoh: Foto kegiatan desa"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor={`${idPrefix}deskripsi`}
+                  className="mb-1.5 block text-sm font-medium text-on-surface-variant"
+                >
+                  Deskripsi
+                </label>
+                <textarea
+                  id={`${idPrefix}deskripsi`}
+                  value={formData.deskripsi}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      deskripsi: event.target.value,
+                    }))
+                  }
+                  className={`${fieldClass} min-h-[110px] resize-y`}
+                  placeholder="Jelaskan isi media secara singkat"
+                  rows={4}
+                />
+              </div>
+            </section>
+
+            {formData.tipe === "video" && (
+              <section>
+                <p className="mb-3 text-sm font-semibold text-on-surface">
+                  4. Thumbnail Video
+                </p>
+                <label
+                  htmlFor={`${idPrefix}thumbnail`}
+                  className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-surface-container-low px-4 py-3 transition-colors hover:bg-surface-container"
+                >
+                  <input
+                    ref={thumbnailInputRef}
+                    id={`${idPrefix}thumbnail`}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    onChange={(event) =>
+                      setFormData((previous) => ({
+                        ...previous,
+                        thumbnail: event.target.files?.[0] ?? null,
+                      }))
+                    }
+                    className="sr-only"
+                  />
+                  <FaFileVideo className="text-lg text-primary" />
+                  <span className="text-sm font-medium text-on-surface">
+                    Pilih gambar thumbnail
+                  </span>
+                </label>
+                <p className="mt-2 flex items-start gap-1.5 text-xs text-muted-foreground">
+                  <FaInfoCircle className="mt-0.5 shrink-0" />
+                  Jika kosong, sistem akan mengambil frame pertama dari video.
+                </p>
+
+                {formData.thumbnail && (
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-border bg-surface p-3">
+                    <span className="min-w-0 flex-1 truncate text-sm text-on-surface">
+                      {formData.thumbnail.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={removeThumbnail}
+                      aria-label="Hapus thumbnail terpilih"
+                      className="rounded-xl p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                )}
+
+                {currentThumbnailUrl && (
+                  <div className="mt-3">
+                    <p className="mb-1.5 text-xs text-muted-foreground">
+                      Thumbnail saat ini
+                    </p>
+                    <img
+                      src={currentThumbnailUrl}
+                      alt="Thumbnail video saat ini"
+                      className="h-24 w-40 rounded-xl object-cover"
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
                       }}
                     />
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+                )}
+              </section>
+            )}
+          </div>
 
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            Batal
-          </button>
-          <button
-            onClick={onSubmit}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-          >
-            {isEdit ? "Simpan Perubahan" : "Simpan"}
-          </button>
-        </div>
-      </div>
-    </div>
+          <footer className="shrink-0 border-t border-border bg-surface-container-lowest px-6 py-4">
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={isLoading}
+                className="rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLoading && <FaCloudUploadAlt className="animate-pulse" />}
+                {isEdit ? "Simpan Perubahan" : "Simpan Media"}
+              </button>
+            </div>
+          </footer>
+        </form>
+      </aside>
+    </ModalPortal>
   );
 }

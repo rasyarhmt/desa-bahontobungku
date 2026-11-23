@@ -78,6 +78,7 @@ func RegisterRoutes(application app.App) http.Handler {
 	penduduk.Use(middlewares.AuthMiddleware())
 	{
 		penduduk.GET("/", application.PendudukHandler.GetAll)
+		penduduk.GET("/export/xlsx", application.PendudukHandler.ExportXLSX)
 		penduduk.GET("/nik/:nik", application.PendudukHandler.GetByNIK)
 		penduduk.POST("/", application.PendudukHandler.Create)
 		penduduk.PUT("/update/:nik", application.PendudukHandler.Update)

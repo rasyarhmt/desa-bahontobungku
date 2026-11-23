@@ -1,5 +1,15 @@
 import { useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { FaFileAlt, FaSave } from "react-icons/fa";
+
+import {
+  AdminField,
+  AdminFormSection,
+  AdminFormView,
+  AdminInput,
+  AdminSelect,
+  adminPrimaryButtonClass,
+} from "@/components/admin/admin-ui";
 
 import type { SuratFormData } from "./suratShared";
 
@@ -63,176 +73,160 @@ export default function SuratForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div>
-        <label
-          htmlFor="jenis"
-          className="block text-sm font-medium text-gray-700 mb-1"
+    <form onSubmit={handleSubmit}>
+      <AdminFormView
+        eyebrow="Arsip Surat"
+        title={isEdit ? "Edit Surat" : "Tambah Surat Baru"}
+        description={
+          isEdit
+            ? "Perbarui data surat dan berkas yang tersimpan di arsip."
+            : "Lengkapi data surat untuk disimpan ke dalam arsip desa."
+        }
+        onBack={onCancel}
+      >
+        <AdminFormSection
+          number={1}
+          title="Informasi Surat"
+          description="Jenis surat, nomor, dan pihak terkait."
         >
-          Jenis Surat
-        </label>
-        <select
-          id="jenis"
-          value={formData.jenis}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              jenis: e.target.value as "Surat Masuk" | "Surat Keluar",
-            })
-          }
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-          disabled={isEdit && currentItem?.id != null && currentItem.id > 0}
-        >
-          <option value="Surat Masuk">Surat Masuk</option>
-          <option value="Surat Keluar">Surat Keluar</option>
-        </select>
-      </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Jenis Surat" htmlFor="jenis" required>
+              <AdminSelect
+                id="jenis"
+                value={formData.jenis}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    jenis: e.target.value as "Surat Masuk" | "Surat Keluar",
+                  })
+                }
+                disabled={isEdit && currentItem?.id != null && currentItem.id > 0}
+              >
+                <option value="Surat Masuk">Surat Masuk</option>
+                <option value="Surat Keluar">Surat Keluar</option>
+              </AdminSelect>
+            </AdminField>
 
-      <div>
-        <label
-          htmlFor="nomor"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Nomor Surat
-        </label>
-        <input
-          id="nomor"
-          type="text"
-          value={formData.nomor}
-          onChange={(e) => setFormData({ ...formData, nomor: e.target.value })}
-          className={`w-full px-4 py-2 border ${
-            formErrors.nomor ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
-          placeholder="Contoh: SM/2024/001"
-        />
-        {formErrors.nomor && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.nomor}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="perihal"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Perihal
-        </label>
-        <input
-          id="perihal"
-          type="text"
-          value={formData.perihal}
-          onChange={(e) =>
-            setFormData({ ...formData, perihal: e.target.value })
-          }
-          className={`w-full px-4 py-2 border ${
-            formErrors.perihal ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
-          placeholder="Perihal surat"
-        />
-        {formErrors.perihal && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.perihal}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="pengirim"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          {formData.jenis === "Surat Masuk" ? "Pengirim" : "Penerima"}
-        </label>
-        <input
-          id="pengirim"
-          type="text"
-          value={formData.pengirim}
-          onChange={(e) =>
-            setFormData({ ...formData, pengirim: e.target.value })
-          }
-          className={`w-full px-4 py-2 border ${
-            formErrors.pengirim ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
-          placeholder={
-            formData.jenis === "Surat Masuk" ? "Nama pengirim" : "Nama penerima"
-          }
-        />
-        {formErrors.pengirim && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.pengirim}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="tanggal"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          {formData.jenis === "Surat Masuk"
-            ? "Tanggal Terima"
-            : "Tanggal Kirim"}
-        </label>
-        <input
-          id="tanggal"
-          type="date"
-          value={formData.tanggal}
-          onChange={(e) =>
-            setFormData({ ...formData, tanggal: e.target.value })
-          }
-          className={`w-full px-4 py-2 border ${
-            formErrors.tanggal ? "border-red-500" : "border-gray-300"
-          } rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
-        />
-        {formErrors.tanggal && (
-          <p className="mt-1 text-sm text-red-500">{formErrors.tanggal}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="upload-file"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Upload Dokumen {isEdit ? "Baru " : ""}(Opsional)
-        </label>
-        <input
-          id="upload-file"
-          type="file"
-          accept=".pdf,.doc,.docx"
-          onChange={handleFileChange}
-          className="w-full border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-        />
-        {isEdit && currentItem?.file && (
-          <p className="mt-1 text-sm text-gray-500">
-            File saat ini:{" "}
-            <a
-              href={`/storage/${currentItem.file}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline hover:text-blue-800"
+            <AdminField
+              label="Nomor Surat"
+              htmlFor="nomor"
+              required
+              error={formErrors.nomor}
             >
-              Lihat Dokumen
-            </a>
-          </p>
-        )}
-      </div>
+              <AdminInput
+                id="nomor"
+                type="text"
+                value={formData.nomor}
+                onChange={(e) =>
+                  setFormData({ ...formData, nomor: e.target.value })
+                }
+                placeholder="Contoh: SM/2024/001"
+              />
+            </AdminField>
 
-      <div className="flex justify-end gap-2 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            <AdminField
+              label="Perihal"
+              htmlFor="perihal"
+              required
+              error={formErrors.perihal}
+            >
+              <AdminInput
+                id="perihal"
+                type="text"
+                value={formData.perihal}
+                onChange={(e) =>
+                  setFormData({ ...formData, perihal: e.target.value })
+                }
+                placeholder="Perihal surat"
+              />
+            </AdminField>
+
+            <AdminField
+              label={
+                formData.jenis === "Surat Masuk" ? "Pengirim" : "Penerima"
+              }
+              htmlFor="pengirim"
+              required
+              error={formErrors.pengirim}
+            >
+              <AdminInput
+                id="pengirim"
+                type="text"
+                value={formData.pengirim}
+                onChange={(e) =>
+                  setFormData({ ...formData, pengirim: e.target.value })
+                }
+                placeholder={
+                  formData.jenis === "Surat Masuk"
+                    ? "Nama pengirim"
+                    : "Nama penerima"
+                }
+              />
+            </AdminField>
+
+            <AdminField
+              label={
+                formData.jenis === "Surat Masuk"
+                  ? "Tanggal Terima"
+                  : "Tanggal Kirim"
+              }
+              htmlFor="tanggal"
+              required
+              error={formErrors.tanggal}
+            >
+              <AdminInput
+                id="tanggal"
+                type="date"
+                value={formData.tanggal}
+                onChange={(e) =>
+                  setFormData({ ...formData, tanggal: e.target.value })
+                }
+              />
+            </AdminField>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection
+          number={2}
+          title="Dokumen Surat"
+          description="Berkas PDF atau Word yang melengkapi arsip surat."
         >
-          Batal
-        </button>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-        >
-          {isEdit ? "Simpan Perubahan" : "Simpan"}
-        </button>
-      </div>
+          <AdminField
+            label={`Upload Dokumen ${isEdit ? "Baru " : ""}`}
+            htmlFor="upload-file"
+            hint="Format yang diterima: PDF, DOC, DOCX."
+          >
+            <AdminInput
+              id="upload-file"
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileChange}
+              className="file:mr-4 file:rounded-xl file:border-0 file:bg-primary-fixed file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-on-primary-fixed hover:file:bg-primary-fixed-dim"
+            />
+          </AdminField>
+          {isEdit && currentItem?.file && (
+            <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+              <FaFileAlt className="text-primary" />
+              File saat ini:{" "}
+              <a
+                href={`/storage/${currentItem.file}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline hover:text-primary/80"
+              >
+                Lihat Dokumen
+              </a>
+            </p>
+          )}
+        </AdminFormSection>
+
+        <div className="flex justify-end">
+          <button type="submit" className={adminPrimaryButtonClass}>
+            <FaSave />
+            {isEdit ? "Simpan Perubahan" : "Simpan"}
+          </button>
+        </div>
+      </AdminFormView>
     </form>
   );
 }

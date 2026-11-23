@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { FaMoneyBillWave, FaMoneyCheckAlt, FaTimes } from "react-icons/fa";
+
+import {
+  AdminField,
+  AdminFormSection,
+  AdminFormView,
+  AdminInput,
+  AdminSelect,
+  AdminTextarea,
+  adminPrimaryButtonClass,
+} from "@/components/admin/admin-ui";
 
 export interface DanaMasukPayload {
   tahun: number;
@@ -68,21 +77,6 @@ const DanaForm = (props: DanaFormProps) => {
   const fieldName = isMasuk ? "sumber" : "kategori";
   const fieldLabel = isMasuk ? "Sumber" : "Kategori";
   const title = isMasuk ? "Pendapatan" : "Pengeluaran";
-  const Icon = isMasuk ? FaMoneyBillWave : FaMoneyCheckAlt;
-
-  const theme = isMasuk
-    ? {
-        iconBg: "bg-green-100",
-        iconColor: "text-green-500",
-        ring: "focus:ring-green-500",
-        button: "bg-green-500 hover:bg-green-600",
-      }
-    : {
-        iconBg: "bg-red-100",
-        iconColor: "text-red-500",
-        ring: "focus:ring-red-500",
-        button: "bg-red-500 hover:bg-red-600",
-      };
 
   const [formData, setFormData] = useState({
     tahun: new Date().getFullYear().toString(),
@@ -135,131 +129,95 @@ const DanaForm = (props: DanaFormProps) => {
     }
   };
 
-  const inputClass = `w-full border border-gray-300 rounded-lg p-2 focus:ring-2 ${theme.ring} focus:outline-none`;
-
   return (
-    <div
-      className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50"
-      style={{ fontFamily: "poppins" }}
+    <AdminFormView
+      eyebrow="APBDes"
+      title={`${isEditing ? "Edit" : "Tambah"} Data ${title}`}
+      description="Isi detail transaksi sesuai dokumen anggaran desa."
+      onBack={onCancel}
     >
-      <div className="bg-white/95 backdrop-filter rounded-2xl shadow-xl p-6 w-full max-w-md border border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className={`${theme.iconBg} p-2 rounded-lg`}>
-              <Icon className={theme.iconColor} size={20} />
-            </div>
-            <h2 className="font-semibold text-xl text-gray-800">
-              {isEditing
-                ? `Edit Data ${title}`
-                : `Tambah Data ${title}`}
-            </h2>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <AdminFormSection number={1} title="Periode Transaksi">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Tahun" htmlFor="dana-tahun" required>
+              <AdminInput
+                id="dana-tahun"
+                type="number"
+                name="tahun"
+                value={formData.tahun}
+                onChange={handleChange}
+                min="2000"
+                max="2100"
+                required
+              />
+            </AdminField>
+            <AdminField label="Bulan" htmlFor="dana-bulan" required>
+              <AdminSelect
+                id="dana-bulan"
+                name="bulan"
+                value={formData.bulan}
+                onChange={handleChange}
+                required
+              >
+                {MONTHS.map((month, index) => (
+                  <option key={month} value={index + 1}>
+                    {month}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
           </div>
-          <button
-            onClick={onCancel}
-            className="text-gray-500 hover:text-gray-700"
-            title="Tutup"
-          >
-            <FaTimes size={20} />
+        </AdminFormSection>
+
+        <AdminFormSection
+          number={2}
+          title="Detail Dana"
+          description={`Data ${title.toLowerCase()} yang akan dicatat.`}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Jumlah" htmlFor="dana-jumlah" required>
+              <AdminInput
+                id="dana-jumlah"
+                type="number"
+                name="jumlah"
+                value={formData.jumlah}
+                onChange={handleChange}
+                required
+                min="0"
+              />
+            </AdminField>
+            <AdminField label={fieldLabel} htmlFor="dana-field" required>
+              <AdminInput
+                id="dana-field"
+                type="text"
+                name={fieldName}
+                value={fieldValue}
+                onChange={handleChange}
+                required
+              />
+            </AdminField>
+          </div>
+          <div className="mt-4">
+            <AdminField label="Keterangan" htmlFor="dana-keterangan" required>
+              <AdminTextarea
+                id="dana-keterangan"
+                name="keterangan"
+                value={formData.keterangan}
+                onChange={handleChange}
+                required
+                rows={3}
+              />
+            </AdminField>
+          </div>
+        </AdminFormSection>
+
+        <div className="flex justify-end gap-2">
+          <button type="submit" className={adminPrimaryButtonClass}>
+            {isEditing ? "Update" : "Simpan"}
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tahun
-            </label>
-            <input
-              type="number"
-              name="tahun"
-              value={formData.tahun}
-              onChange={handleChange}
-              min="2000"
-              max="2100"
-              required
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Bulan
-            </label>
-            <select
-              name="bulan"
-              value={formData.bulan}
-              onChange={handleChange}
-              required
-              className={inputClass}
-            >
-              {MONTHS.map((month, index) => (
-                <option key={month} value={index + 1}>
-                  {month}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Jumlah
-            </label>
-            <input
-              type="number"
-              name="jumlah"
-              value={formData.jumlah}
-              onChange={handleChange}
-              required
-              min="0"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {fieldLabel}
-            </label>
-            <input
-              type="text"
-              name={fieldName}
-              value={fieldValue}
-              onChange={handleChange}
-              required
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Keterangan
-            </label>
-            <textarea
-              name="keterangan"
-              value={formData.keterangan}
-              onChange={handleChange}
-              required
-              rows={3}
-              className={inputClass}
-            ></textarea>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className={`px-4 py-2 ${theme.button} text-white rounded-lg transition-colors`}
-            >
-              {isEditing ? "Update" : "Simpan"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </AdminFormView>
   );
 };
 

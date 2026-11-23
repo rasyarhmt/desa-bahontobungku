@@ -17,5 +17,3 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-export { ChartJS };

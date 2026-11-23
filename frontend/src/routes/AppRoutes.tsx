@@ -12,6 +12,7 @@ const Pelayanan = lazy(() => import("../pages/Pelayanan"));
 const PelayananSuratUmum = lazy(() => import("../pages/PelayananSuratUmum"));
 const Verifikasi = lazy(() => import("../pages/Verifikasi"));
 const Media = lazy(() => import("../pages/Media"));
+const MediaDetail = lazy(() => import("../pages/MediaDetail"));
 const Information = lazy(() => import("../pages/Information"));
 const BeritaDetail = lazy(() => import("../pages/BeritaDetail"));
 const Map = lazy(() => import("../pages/Map"));
@@ -49,6 +50,7 @@ const AppRoutes = (): JSX.Element => {
         <Route path="/pelayanan/surat/:id" element={<Suspense fallback={fallback}><PelayananSuratUmum /></Suspense>} />
         <Route path="/verifikasi" element={<Suspense fallback={fallback}><Verifikasi /></Suspense>} />
         <Route path="/Media" element={<Suspense fallback={fallback}><Media /></Suspense>} />
+        <Route path="/media/:id" element={<Suspense fallback={fallback}><MediaDetail /></Suspense>} />
         <Route path="/Information" element={<Suspense fallback={fallback}><Information /></Suspense>} />
         <Route path="/berita-detail/:id" element={<Suspense fallback={fallback}><BeritaDetail /></Suspense>} />
         <Route path="/Map" element={<Suspense fallback={fallback}><Map /></Suspense>} />

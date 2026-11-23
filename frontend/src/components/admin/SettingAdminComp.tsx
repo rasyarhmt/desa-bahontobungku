@@ -1,18 +1,136 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { FaEye, FaEyeSlash, FaSave, FaUndo } from "react-icons/fa";
+
+import ModalPortal from "@/components/admin/ModalPortal";
 import {
-  FaCog,
-  FaUser,
-  FaEnvelope,
-  FaLock,
-  FaSave,
-  FaUndo,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
+  AdminCard,
+  AdminField,
+  AdminFormSection,
+  AdminInput,
+  AdminPageHeader,
+  adminPrimaryButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
 import { adminUserApi } from "@/lib/api/admin";
 import { useAsyncData, useDisclosure } from "@/hooks";
 import { getErrorMessage } from "@/lib/errors";
+
+function ActionDialog({
+  isOpen,
+  title,
+  description,
+  confirmLabel,
+  onConfirm,
+  onCancel,
+}: {
+  isOpen: boolean;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onCancel]);
+
+  if (!isOpen) return null;
+
+  return (
+    <ModalPortal>
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+        <div
+          aria-hidden="true"
+          onClick={onCancel}
+          className="absolute inset-0 bg-inverse-surface/50 backdrop-blur-sm"
+        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="setting-action-title"
+          className="relative z-[80] w-full max-w-md rounded-3xl border border-border bg-surface-container-lowest p-6 shadow-2xl"
+        >
+          <h2
+            id="setting-action-title"
+            className="text-lg font-semibold text-on-surface"
+          >
+            {title}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+          <div className="mt-6 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onCancel}
+              className={adminSecondaryButtonClass}
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              className={adminPrimaryButtonClass}
+            >
+              {confirmLabel}
+            </button>
+          </div>
+        </div>
+      </div>
+    </ModalPortal>
+  );
+}
+
+function SuccessDialog({
+  isOpen,
+  message,
+  onClose,
+}: {
+  isOpen: boolean;
+  message: string;
+  onClose: () => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <ModalPortal>
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+        <div
+          aria-hidden="true"
+          onClick={onClose}
+          className="absolute inset-0 bg-inverse-surface/50 backdrop-blur-sm"
+        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="setting-success-title"
+          className="relative z-[80] w-full max-w-md rounded-3xl border border-border bg-surface-container-lowest p-6 text-center shadow-2xl"
+        >
+          <h2
+            id="setting-success-title"
+            className="text-lg font-semibold text-on-surface"
+          >
+            Berhasil
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+          <button
+            type="button"
+            onClick={onClose}
+            className={`${adminPrimaryButtonClass} mt-6`}
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </ModalPortal>
+  );
+}
 
 const SettingAdminComp = () => {
   const {
@@ -38,12 +156,11 @@ const SettingAdminComp = () => {
   const successModal = useDisclosure();
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
-
   const resetModal = useDisclosure();
   const saveModal = useDisclosure();
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     setError("");
 
     if (
@@ -96,285 +213,170 @@ const SettingAdminComp = () => {
     }
   };
 
-  const handleReset = () => {
-    resetModal.open();
-  };
-
-  const confirmReset = async () => {
-    try {
-      const res = await adminUserApi.getCurrentUser();
-      if (res) {
+  const confirmReset = () => {
+    void (async () => {
+      try {
+        const res = await adminUserApi.getCurrentUser();
+        if (res) {
+          setUserData({
+            nama: res.nama || "",
+            email: res.email || "",
+            password: "",
+          });
+        }
+      } catch (_err) {
         setUserData({
-          nama: res.nama || "",
-          email: res.email || "",
+          nama: "",
+          email: "",
           password: "",
         });
       }
-    } catch (_err) {
-      setUserData({
-        nama: "",
-        email: "",
-        password: "",
-      });
-    }
 
-    resetModal.close();
-    setError("");
+      resetModal.close();
+      setError("");
+    })();
   };
 
   if (loadingUser) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Memuat data user...</p>
+      <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
+        Memuat data user...
       </div>
     );
   }
 
+  const notice: ReactNode = error || fetchError;
+
   return (
-    <div className="p-6 min-h-screen" style={{ fontFamily: "poppins" }}>
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaCog className="text-purple-500 text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">Pengaturan Akun</h1>
-        </div>
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Akun"
+        title="Pengaturan Akun"
+        description="Kelola informasi akun dan kredensial login Anda."
+      />
 
-        <div className="rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Kredensial Akun
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Kelola informasi akun dan kredensial login Anda
-              </p>
-            </div>
-          </div>
+      <AdminCard className="p-6 sm:p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <AdminFormSection
+            number={1}
+            title="Kredensial Akun"
+            description="Perubahan nama dan kata sandi akan langsung diterapkan."
+          >
+            {notice && (
+              <div className="mb-4 rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {notice}
+              </div>
+            )}
 
-          {(error || fetchError) && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
-              {error || fetchError}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="nama"
-                className="block text-sm font-medium text-gray-700 mb-1"
+            <div className="grid gap-4 sm:grid-cols-2">
+              <AdminField
+                label="Nama"
+                htmlFor="setting-nama"
+                hint="Nama yang akan ditampilkan di dashboard"
               >
-                Nama
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="text-gray-400" />
-                </div>
-                <input
-                  id="nama"
+                <AdminInput
+                  id="setting-nama"
                   type="text"
                   value={userData.nama}
-                  onChange={(e) =>
-                    setUserData({ ...userData, nama: e.target.value })
+                  onChange={(event) =>
+                    setUserData({ ...userData, nama: event.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="Masukkan nama Anda"
                 />
-              </div>
-              <p className="mt-1 text-sm text-gray-500">
-                Nama yang akan ditampilkan di dashboard
-              </p>
-            </div>
+              </AdminField>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+              <AdminField
+                label="Email"
+                htmlFor="setting-email"
+                hint="Email yang digunakan untuk login (tidak dapat diubah)"
               >
-                Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="text-gray-400" />
-                </div>
-                <input
-                  id="email"
+                <AdminInput
+                  id="setting-email"
                   type="email"
                   value={userData.email}
                   disabled
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100"
                   placeholder="Email Anda (tidak dapat diubah)"
                 />
-              </div>
-              <p className="mt-1 text-sm text-gray-500">
-                Email yang digunakan untuk login (tidak dapat diubah)
-              </p>
+              </AdminField>
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+            <div className="mt-4">
+              <AdminField
+                label="Password Baru"
+                htmlFor="setting-password"
+                hint="Isi hanya jika ingin mengubah password"
               >
-                Password Baru
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={userData.password}
-                  onChange={(e) =>
-                    setUserData({ ...userData, password: e.target.value })
-                  }
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Kosongkan jika tidak ingin mengubah password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <FaEyeSlash className="text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <FaEye className="text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-              <p className="mt-1 text-sm text-gray-500">
-                Isi hanya jika ingin mengubah password
-              </p>
-            </div>
-
-            <div className="flex justify-between pt-4">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <FaUndo />
-                <span>Reset Form</span>
-              </button>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                {isLoading ? (
-                  <span>Menyimpan...</span>
-                ) : (
-                  <>
-                    <FaSave />
-                    <span>Simpan Perubahan</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      {successModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6 text-center">
-              <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
+                <div className="relative">
+                  <AdminInput
+                    id="setting-password"
+                    type={showPassword ? "text" : "password"}
+                    value={userData.password}
+                    onChange={(event) =>
+                      setUserData({ ...userData, password: event.target.value })
+                    }
+                    className="pr-11"
+                    placeholder="Kosongkan jika tidak ingin mengubah password"
                   />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-800">Berhasil</h3>
-              <p className="text-gray-600">{successMessage}</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground transition-colors hover:text-on-surface"
+                    aria-label={
+                      showPassword ? "Sembunyikan password" : "Tampilkan password"
+                    }
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </AdminField>
             </div>
+          </AdminFormSection>
 
-            <div className="flex justify-center">
-              <button
-                onClick={successModal.close}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                Tutup
-              </button>
-            </div>
+          <div className="flex flex-wrap justify-between gap-2 border-t border-border pt-5">
+            <button
+              type="button"
+              onClick={resetModal.open}
+              className={adminSecondaryButtonClass}
+            >
+              <FaUndo /> Reset Form
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={adminPrimaryButtonClass}
+            >
+              <FaSave /> {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </AdminCard>
 
-      {resetModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Reset
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin mereset form? Nama akan dikembalikan ke
-                data asli dan password akan dikosongkan.
-              </p>
-            </div>
+      <SuccessDialog
+        isOpen={successModal.isOpen}
+        message={successMessage}
+        onClose={() => {
+          successModal.close();
+          setSuccessMessage("");
+        }}
+      />
 
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={resetModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmReset}
-                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
-              >
-                Ya, Reset
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ActionDialog
+        isOpen={resetModal.isOpen}
+        title="Konfirmasi Reset"
+        description="Apakah Anda yakin ingin mereset form? Nama akan dikembalikan ke data asli dan password akan dikosongkan."
+        confirmLabel="Ya, Reset"
+        onConfirm={confirmReset}
+        onCancel={resetModal.close}
+      />
 
-      {saveModal.isOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-gray-700/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Simpan
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin menyimpan perubahan pada pengaturan
-                akun?
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={saveModal.close}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmSave}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                Ya, Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ActionDialog
+        isOpen={saveModal.isOpen}
+        title="Konfirmasi Simpan"
+        description="Apakah Anda yakin ingin menyimpan perubahan pada pengaturan akun?"
+        confirmLabel="Ya, Simpan"
+        onConfirm={() => void confirmSave()}
+        onCancel={saveModal.close}
+      />
     </div>
   );
 };

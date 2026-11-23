@@ -1,5 +1,11 @@
-import { FaMoneyCheckAlt, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaMoneyCheckAlt, FaPlus, FaTrash } from "react-icons/fa";
 
+import {
+  AdminSectionHeader,
+  AdminStatusBadge,
+  AdminTableShell,
+  adminPrimaryButtonClass,
+} from "@/components/admin/admin-ui";
 import { formatCurrency, getMonthName } from "@/lib/format";
 
 import type { DanaKeluarDisplay } from "./apbdesShared";
@@ -13,6 +19,9 @@ interface DanaKeluarTableProps {
   onDelete: (id: number) => void;
 }
 
+const actionButtonClass =
+  "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-container-lowest text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary";
+
 export default function DanaKeluarTable({
   items,
   totalPengeluaran,
@@ -21,132 +30,99 @@ export default function DanaKeluarTable({
   onEdit,
   onDelete,
 }: DanaKeluarTableProps) {
+  const headerClass =
+    "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground";
+  const cellClass = "px-4 py-3 text-on-surface";
+
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-red-100 p-2 rounded-lg">
-              <FaMoneyCheckAlt className="text-red-500 text-xl" />
-            </div>
-            <h2 className="font-semibold text-xl text-gray-800">
-              Data Pengeluaran
-            </h2>
-          </div>
-          <button
-            onClick={onAdd}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <FaPlus size={16} />
-            <span>Tambah Pengeluaran</span>
-          </button>
+    <AdminTableShell
+      footer={
+        <div className="flex items-center justify-between gap-3 border-t border-border bg-destructive/10 px-6 py-3 text-sm text-destructive">
+          <span className="font-medium">Total</span>
+          <span className="font-semibold tabular-nums">
+            {formatCurrency(totalPengeluaran)}
+          </span>
         </div>
+      }
+    >
+      <div className="p-5 sm:p-6">
+        <AdminSectionHeader
+          icon={<FaMoneyCheckAlt />}
+          title="Data Pengeluaran"
+          description={`Rekap dana keluar tahun ${selectedYear}`}
+          action={
+            <button type="button" onClick={onAdd} className={adminPrimaryButtonClass}>
+              <FaPlus /> Tambah Pengeluaran
+            </button>
+          }
+        />
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm text-gray-600">
+          <table className="min-w-full text-sm text-on-surface-variant">
             <thead>
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-red-50 rounded-tl-lg">
-                  ID
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-red-50">
-                  Tahun
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-red-50">
-                  Bulan
-                </th>
-                <th className="px-4 py-3 text-right font-medium text-gray-700 bg-red-50">
-                  Jumlah
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-red-50">
-                  Kategori
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700 bg-red-50">
-                  Keterangan
-                </th>
-                <th className="px-4 py-3 text-right font-medium text-gray-700 bg-red-50 rounded-tr-lg">
-                  Aksi
-                </th>
+              <tr className="border-b border-border bg-surface-container-low">
+                <th className={`${headerClass} text-left`}>ID</th>
+                <th className={`${headerClass} text-left`}>Tahun</th>
+                <th className={`${headerClass} text-left`}>Bulan</th>
+                <th className={`${headerClass} text-right`}>Jumlah</th>
+                <th className={`${headerClass} text-left`}>Kategori</th>
+                <th className={`${headerClass} text-left`}>Keterangan</th>
+                <th className={`${headerClass} text-right`}>Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {items.length > 0 ? (
-                items.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <td className="px-4 py-3 text-sm text-gray-800">
-                      {item.id}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
-                      {item.tahun}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 font-medium">
-                      {getMonthName(item.bulan ?? 0)}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-red-600 font-mono font-medium text-right">
-                      {formatCurrency(Number(item.jumlah ?? 0))}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
-                      <span className="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium">
-                        {item.kategori}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 max-w-xs truncate">
-                      {item.keterangan}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => onEdit(item)}
-                          className="p-1.5 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors shadow-sm"
-                          title="Edit"
-                        >
-                          <FaEdit className="text-blue-600" />
-                        </button>
-                        <button
-                          onClick={() => onDelete(item.id)}
-                          className="p-1.5 bg-red-100 rounded-md hover:bg-red-200 transition-colors shadow-sm"
-                          title="Hapus"
-                        >
-                          <FaTrash className="text-red-600" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
+            <tbody className="divide-y divide-border">
+              {items.length === 0 && (
                 <tr>
                   <td
                     colSpan={7}
-                    className="px-4 py-8 text-center text-gray-500 italic"
+                    className="px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     Tidak ada data pengeluaran untuk tahun {selectedYear}
                   </td>
                 </tr>
               )}
+              {items.map((item) => (
+                <tr key={item.id} className="transition-colors hover:bg-surface-container-low">
+                  <td className={cellClass}>{item.id}</td>
+                  <td className={cellClass}>{item.tahun}</td>
+                  <td className={`${cellClass} font-medium`}>
+                    {getMonthName(item.bulan ?? 0)}
+                  </td>
+                  <td className={`${cellClass} text-right font-semibold tabular-nums text-destructive`}>
+                    {formatCurrency(Number(item.jumlah ?? 0))}
+                  </td>
+                  <td className={cellClass}>
+                    <AdminStatusBadge label={item.kategori ?? "-"} />
+                  </td>
+                  <td className={`${cellClass} max-w-xs truncate`}>
+                    {item.keterangan}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(item)}
+                        className={actionButtonClass}
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDelete(item.id)}
+                        className={`${actionButtonClass} hover:text-destructive`}
+                        title="Hapus"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
-            <tfoot>
-              <tr>
-                <td
-                  colSpan={3}
-                  className="px-4 py-3 font-medium text-right bg-red-50 rounded-bl-lg"
-                >
-                  Total:
-                </td>
-                <td className="px-4 py-3 font-medium text-right bg-red-50 text-red-600 font-mono">
-                  {formatCurrency(totalPengeluaran)}
-                </td>
-                <td
-                  colSpan={3}
-                  className="px-4 py-3 bg-red-50 rounded-br-lg"
-                ></td>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </div>
-    </div>
+    </AdminTableShell>
   );
 }

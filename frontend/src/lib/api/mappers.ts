@@ -45,6 +45,7 @@ export interface AparatFormatted {
   nip: string;
   foto: string;
   telepon?: string;
+  status?: string;
 }
 
 /** Format aparatur ke bentuk siap-render (foto absolut, nip fallback ke nik). */
@@ -56,4 +57,5 @@ export const formatAparatData = (data: Aparatur[]): AparatFormatted[] =>
     nip: item.nip || item.nik || "",
     foto: resolveUploadUrl(item.foto),
     telepon: item.telepon ?? undefined,
+    status: item.status ?? undefined,
   }));

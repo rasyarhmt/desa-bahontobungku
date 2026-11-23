@@ -13,7 +13,7 @@ export interface SuratFormData {
 
 export const getSuratIcon = (type: string): JSX.Element => {
   if (type === "Surat Masuk") {
-    return <FaEnvelopeOpen className="text-blue-500" />;
+    return <FaEnvelopeOpen className="text-primary" />;
   }
-  return <FaEnvelope className="text-green-500" />;
+  return <FaEnvelope className="text-[var(--success-fg)]" />;
 };

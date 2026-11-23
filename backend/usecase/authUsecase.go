@@ -31,7 +31,7 @@ func (u *authUsecase) Login(ctx context.Context, req dto.LoginRequestDTO, userAg
 		return nil, domain.NewUnauthorized("email atau password salah")
 	}
 	if !utils.ComparePassword(user.Password, req.Password) {
-		return nil, domain.NewUnauthorized("password salah")
+		return nil, domain.NewUnauthorized("email atau password salah")
 	}
 
 	now := time.Now()

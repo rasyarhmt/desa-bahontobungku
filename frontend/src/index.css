@@ -35,6 +35,49 @@
   --chart-3: oklch(0.72 0.11 90);
   --chart-4: oklch(0.55 0.2 30);
   --chart-5: oklch(0.62 0.14 250);
+  --surface: #f8f9ff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eff4ff;
+  --surface-container: #e5eeff;
+  --surface-container-high: #dce9ff;
+  --surface-container-highest: #d3e4fe;
+  --inverse-surface: #213145;
+  --inverse-on-surface: #eaf1ff;
+  --on-surface: #0b1c30;
+  --on-surface-variant: #3d4a42;
+  --primary-fixed: #85f8c4;
+  --primary-fixed-dim: #68dba9;
+  --on-primary-fixed: #002114;
+  --on-primary: #ffffff;
+  --primary-container: #00855d;
+  --on-primary-container: #f5fff7;
+  --on-secondary: #ffffff;
+  --tertiary-container: #00855b;
+  --on-tertiary-container: #f5fff6;
+  --tertiary-fixed: #6ffbbe;
+  --tertiary-fixed-dim: #4edea3;
+  --on-tertiary-fixed: #002114;
+  --secondary-container: #dae2fd;
+  --on-secondary-container: #5c647a;
+  --outline: #5f6f64;
+  --outline-variant: #7d8c82;
+}
+
+.home-theme {
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+  --card: #ffffff;
+  --card-foreground: #0b1c30;
+  --primary: #006948;
+  --primary-foreground: #ffffff;
+  --secondary: #dae2fd;
+  --secondary-foreground: #565e74;
+  --muted: #e5eeff;
+  --muted-foreground: #3d4a42;
+  --accent: #d3e4fe;
+  --accent-foreground: #0b1c30;
+  --border: #bccac0;
+  --ring: #006948;
 }
 
 @theme inline {
@@ -57,6 +100,12 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-success-border: var(--success-border);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-fg: var(--warning-fg);
+  --color-warning-border: var(--warning-border);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -66,6 +115,35 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-surface: var(--surface);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  --color-on-tertiary-fixed: var(--on-tertiary-fixed);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-primary-fixed-dim: var(--primary-fixed-dim);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-tertiary-fixed: var(--tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--tertiary-fixed-dim);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
 }
 
 /* ===== Utilitas warisan ===== */

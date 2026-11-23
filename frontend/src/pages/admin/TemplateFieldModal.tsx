@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
-import { FaSpinner, FaTimes, FaSave } from "react-icons/fa";
-import type { TemplateField } from "@/lib/api/schemas";
+import { FaSave, FaSpinner, FaTimes } from "react-icons/fa";
+
+import {
+  adminCardClass,
+  adminFieldClass,
+  adminPrimaryButtonClass,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
+import ModalPortal from "@/components/admin/ModalPortal";
 import { adminTemplateApi } from "@/lib/api/admin";
+import type { TemplateField } from "@/lib/api/schemas";
 import { getErrorMessage } from "@/lib/errors";
 
 interface Props {
@@ -46,6 +54,17 @@ export default function TemplateFieldModal({
       cancelled = true;
     };
   }, [templateId]);
+
+  useEffect(() => {
+    if (!templateId) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !saving) onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [templateId, saving, onClose]);
 
   if (!templateId) return null;
 
@@ -96,154 +115,190 @@ export default function TemplateFieldModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-700/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <div className="flex items-start justify-between p-6 border-b">
-          <div>
-            <h3 className="text-xl font-bold text-gray-800">
+    <ModalPortal>
+      <div
+        aria-hidden="true"
+        onClick={saving ? undefined : onClose}
+        className="fixed inset-0 z-[70] bg-inverse-surface/50 backdrop-blur-sm"
+      />
+
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="template-field-title"
+        className="fixed left-1/2 top-1/2 z-[80] flex max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-border bg-surface-container-lowest shadow-2xl"
+      >
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Konfigurasi Form Surat
+            </p>
+            <h2
+              id="template-field-title"
+              className="mt-1 text-xl font-semibold text-on-surface"
+            >
               Atur Field Template
-            </h3>
-            <p className="text-sm text-gray-500">
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               {templateName || "Template"} — label, tipe input, dan opsi select.
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100"
-            title="Tutup"
+            aria-label="Tutup"
+            className="rounded-xl p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           >
-            <FaTimes className="text-gray-500" />
+            <FaTimes />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="scrollbar-hide flex-1 space-y-4 overflow-y-auto px-6 py-6">
           {loading ? (
-            <div className="text-center py-10">
-              <FaSpinner className="animate-spin text-indigo-500 text-3xl mx-auto mb-3" />
-              <p className="text-gray-500">Memuat field...</p>
+            <div className="flex min-h-[200px] flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
+              <FaSpinner className="animate-spin text-3xl text-primary" />
+              Memuat field...
             </div>
           ) : fields.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">
+            <div className="flex min-h-[200px] items-center justify-center rounded-2xl border border-dashed border-border bg-surface-container-low px-6 text-center text-sm text-muted-foreground">
               Template ini tidak memiliki field selain nama dan NIK.
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {fields.map((field, index) => (
-                <div
-                  key={field.key}
-                  className="border rounded-xl p-4 bg-gray-50"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <code className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
-                      {`{{ ${field.key} }}`}
-                    </code>
-                    <label className="text-xs text-gray-500 flex items-center gap-1">
-                      Urutan
-                      <input
-                        type="number"
-                        min={1}
-                        value={field.urutan || index + 1}
-                        onChange={(e) =>
-                          updateField(index, {
-                            urutan: Number(e.target.value) || 0,
-                          })
-                        }
-                        className="w-16 px-2 py-1 border rounded text-sm"
-                      />
-                    </label>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        Label
-                      </label>
-                      <input
-                        value={field.label}
-                        onChange={(e) =>
-                          updateField(index, { label: e.target.value })
-                        }
-                        className="w-full px-3 py-2 border rounded-lg text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        Tipe
-                      </label>
-                      <select
-                        value={field.tipe}
-                        onChange={(e) =>
-                          updateField(index, {
-                            tipe: e.target.value as TemplateField["tipe"],
-                          })
-                        }
-                        className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
-                      >
-                        {TIPE_OPTIONS.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {field.tipe === "select" && (
-                    <div className="mt-3">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        Opsi (pisahkan dengan koma)
-                      </label>
-                      <input
-                        value={field.options.join(", ")}
-                        onChange={(e) =>
-                          updateField(index, {
-                            options: e.target.value
-                              .split(",")
-                              .map((o) => o.trim()),
-                          })
-                        }
-                        className="w-full px-3 py-2 border rounded-lg text-sm"
-                        placeholder="Laki-laki, Perempuan"
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
             </div>
+          ) : (
+            fields.map((field, index) => (
+              <div key={field.key} className={`${adminCardClass} p-4`}>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <code className="rounded-lg bg-primary-fixed px-2 py-1 text-xs font-medium text-on-primary-fixed">
+                    {`{{ ${field.key} }}`}
+                  </code>
+                  <label
+                    htmlFor={`urutan-${field.key}`}
+                    className="flex items-center gap-2 text-xs text-muted-foreground"
+                  >
+                    Urutan
+                    <input
+                      id={`urutan-${field.key}`}
+                      type="number"
+                      min={1}
+                      value={field.urutan || index + 1}
+                      onChange={(e) =>
+                        updateField(index, {
+                          urutan: Number(e.target.value) || 0,
+                        })
+                      }
+                      className={`${adminFieldClass} w-20 px-2 py-1.5`}
+                    />
+                  </label>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor={`label-${field.key}`}
+                      className="mb-1.5 block text-xs font-medium text-on-surface-variant"
+                    >
+                      Label
+                    </label>
+                    <input
+                      id={`label-${field.key}`}
+                      value={field.label}
+                      onChange={(e) =>
+                        updateField(index, { label: e.target.value })
+                      }
+                      className={adminFieldClass}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`tipe-${field.key}`}
+                      className="mb-1.5 block text-xs font-medium text-on-surface-variant"
+                    >
+                      Tipe
+                    </label>
+                    <select
+                      id={`tipe-${field.key}`}
+                      value={field.tipe}
+                      onChange={(e) =>
+                        updateField(index, {
+                          tipe: e.target.value as TemplateField["tipe"],
+                        })
+                      }
+                      className={adminFieldClass}
+                    >
+                      {TIPE_OPTIONS.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {field.tipe === "select" && (
+                  <div className="mt-3">
+                    <label
+                      htmlFor={`opsi-${field.key}`}
+                      className="mb-1.5 block text-xs font-medium text-on-surface-variant"
+                    >
+                      Opsi (pisahkan dengan koma)
+                    </label>
+                    <input
+                      id={`opsi-${field.key}`}
+                      value={field.options.join(", ")}
+                      onChange={(e) =>
+                        updateField(index, {
+                          options: e.target.value
+                            .split(",")
+                            .map((o) => o.trim()),
+                        })
+                      }
+                      className={adminFieldClass}
+                      placeholder="Laki-laki, Perempuan"
+                    />
+                  </div>
+                )}
+              </div>
+            ))
           )}
         </div>
 
-        <div className="p-6 border-t flex items-center justify-between gap-3">
-          <p className="text-xs text-gray-500">
-            Field mengikuti placeholder di file template. Untuk menambah field,
-            ganti file template.
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-            >
-              Batal
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving || loading}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-60"
-            >
-              {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
-              Simpan
-            </button>
-          </div>
-        </div>
-
         {error && (
-          <div className="px-6 pb-4">
-            <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2">
+          <div className="shrink-0 px-6 pb-2">
+            <p
+              role="alert"
+              className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-2.5 text-sm text-destructive"
+            >
               {error}
-            </div>
+            </p>
           </div>
         )}
-      </div>
-    </div>
+
+        <footer className="shrink-0 border-t border-border bg-surface-container-lowest px-6 py-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
+              Field mengikuti placeholder di file template. Untuk menambah
+              field, ganti file template.
+            </p>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className={adminSecondaryButtonClass}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleSave()}
+                disabled={saving || loading}
+                className={adminPrimaryButtonClass}
+              >
+                {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
+                Simpan
+              </button>
+            </div>
+          </div>
+        </footer>
+      </aside>
+    </ModalPortal>
   );
 }

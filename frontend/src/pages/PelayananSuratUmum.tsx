@@ -1,22 +1,29 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import {
-  FaSpinner,
-  FaExclamationTriangle,
-  FaDownload,
-  FaCheckCircle,
-  FaQrcode,
-  FaFileSignature,
-} from "react-icons/fa";
+  ArrowLeft,
+  CheckCircle2,
+  ChevronRight,
+  Download,
+  ExternalLink,
+  FileSignature,
+  Home,
+  Loader2,
+  QrCode,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
+
+import HomeFooter from "@/components/home/HomeFooter";
+import HomeHeader from "@/components/home/HomeHeader";
 import { pelayananApi } from "@/lib/api/pelayanan";
 import { resolveFileUrl } from "@/lib/api/config";
 import { getErrorMessage } from "@/lib/errors";
 import { useAsyncData } from "@/hooks";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 import type {
-  AjukanSuratResponse,
   AjukanSuratRequest,
+  AjukanSuratResponse,
   Pelayanan,
   TemplateField,
 } from "@/lib/api/schemas";
@@ -42,7 +49,7 @@ export default function PelayananSuratUmum() {
   } = useAsyncData<PelayananLoadResult>(
     async () => {
       const list = await pelayananApi.getAllPelayanan();
-      const found = list.find((l) => Number(l.id) === Number(id));
+      const found = list.find((item) => Number(item.id) === Number(id));
       if (!found) {
         return {
           pelayanan: null,
@@ -65,12 +72,15 @@ export default function PelayananSuratUmum() {
             "Layanan ini belum tersedia secara online. Silakan hubungi kantor desa.",
         };
       }
+
       const rawFields = await pelayananApi.getTemplateFields(found.id);
       const normalized = Array.isArray(rawFields)
         ? rawFields.filter(
-            (f) => f.key !== "nama_pemohon" && f.key !== "nik_pemohon",
+            (field) =>
+              field.key !== "nama_pemohon" && field.key !== "nik_pemohon",
           )
         : [];
+
       if (normalized.length === 0) {
         return {
           pelayanan: found,
@@ -95,7 +105,7 @@ export default function PelayananSuratUmum() {
   useEffect(() => {
     if (!pelayanan) return;
     const init: Record<string, string> = {};
-    fields.forEach((f) => (init[f.key] = ""));
+    fields.forEach((field) => (init[field.key] = ""));
     setValues(init);
   }, [pelayanan, fields]);
 
@@ -107,16 +117,14 @@ export default function PelayananSuratUmum() {
   }, [id, fetchPelayanan]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = event.target;
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     if (!pelayanan) return;
 
     const nama = String(values.nama || "").trim();
@@ -131,10 +139,12 @@ export default function PelayananSuratUmum() {
       return;
     }
 
-    const missing = fields.filter((f) => !String(values[f.key] || "").trim());
+    const missing = fields.filter(
+      (field) => field.required && !String(values[field.key] || "").trim(),
+    );
     if (missing.length > 0) {
       setSubmitError(
-        `Field berikut wajib diisi: ${missing.map((f) => f.label).join(", ")}.`,
+        `Field berikut wajib diisi: ${missing.map((field) => field.label).join(", ")}.`,
       );
       return;
     }
@@ -144,8 +154,8 @@ export default function PelayananSuratUmum() {
     setResult(null);
     try {
       const data: Record<string, string> = {};
-      fields.forEach((f) => {
-        data[f.key] = String(values[f.key] || "").trim();
+      fields.forEach((field) => {
+        data[field.key] = String(values[field.key] || "").trim();
       });
 
       const payload: AjukanSuratRequest = {
@@ -153,14 +163,9 @@ export default function PelayananSuratUmum() {
         nik_pemohon: nik,
         data,
       };
-
-      const res = await pelayananApi.ajukanSurat(pelayanan.id, payload);
-      setResult(res);
+      setResult(await pelayananApi.ajukanSurat(pelayanan.id, payload));
     } catch (err) {
-      console.error("Error submitting surat:", err);
-      setSubmitError(
-        getErrorMessage(err, "Gagal membuat surat. Silakan coba lagi."),
-      );
+      setSubmitError(getErrorMessage(err, "Gagal membuat surat. Silakan coba lagi."));
     } finally {
       setSubmitting(false);
     }
@@ -168,127 +173,134 @@ export default function PelayananSuratUmum() {
 
   const downloadUrl = result ? resolveFileUrl(result.file_url) : "";
   const qrUrl = result ? resolveFileUrl(result.qr_url) : "";
+  const inputClass =
+    "w-full rounded-xl bg-surface-container px-4 py-2.5 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/40";
 
   return (
-    <>
-      <Navbar />
-      <div
-        className="flex flex-col bg-gray-50 items-center min-h-screen"
-        style={{ fontFamily: "poppins" }}
-      >
-        <div className="w-full bg-gradient-to-r from-[#6CABCA] to-[#5DE1C4] py-12 md:py-16">
-          <div className="w-full mx-auto px-8 md:px-18 lg:px-32">
-            <Link
-              to="/Pelayanan"
-              className="text-white text-sm mb-2 inline-block hover:underline"
-            >
-              &larr; Kembali ke Daftar Layanan
-            </Link>
-            <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight">
-              {pelayanan ? pelayanan.nama_layanan : "Formulir Surat Online"}
-            </h1>
-            <p className="text-white opacity-90 mt-2">
-              Isi data di bawah ini. Surat akan dibuat otomatis dan dapat Anda
-              unduh, lalu diresmikan di kantor desa.
-            </p>
-          </div>
-        </div>
+    <div className="home-theme min-h-screen bg-surface font-sans text-on-surface antialiased">
+      <HomeHeader />
 
-        <div className="w-full max-w-7xl px-8 md:px-18 lg:px-32 py-10">
-          {pageLoading ? (
-            <div className="flex justify-center items-center py-12 bg-white rounded-2xl shadow">
-              <FaSpinner className="animate-spin text-4xl text-[#6CABCA]" />
-            </div>
-          ) : pageError && !pelayanan ? (
-            <div className="flex flex-col justify-center items-center py-12 bg-white rounded-2xl shadow text-center">
-              <FaExclamationTriangle className="text-4xl text-yellow-500 mb-2" />
-              <p className="text-gray-600 mb-4 px-6">{pageError}</p>
+      <main className="w-full pt-28">
+        <nav
+          aria-label="Breadcrumb"
+          className={`flex flex-wrap items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant md:pt-12 ${CONTAINER_CLASS}`}
+        >
+          <Link to="/" className="flex items-center gap-1.5 hover:text-primary">
+            <Home className="size-4" />
+            Beranda
+          </Link>
+          <ChevronRight className="size-4 text-outline" />
+          <Link to="/Pelayanan" className="hover:text-primary">
+            Pelayanan Mandiri
+          </Link>
+          <ChevronRight className="size-4 text-outline" />
+          <span className="text-primary">Ajukan Surat</span>
+        </nav>
+
+        <section className={`pt-8 pb-8 md:pt-12 md:pb-12 ${CONTAINER_CLASS}`}>
+          <div className="relative overflow-hidden rounded-3xl bg-surface-container-low p-8 lg:p-12">
+            <div className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-primary/10 blur-3xl" />
+            <div className="relative space-y-4">
+              <span className="inline-flex items-center gap-2 rounded-full bg-tertiary-fixed px-3.5 py-1.5 text-xs font-semibold text-on-tertiary-fixed">
+                <FileSignature className="size-4" />
+                Formulir Pengajuan Surat
+              </span>
+              <h1 className="font-display text-3xl font-bold tracking-tight text-on-surface lg:text-4xl">
+                {pelayanan ? pelayanan.nama_layanan : "Formulir Surat Online"}
+              </h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-on-surface-variant lg:text-base">
+                Lengkapi data berikut sesuai dokumen kependudukan. Surat akan
+                dibuat otomatis oleh sistem dan dapat diverifikasi dengan kode
+                unik.
+              </p>
               <Link
                 to="/Pelayanan"
-                className="px-4 py-2 bg-[#6CABCA] text-white rounded-lg text-sm"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                <ArrowLeft className="size-4" />
+                Kembali ke daftar layanan
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className={`mx-auto max-w-4xl ${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+          {pageLoading ? (
+            <div className="flex justify-center rounded-2xl bg-white p-12 shadow-sm">
+              <Loader2 className="size-8 animate-spin text-primary" />
+            </div>
+          ) : pageError && !pelayanan ? (
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+              <TriangleAlert className="mx-auto size-8 text-destructive" />
+              <p className="mt-3 text-sm text-destructive">{pageError}</p>
+              <Link
+                to="/Pelayanan"
+                className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-semibold text-on-primary"
               >
                 Kembali
               </Link>
             </div>
-          ) : pageError && pelayanan ? (
-            <div className="bg-white rounded-2xl shadow p-8 text-center">
-              <FaExclamationTriangle className="text-4xl text-yellow-500 mb-2" />
-              <p className="text-gray-600 mb-4">{pageError}</p>
-              <Link
-                to="/Pelayanan"
-                className="px-4 py-2 bg-[#6CABCA] text-white rounded-lg text-sm"
-              >
-                Kembali ke Daftar Layanan
-              </Link>
-            </div>
           ) : result ? (
-            <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-              <FaCheckCircle className="text-5xl text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
+              <CheckCircle2 className="mx-auto size-12 text-primary" />
+              <h2 className="mt-4 font-display text-2xl font-bold text-on-surface">
                 Surat Berhasil Dibuat
               </h2>
-              <p className="text-gray-500 mb-6">
-                Simpan kode unik berikut. Gunakan untuk mengunduh surat dan
-                verifikasi keaslian.
+              <p className="mt-2 text-sm text-on-surface-variant">
+                Simpan kode unik berikut untuk mengunduh dan memverifikasi surat.
               </p>
 
-              <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                <p className="text-xs uppercase tracking-wide text-gray-400 mb-1">
+              <div className="mt-6 rounded-2xl bg-surface-container p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
                   Kode Unik Surat
                 </p>
-                <p className="text-2xl font-mono font-bold text-[#6CABCA] tracking-widest">
+                <p className="mt-1 font-display text-2xl font-bold tracking-widest text-primary">
                   {result.kode_unik}
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-                <div className="bg-white border rounded-xl p-4">
+              {qrUrl && (
+                <div className="mt-6 inline-block rounded-2xl border border-surface-container bg-white p-4">
                   <img
                     src={qrUrl}
                     alt="QR verifikasi surat"
-                    className="w-32 h-32"
+                    className="size-32"
                   />
-                  <p className="text-xs text-gray-400 mt-2 flex items-center justify-center gap-1">
-                    <FaQrcode /> QR Verifikasi
+                  <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-on-surface-variant">
+                    <QrCode className="size-4" />
+                    QR Verifikasi
                   </p>
                 </div>
-              </div>
+              )}
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <a
                   href={downloadUrl}
-                  className="flex items-center gap-2 bg-[#6CABCA] text-white px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-container"
                 >
-                  <FaDownload /> Unduh Surat (PDF)
+                  <Download className="size-4" />
+                  Unduh Surat (PDF)
                 </a>
-                <a
-                  href={downloadUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-gray-500 underline"
+                <Link
+                  to={`/verifikasi?kode=${encodeURIComponent(result.kode_unik)}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                 >
-                  Buka di tab baru
-                </a>
+                  Verifikasi surat
+                  <ExternalLink className="size-3.5" />
+                </Link>
               </div>
 
-              <div className="mt-8 text-left bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-bold text-gray-800 mb-1">
+              <div className="mt-8 rounded-2xl border border-surface-container bg-surface-container-low p-5 text-left">
+                <h3 className="flex items-center gap-2 font-display text-sm font-bold text-on-surface">
+                  <ShieldCheck className="size-4 text-primary" />
                   Langkah selanjutnya
                 </h3>
-                <ol className="list-decimal list-inside text-sm text-gray-600 space-y-1">
-                  <li>Unduh &amp; cetak PDF surat ini.</li>
-                  <li>Datang ke kantor desa membawa surat.</li>
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-on-surface-variant">
+                  <li>Unduh dan simpan berkas PDF surat.</li>
+                  <li>Gunakan kode unik atau QR untuk mengecek status surat.</li>
                   <li>
-                    Perangkat desa mengisi nomor surat &amp; menandatangani.
-                  </li>
-                  <li>
-                    Status surat berubah menjadi{" "}
-                    <span className="font-semibold">diresmikan</span> — bisa
-                    dicek via QR/kode unik di halaman{" "}
-                    <Link to="/verifikasi" className="text-[#6CABCA] underline">
-                      Verifikasi Surat
-                    </Link>
-                    .
+                    Status berubah menjadi diresmikan setelah perangkat desa
+                    menetapkan nomor surat.
                   </li>
                 </ol>
               </div>
@@ -296,19 +308,19 @@ export default function PelayananSuratUmum() {
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="bg-white rounded-2xl shadow-md p-8"
+              className="rounded-3xl bg-white p-8 shadow-sm"
             >
-              <h2 className="text-2xl font-bold text-gray-800 mb-1">
+              <h2 className="font-display text-xl font-bold text-on-surface">
                 Formulir Pengajuan
               </h2>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="mt-1 text-sm text-on-surface-variant">
                 Lengkapi data pemohon sesuai dokumen kependudukan.
               </p>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nama Lengkap <span className="text-red-500">*</span>
+                  <label className="mb-1 block text-xs font-semibold text-on-surface-variant">
+                    Nama Lengkap <span className="text-destructive">*</span>
                   </label>
                   <input
                     name="nama"
@@ -317,12 +329,12 @@ export default function PelayananSuratUmum() {
                     onChange={handleChange}
                     required
                     placeholder="Sesuai KTP"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6CABCA]"
+                    className={inputClass}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    NIK <span className="text-red-500">*</span>
+                  <label className="mb-1 block text-xs font-semibold text-on-surface-variant">
+                    NIK <span className="text-destructive">*</span>
                   </label>
                   <input
                     name="nik"
@@ -334,90 +346,88 @@ export default function PelayananSuratUmum() {
                     required
                     maxLength={16}
                     placeholder="16 digit NIK"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6CABCA]"
+                    className={inputClass}
                   />
                 </div>
 
-                {fields.map((field) => {
-                  const { key, label, tipe, options } = field;
-                  return (
-                    <div
-                      key={key}
-                      className={tipe === "textarea" ? "md:col-span-2" : ""}
-                    >
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {label} <span className="text-red-500">*</span>
-                      </label>
-                      {tipe === "select" ? (
-                        <select
-                          name={key}
-                          value={values[key] || ""}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6CABCA] bg-white"
-                        >
-                          <option value="">Pilih {label}</option>
-                          {options.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      ) : tipe === "textarea" ? (
-                        <textarea
-                          name={key}
-                          value={values[key] || ""}
-                          onChange={handleChange}
-                          rows={3}
-                          required
-                          className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6CABCA]"
-                        />
-                      ) : (
-                        <input
-                          name={key}
-                          type={tipe}
-                          value={values[key] || ""}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6CABCA]"
-                        />
+                {fields.map((field) => (
+                  <div
+                    key={field.key}
+                    className={field.tipe === "textarea" ? "md:col-span-2" : ""}
+                  >
+                    <label className="mb-1 block text-xs font-semibold text-on-surface-variant">
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-destructive">*</span>
                       )}
-                    </div>
-                  );
-                })}
+                    </label>
+                    {field.tipe === "select" ? (
+                      <select
+                        name={field.key}
+                        value={values[field.key] || ""}
+                        onChange={handleChange}
+                        required={field.required}
+                        className={`${inputClass} bg-surface`}
+                      >
+                        <option value="">Pilih {field.label}</option>
+                        {field.options.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    ) : field.tipe === "textarea" ? (
+                      <textarea
+                        name={field.key}
+                        value={values[field.key] || ""}
+                        onChange={handleChange}
+                        rows={3}
+                        required={field.required}
+                        className={inputClass}
+                      />
+                    ) : (
+                      <input
+                        name={field.key}
+                        type={field.tipe}
+                        value={values[field.key] || ""}
+                        onChange={handleChange}
+                        required={field.required}
+                        className={inputClass}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
 
+              {pageError && pelayanan && (
+                <p className="mt-6 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                  {pageError}
+                </p>
+              )}
               {submitError && (
-                <div className="mt-6 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3">
+                <p className="mt-6 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
                   {submitError}
-                </div>
+                </p>
               )}
 
-              <div className="mt-8">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full flex items-center justify-center gap-2 bg-[#6CABCA] text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition disabled:opacity-60"
-                >
-                  {submitting ? (
-                    <>
-                      <FaSpinner className="animate-spin" /> Membuat Surat...
-                    </>
-                  ) : (
-                    <>
-                      <FaFileSignature /> Buat Surat
-                    </>
-                  )}
-                </button>
-                <p className="text-xs text-gray-400 mt-3 text-center">
-                  Semua field wajib diisi.
-                </p>
-              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-60"
+              >
+                {submitting ? (
+                  <Loader2 className="size-5 animate-spin" />
+                ) : (
+                  <FileSignature className="size-5" />
+                )}
+                {submitting ? "Membuat Surat..." : "Buat Surat"}
+              </button>
             </form>
           )}
-        </div>
-      </div>
-      <Footer />
-    </>
+        </section>
+      </main>
+
+      <HomeFooter />
+    </div>
   );
 }

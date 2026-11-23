@@ -89,6 +89,7 @@ type (
 		Create(ctx context.Context, req dto.PendudukRequestDTO) error
 		GetByNIK(ctx context.Context, nik string) (*dto.PendudukResponseDTO, error)
 		GetAll(ctx context.Context) ([]dto.PendudukResponseDTO, error)
+		ExportXLSX(ctx context.Context) ([]byte, error)
 		GetKepalaKeluarga(ctx context.Context) ([]dto.PendudukResponseDTO, error)
 		Update(ctx context.Context, req dto.PendudukUpdateRequestDTO) error
 		Delete(ctx context.Context, nik string) error

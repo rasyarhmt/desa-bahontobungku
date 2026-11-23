@@ -1,7 +1,7 @@
-export const API_URL: string = import.meta.env.VITE_API_URL || "";
+export const API_URL: string = import.meta.env.VITE_API_URL || "/api";
 
 /** Origin tanpa suffix /api — dipakai untuk meresolve path file statis (uploads). */
-export const API_ORIGIN: string = API_URL
+const API_ORIGIN: string = API_URL
   ? API_URL.replace(/\/api\/?$/, "")
   : "";
 

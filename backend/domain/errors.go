@@ -58,14 +58,6 @@ func NewUnauthorized(message string) *AppError {
 	return NewAppError(KindUnauthorized, message, ErrUnauthorized)
 }
 
-func NewForbidden(message string) *AppError {
-	return NewAppError(KindForbidden, message, ErrForbidden)
-}
-
-func NewConflict(message string) *AppError {
-	return NewAppError(KindConflict, message, ErrConflict)
-}
-
 func NewInternal(message string, err error) *AppError {
 	return NewAppError(KindInternal, message, err)
 }

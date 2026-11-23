@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 
 import { API_URL } from "./config";
 import { EnvelopeSchema, RefreshTokensSchema, type RefreshTokens } from "./schemas";
@@ -8,7 +8,7 @@ import { EnvelopeSchema, RefreshTokensSchema, type RefreshTokens } from "./schem
  * Input dibiarkan `unknown` agar skema dengan `.catch()`/`.default()`/transform
  * (yang tipe input-nya berbeda dari output) tetap bisa dipakai tanpa kehilangan tipe.
  */
-export type ResponseSchema<T> = z.ZodType<T, z.ZodTypeDef, unknown>;
+type ResponseSchema<T> = z.ZodType<T, z.ZodTypeDef, unknown>;
 
 /** Kunci localStorage yang dipakai aplikasi. */
 export const AUTH_STORAGE = {
@@ -38,7 +38,7 @@ export const clearAuth = (): void => {
 let refreshPromise: Promise<RefreshTokens | null> | null = null;
 
 /** Refetch token dengan deduplikasi (satu refresh berjalan untuk semua pemanggil). */
-export const refreshTokens = (): Promise<RefreshTokens | null> => {
+const refreshTokens = (): Promise<RefreshTokens | null> => {
   const refreshToken = localStorage.getItem(AUTH_STORAGE.refreshToken);
   if (!refreshToken) {
     return Promise.reject(new Error("refresh token tidak ada"));
@@ -95,7 +95,7 @@ const parsePayload = <T>(schema: ResponseSchema<T>, data: unknown, path: string)
 
 type QueryValue = string | number | boolean;
 
-export interface RequestOptions<T> {
+interface RequestOptions<T> {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
   query?: Record<string, QueryValue | QueryValue[] | undefined>;
@@ -109,7 +109,7 @@ export interface RequestOptions<T> {
  * Fitur: token Bearer otomatis, multipart (FormData), auto-refresh token saat 401,
  * dan unwrap envelope { code, message, data } tervalidasi.
  */
-export class ApiClient {
+class ApiClient {
   constructor(private readonly baseURL: string) {}
 
   private buildUrl(

@@ -5,13 +5,6 @@ import (
 	"strings"
 )
 
-func GeneratePDF(
-	templateBytes []byte,
-	data map[string]string,
-) ([]byte, error) {
-	return GeneratePDFWithQR(templateBytes, data, nil)
-}
-
 func GeneratePDFWithQR(
 	templateBytes []byte,
 	data map[string]string,

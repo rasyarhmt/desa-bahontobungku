@@ -1,96 +1,123 @@
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { aparaturApi, type AparaturFormatted } from "@/lib/api/aparatur";
+import { BadgeCheck, IdCard, Landmark, Phone, UsersRound } from "lucide-react";
+
+import { aparaturApi, type AparatFormatted } from "@/lib/api/aparatur";
 import { useAsyncData } from "@/hooks";
 
-interface VisibleSlide {
-  index: number;
-  position: "left" | "center" | "right";
-  key: string;
+const initialsOf = (name: string): string =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("") || "PD";
+
+function AparatAvatar({
+  item,
+  large = false,
+}: {
+  item: AparatFormatted;
+  large?: boolean;
+}) {
+  const sizeClass = large ? "size-24 md:size-28" : "size-16";
+
+  if (item.foto) {
+    return (
+      <img
+        src={item.foto}
+        alt={item.nama}
+        className={`${sizeClass} rounded-2xl border border-surface-container object-cover object-top shadow-sm`}
+      />
+    );
+  }
+
+  return (
+    <span
+      className={`${sizeClass} flex items-center justify-center rounded-2xl bg-primary-container font-display text-lg font-bold text-on-primary-container`}
+    >
+      {initialsOf(item.nama)}
+    </span>
+  );
+}
+
+function AparatCard({ item }: { item: AparatFormatted }) {
+  const phoneDigits = item.telepon?.replace(/\D/g, "");
+
+  return (
+    <div className="rounded-2xl border border-surface-container bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md">
+      <div className="flex justify-center">
+        <AparatAvatar item={item} />
+      </div>
+      <h4 className="mt-3 font-display text-sm font-bold text-on-surface">
+        {item.nama || "Aparatur Desa"}
+      </h4>
+      <p className="mt-0.5 text-xs text-on-surface-variant">
+        {item.jabatan || "Perangkat Desa"}
+      </p>
+
+      {item.status && (
+        <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-surface-container px-2.5 py-1 text-[10px] font-semibold text-primary">
+          <BadgeCheck className="size-3" />
+          {item.status}
+        </span>
+      )}
+
+      <div className="mt-4 space-y-1.5 border-t border-surface-container pt-3 text-left">
+        {item.nip && (
+          <p className="flex items-center gap-2 text-[11px] text-on-surface-variant">
+            <IdCard className="size-3.5 shrink-0 text-primary" />
+            <span className="truncate">{item.nip}</span>
+          </p>
+        )}
+        {phoneDigits && (
+          <a
+            href={`tel:${phoneDigits}`}
+            className="flex items-center gap-2 text-[11px] text-on-surface-variant transition-colors hover:text-primary"
+          >
+            <Phone className="size-3.5 shrink-0 text-primary" />
+            <span className="truncate">{item.telepon}</span>
+          </a>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function CarouselAparatur() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
   const {
     data: aparatur,
-    isLoading: loading,
+    isLoading,
     error,
-  } = useAsyncData<AparaturFormatted[]>(
+    refetch,
+  } = useAsyncData<AparatFormatted[]>(
     async () => {
       const data = await aparaturApi.getAllAparat();
-      const formattedData = aparaturApi.formatAparatData(data);
-      return formattedData;
+      return aparaturApi.formatAparatData(data);
     },
     [],
+    { errorMessage: "Gagal memuat data aparatur desa." },
   );
 
-  useEffect(() => {
-    if (!isHovered && aparatur.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % aparatur.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [currentIndex, isHovered, aparatur.length]);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % aparatur.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + aparatur.length) % aparatur.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  const getVisibleSlides = (): VisibleSlide[] => {
-    const slides: VisibleSlide[] = [];
-    const total = aparatur.length;
-
-    if (total === 0) return [];
-
-    const prevIndex = (currentIndex - 1 + total) % total;
-    const nextIndex = (currentIndex + 1) % total;
-
-    slides.push({
-      index: prevIndex,
-      position: "left",
-      key: `left-${prevIndex}`,
-    });
-    slides.push({
-      index: currentIndex,
-      position: "center",
-      key: `center-${currentIndex}`,
-    });
-    slides.push({
-      index: nextIndex,
-      position: "right",
-      key: `right-${nextIndex}`,
-    });
-
-    return slides;
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="text-center py-20 text-gray-500 animate-pulse">
-        Memuat data aparatur...
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="h-64 animate-pulse rounded-2xl border border-surface-container bg-surface-container/60"
+          />
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-20 text-red-500">
-        Error: {error}
-        <br />
+      <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+        <p className="text-sm font-medium text-destructive">{error}</p>
         <button
-          onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          type="button"
+          onClick={() => void refetch()}
+          className="mt-4 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-on-primary transition-colors hover:bg-tertiary-container"
         >
           Coba Lagi
         </button>
@@ -100,98 +127,59 @@ export default function CarouselAparatur() {
 
   if (aparatur.length === 0) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        Tidak ada data aparatur ditemukan.
+      <div className="rounded-2xl border border-surface-container bg-white p-10 text-center text-sm text-on-surface-variant">
+        Belum ada data aparatur yang tersedia.
       </div>
     );
   }
 
-  const visibleSlides = getVisibleSlides();
+  const leaderIndex = aparatur.findIndex((item) =>
+    item.jabatan.toLowerCase().includes("kepala desa"),
+  );
+  const leader = aparatur[leaderIndex >= 0 ? leaderIndex : 0];
+  const staff = aparatur.filter((item) => item.id !== leader.id);
 
   return (
-    <div
-      className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="relative h-[20rem] sm:h-[25rem] md:h-[28rem] flex items-center justify-center">
-        {visibleSlides.map(({ index, position, key }) => {
-          const item = aparatur[index];
-          if (!item) return null;
-
-          const isCenter = position === "center";
-
-          let translateX = 0;
-          let zIndex = 10;
-          let opacity = 1;
-          let scale = 1;
-
-          if (position === "left") {
-            translateX = -150;
-            if (window.innerWidth >= 640) translateX = -200;
-            if (window.innerWidth >= 1024) translateX = -250;
-            zIndex = 5;
-            opacity = 0.6;
-            scale = 0.85;
-          } else if (position === "right") {
-            translateX = 150;
-            if (window.innerWidth >= 640) translateX = 200;
-            if (window.innerWidth >= 1024) translateX = 250;
-            zIndex = 5;
-            opacity = 0.6;
-            scale = 0.85;
-          }
-
-          return (
-            <div
-              key={key}
-              className="absolute transition-transform duration-700 ease-in-out cursor-pointer"
-              style={{
-                transform: `translateX(${translateX}px) scale(${scale})`,
-                zIndex,
-                opacity,
-              }}
-              onClick={() => !isCenter && goToSlide(index)}
-            >
-              <div
-                className="relative 
-                  w-full max-w-[40vw]
-                  sm:w-[200px] md:w-[240px] lg:w-[260px] 
-                  aspect-[3/4] 
-                  rounded-xl overflow-hidden shadow-lg 
-                  bg-white border border-gray-200"
-              >
-                <img
-                  src={item.foto}
-                  alt={item.jabatan || "Aparatur"}
-                  className="w-full h-full object-cover object-top"
-                />
-                {isCenter && (
-                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white text-center bg-gradient-to-t from-black/70 to-transparent">
-                    <p className="font-semibold capitalize text-sm sm:text-base">
-                      {item.jabatan || "Jabatan"}
-                    </p>
-                    <p className="text-xs sm:text-sm">{item.nama || "Nama"}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+    <div className="space-y-8">
+      <div className="flex flex-col items-center">
+        <div className="w-full max-w-sm rounded-3xl border border-primary/20 bg-[linear-gradient(180deg,#e5eeff_0%,#ffffff_100%)] p-6 text-center shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-on-primary">
+            <Landmark className="size-3.5" />
+            Pimpinan Desa
+          </span>
+          <div className="mt-4 flex justify-center">
+            <AparatAvatar item={leader} large />
+          </div>
+          <h4 className="mt-4 font-display text-lg font-bold text-on-surface">
+            {leader.nama || "Kepala Desa"}
+          </h4>
+          <p className="mt-0.5 text-sm text-primary">
+            {leader.jabatan || "Kepala Desa"}
+          </p>
+          {leader.nip && (
+            <p className="mt-2 text-[11px] text-on-surface-variant">
+              NIP/NIK: {leader.nip}
+            </p>
+          )}
+        </div>
+        <div className="h-8 w-px bg-gradient-to-b from-primary/50 to-transparent" />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container px-3 py-1 text-[11px] font-semibold text-on-surface-variant">
+          <UsersRound className="size-3.5" />
+          Perangkat Desa
+        </span>
       </div>
 
-      <button
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-8 sm:w-10 h-8 sm:h-10 bg-white rounded-full flex items-center justify-center shadow hover:bg-gray-100"
-        onClick={prevSlide}
-      >
-        <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
-      </button>
-      <button
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-8 sm:w-10 h-8 sm:h-10 bg-white rounded-full flex items-center justify-center shadow hover:bg-gray-100"
-        onClick={nextSlide}
-      >
-        <ChevronRight size={18} className="sm:w-5 sm:h-5" />
-      </button>
+      {staff.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {staff.map((item) => (
+            <AparatCard key={item.id} item={item} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-sm text-on-surface-variant">
+          Belum ada perangkat desa lain yang terdaftar.
+        </p>
+      )}
     </div>
   );
 }

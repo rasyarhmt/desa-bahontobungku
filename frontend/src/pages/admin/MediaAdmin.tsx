@@ -1,29 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  FaImage,
-  FaVideo,
-  FaFileAlt,
   FaChartBar,
+  FaChartPie,
+  FaFileAlt,
+  FaImage,
+  FaList,
+  FaPlus,
+  FaSearch,
   FaSpinner,
+  FaSyncAlt,
+  FaTh,
+  FaVideo,
 } from "react-icons/fa";
 
-import { adminMediaApi } from "@/lib/api/admin";
-import { type Media } from "@/lib/api/schemas";
-import { useAsyncData, useCrudResource, useDisclosure } from "@/hooks";
-import { useThumbnailExtraction } from "@/hooks";
-import MediaTable from "@/components/admin/MediaTable";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import MediaFormModal from "@/components/admin/MediaFormModal";
 import MediaPreviewModal from "@/components/admin/MediaPreviewModal";
-import type {
-  MediaFormState,
-  MediaItem,
-} from "@/components/admin/mediaShared";
+import MediaTable from "@/components/admin/MediaTable";
+import type { MediaViewMode } from "@/components/admin/MediaTable";
+import ModalPortal from "@/components/admin/ModalPortal";
+import type { MediaFormState, MediaItem } from "@/components/admin/mediaShared";
+import {
+  useAsyncData,
+  useCrudResource,
+  useDisclosure,
+  useThumbnailExtraction,
+} from "@/hooks";
+import { adminMediaApi } from "@/lib/api/admin";
+import { type Media } from "@/lib/api/schemas";
+import { toast } from "@/lib/toast";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp"];
 const VIDEO_EXTENSIONS = ["mp4", "webm", "ogg", "mkv"];
 const PDF_EXTENSIONS = ["pdf"];
+const PAGE_SIZE = 8;
 
 const getExtension = (name: string) => name.split(".").pop()!.toLowerCase();
 
@@ -55,8 +67,14 @@ const MediaAdmin = () => {
   );
 
   const [activeTab, setActiveTab] = useState("semua");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<MediaViewMode>("tabel");
+  const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [isBulkDeleting, setBulkDeleting] = useState(false);
 
   const previewModal = useDisclosure();
+  const bulkDeleteModal = useDisclosure();
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
 
   const { isThumbnailLoading, extractThumbnail } = useThumbnailExtraction();
@@ -68,6 +86,7 @@ const MediaAdmin = () => {
     currentItem,
     formData,
     setFormData,
+    isActionLoading,
     handleAdd,
     handleEdit,
     handleDelete,
@@ -158,181 +177,352 @@ const MediaAdmin = () => {
     },
   });
 
+  const counts = useMemo(() => {
+    const foto = mediaData.filter((item) => item.tipe === "foto").length;
+    const video = mediaData.filter((item) => item.tipe === "video").length;
+    const dokumen = mediaData.filter((item) => item.tipe === "dokumen").length;
+    return { total: mediaData.length, foto, video, dokumen };
+  }, [mediaData]);
+
+  const filteredData = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    return mediaData.filter((item) => {
+      const matchesType =
+        activeTab === "semua" ||
+        (item.tipe ?? "").toLowerCase() === activeTab.toLowerCase();
+      const matchesQuery =
+        !query ||
+        item.nama.toLowerCase().includes(query) ||
+        (item.deskripsi ?? "").toLowerCase().includes(query);
+      return matchesType && matchesQuery;
+    });
+  }, [mediaData, activeTab, searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+  const pageItems = useMemo(
+    () => filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredData, page],
+  );
+  const visibleIds = pageItems.map((item) => item.id);
+  const allVisibleSelected =
+    visibleIds.length > 0 &&
+    visibleIds.every((id) => selectedIds.includes(id));
+
+  useEffect(() => {
+    setPage(1);
+    setSelectedIds([]);
+  }, [activeTab, searchTerm]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    setSelectedIds((previous) =>
+      previous.filter((id) => mediaData.some((item) => item.id === id)),
+    );
+  }, [mediaData]);
+
   const handlePreview = (id: number) => {
-    const item = mediaData.find((item) => item.id === id);
+    const item = mediaData.find((media) => media.id === id);
     if (item) {
       setPreviewItem(item);
       previewModal.open();
     }
   };
 
-  const filteredData =
-    activeTab === "semua"
-      ? mediaData
-      : mediaData.filter(
-          (item) => (item.tipe ?? "").toLowerCase() === activeTab.toLowerCase(),
-        );
+  const toggleSelect = (id: number) => {
+    setSelectedIds((previous) =>
+      previous.includes(id)
+        ? previous.filter((selectedId) => selectedId !== id)
+        : [...previous, id],
+    );
+  };
 
-  const countFoto = mediaData.filter((item) => item.tipe === "foto").length;
-  const countVideo = mediaData.filter((item) => item.tipe === "video").length;
-  const countDokumen = mediaData.filter(
-    (item) => item.tipe === "dokumen",
-  ).length;
+  const toggleAllVisible = () => {
+    setSelectedIds((previous) =>
+      allVisibleSelected
+        ? previous.filter((id) => !visibleIds.includes(id))
+        : Array.from(new Set([...previous, ...visibleIds])),
+    );
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    setBulkDeleting(true);
+    try {
+      await Promise.all(selectedIds.map((id) => adminMediaApi.deleteMedia(id)));
+      await fetchMediaData();
+      toast.success(`${selectedIds.length} media berhasil dihapus.`);
+      setSelectedIds([]);
+      bulkDeleteModal.close();
+    } catch {
+      toast.error("Terjadi kesalahan saat menghapus media terpilih.");
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const percentage = (value: number) =>
+    counts.total === 0 ? 0 : (value / counts.total) * 100;
+
+  const tabs = [
+    {
+      value: "semua",
+      label: "Semua Media",
+      count: counts.total,
+      icon: <FaChartBar />,
+    },
+    { value: "foto", label: "Foto", count: counts.foto, icon: <FaImage /> },
+    { value: "video", label: "Video", count: counts.video, icon: <FaVideo /> },
+    {
+      value: "dokumen",
+      label: "Dokumen",
+      count: counts.dokumen,
+      icon: <FaFileAlt />,
+    },
+  ];
+
+  const metrics = [
+    {
+      label: "Total Media",
+      value: counts.total,
+      icon: <FaChartBar />,
+      iconClass: "bg-primary-fixed text-on-primary-fixed",
+    },
+    {
+      label: "Foto",
+      value: counts.foto,
+      icon: <FaImage />,
+      iconClass: "bg-secondary-container text-on-secondary-container",
+    },
+    {
+      label: "Video",
+      value: counts.video,
+      icon: <FaVideo />,
+      iconClass: "bg-surface-container-high text-primary",
+    },
+    {
+      label: "Dokumen",
+      value: counts.dokumen,
+      icon: <FaFileAlt />,
+      iconClass: "bg-[var(--warning-bg)] text-[var(--warning-fg)]",
+    },
+  ];
 
   return (
-    <div
-      className="p-6 bg-gray-50 min-h-screen"
-      style={{ fontFamily: "poppins" }}
-    >
-      <div className="w-full mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <FaChartBar className="text-purple-500 text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">Manajemen Media</h1>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+            Manajemen Konten
+          </p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-on-surface sm:text-3xl">
+            Pusat Data Multimoda
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manajemen media &amp; berkas digital desa.
+          </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Total Media
-              </h3>
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <FaFileAlt className="text-purple-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {mediaData.length}
-            </div>
-            <p className="text-sm text-gray-600">Item media tersimpan</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Foto</h3>
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <FaImage className="text-blue-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countFoto}
-            </div>
-            <p className="text-sm text-gray-600">Foto tersimpan</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Video</h3>
-              <div className="bg-red-100 p-2 rounded-lg">
-                <FaVideo className="text-red-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countVideo}
-            </div>
-            <p className="text-sm text-gray-600">Video tersimpan</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Dokumen</h3>
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <FaFileAlt className="text-yellow-500 text-xl" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {countDokumen}
-            </div>
-            <p className="text-sm text-gray-600">Dokumen tersimpan</p>
-          </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void fetchMediaData()}
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-container-lowest px-4 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+          >
+            <FaSyncAlt />
+            Muat Ulang
+          </button>
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary/90"
+          >
+            <FaPlus />
+            Tambah Media
+          </button>
         </div>
-
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveTab("semua")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "semua"
-                  ? "bg-purple-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaFileAlt
-                className={
-                  activeTab === "semua" ? "text-white" : "text-purple-500"
-                }
-              />
-              <span>Semua Media</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("foto")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "foto"
-                  ? "bg-blue-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaImage
-                className={
-                  activeTab === "foto" ? "text-white" : "text-blue-500"
-                }
-              />
-              <span>Foto</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("video")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "video"
-                  ? "bg-red-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaVideo
-                className={
-                  activeTab === "video" ? "text-white" : "text-red-500"
-                }
-              />
-              <span>Video</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("dokumen")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                activeTab === "dokumen"
-                  ? "bg-yellow-500 text-white font-medium shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <FaFileAlt
-                className={
-                  activeTab === "dokumen" ? "text-white" : "text-yellow-500"
-                }
-              />
-              <span>Dokumen</span>
-            </button>
-          </div>
-        </div>
-
-        <MediaTable
-          items={filteredData}
-          isLoading={isLoading}
-          error={error}
-          onRetry={fetchMediaData}
-          onAdd={handleAdd}
-          onPreview={handlePreview}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
       </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {metrics.map((metric) => (
+          <article
+            key={metric.label}
+            className="rounded-3xl border border-border bg-surface-container-lowest p-5 shadow-sm"
+          >
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <p className="text-sm font-medium text-muted-foreground">
+                {metric.label}
+              </p>
+              <span
+                className={`flex h-10 w-10 items-center justify-center rounded-2xl ${metric.iconClass}`}
+              >
+                {metric.icon}
+              </span>
+            </div>
+            <p className="text-3xl font-semibold tracking-tight text-on-surface">
+              {metric.value}
+            </p>
+          </article>
+        ))}
+      </div>
+
+      <section className="rounded-3xl border border-border bg-surface-container-lowest p-6 shadow-sm">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-container text-primary">
+            <FaChartPie />
+          </span>
+          <div>
+            <h2 className="text-base font-semibold text-on-surface">
+              Komposisi Media
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Distribusi berkas berdasarkan tipe yang tersimpan.
+            </p>
+          </div>
+        </div>
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-container-high">
+          <div
+            className="bg-primary transition-all"
+            style={{ width: `${percentage(counts.foto)}%` }}
+          />
+          <div
+            className="bg-[#68dba9] transition-all"
+            style={{ width: `${percentage(counts.video)}%` }}
+          />
+          <div
+            className="bg-amber-500 transition-all"
+            style={{ width: `${percentage(counts.dokumen)}%` }}
+          />
+        </div>
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs text-on-surface-variant">
+          <span>Foto: {counts.foto}</span>
+          <span>Video: {counts.video}</span>
+          <span>Dokumen: {counts.dokumen}</span>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-border bg-surface-container-lowest p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                onClick={() => setActiveTab(tab.value)}
+                className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                  activeTab === tab.value
+                    ? "bg-primary text-on-primary"
+                    : "bg-surface-container text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+                <span className="rounded-full bg-white/15 px-1.5 py-0.5 text-[11px]">
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="relative block">
+              <FaSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Cari nama atau deskripsi..."
+                aria-label="Cari media"
+                className="w-full rounded-xl border border-border bg-surface-container-lowest py-2.5 pl-10 pr-3 text-sm text-on-surface placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:w-72"
+              />
+            </label>
+            <div className="flex rounded-xl border border-border bg-surface-container-low p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("tabel")}
+                aria-label="Tampilan tabel"
+                title="Tampilan tabel"
+                className={`rounded-lg p-2 transition-colors ${
+                  viewMode === "tabel"
+                    ? "bg-surface-container-lowest text-primary shadow-sm"
+                    : "text-muted-foreground hover:text-on-surface"
+                }`}
+              >
+                <FaList />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                aria-label="Tampilan grid"
+                title="Tampilan grid"
+                className={`rounded-lg p-2 transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-surface-container-lowest text-primary shadow-sm"
+                    : "text-muted-foreground hover:text-on-surface"
+                }`}
+              >
+                <FaTh />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {selectedIds.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-primary-fixed px-4 py-3 text-on-primary-fixed">
+            <p className="text-sm font-medium">
+              {selectedIds.length} media dipilih
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                className="rounded-xl bg-white/20 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-white/30"
+              >
+                Batalkan
+              </button>
+              <button
+                type="button"
+                onClick={bulkDeleteModal.open}
+                className="rounded-xl bg-white/25 px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-white/35"
+              >
+                Hapus Terpilih
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <MediaTable
+        items={pageItems}
+        viewMode={viewMode}
+        selectedIds={selectedIds}
+        allVisibleSelected={allVisibleSelected}
+        isLoading={isLoading}
+        error={error}
+        page={page}
+        totalPages={totalPages}
+        totalItems={filteredData.length}
+        pageSize={PAGE_SIZE}
+        onRetry={() => void fetchMediaData()}
+        onAdd={handleAdd}
+        onPreview={handlePreview}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onToggleSelect={toggleSelect}
+        onToggleAll={toggleAllVisible}
+        onPageChange={setPage}
+      />
 
       <MediaFormModal
         isOpen={addModal.isOpen}
         isEdit={false}
         formData={formData}
         setFormData={setFormData}
-        onSubmit={saveNewItem}
+        onSubmit={() => void saveNewItem()}
         onCancel={addModal.close}
         currentItem={currentItem}
+        isLoading={isActionLoading}
       />
 
       <MediaFormModal
@@ -340,46 +530,29 @@ const MediaAdmin = () => {
         isEdit={true}
         formData={formData}
         setFormData={setFormData}
-        onSubmit={saveEditedItem}
+        onSubmit={() => void saveEditedItem()}
         onCancel={editModal.close}
         currentItem={currentItem}
+        isLoading={isActionLoading}
       />
 
-      {deleteModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto py-8">
-          <div
-            className="fixed inset-0 backdrop-blur-sm bg-gray-700/30"
-            onClick={() => deleteModal.close()}
-          ></div>
+      <ConfirmDialog
+        isOpen={deleteModal.isOpen}
+        title="Hapus media?"
+        description={`Media "${currentItem?.nama ?? ""}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`}
+        isLoading={isActionLoading}
+        onConfirm={() => void confirmDelete()}
+        onCancel={deleteModal.close}
+      />
 
-          <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-xl p-6">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
-                Konfirmasi Hapus
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Apakah Anda yakin ingin menghapus media &quot;{currentItem?.nama}
-                &quot;? Tindakan ini tidak dapat dibatalkan.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => deleteModal.close()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={bulkDeleteModal.isOpen}
+        title="Hapus media terpilih?"
+        description={`${selectedIds.length} media akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`}
+        isLoading={isBulkDeleting}
+        onConfirm={() => void confirmBulkDelete()}
+        onCancel={bulkDeleteModal.close}
+      />
 
       <MediaPreviewModal
         isOpen={previewModal.isOpen}
@@ -388,15 +561,19 @@ const MediaAdmin = () => {
       />
 
       {isThumbnailLoading && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-700/30 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
-            <FaSpinner className="animate-spin text-purple-500 text-4xl mx-auto mb-4" />
-            <p className="text-gray-800 font-medium">
-              Menghasilkan thumbnail dari video...
-            </p>
-            <p className="text-gray-600 text-sm mt-2">Mohon tunggu sebentar</p>
+        <ModalPortal>
+          <div className="fixed inset-0 z-[90] flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm">
+            <div className="rounded-3xl border border-border bg-surface-container-lowest px-8 py-6 text-center shadow-2xl">
+              <FaSpinner className="mx-auto mb-4 animate-spin text-3xl text-primary" />
+              <p className="text-sm font-semibold text-on-surface">
+                Menghasilkan thumbnail dari video...
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Mohon tunggu sebentar.
+              </p>
+            </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );
