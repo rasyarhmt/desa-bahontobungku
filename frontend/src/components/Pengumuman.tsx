@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Megaphone } from "lucide-react";
 
 import { pengumumanApi } from "@/lib/api/pengumuman";
@@ -45,6 +45,11 @@ export default function Pengumuman() {
   }, [announcements.length]);
 
   const items = announcements.length > 0 ? announcements : [];
+  const marqueeKey = loading
+    ? "loading"
+    : items.length > 0
+      ? items.map((item) => item.id).join("-")
+      : "empty";
 
   return (
     <section className={`${CONTAINER_CLASS} relative z-20 -mt-6`}>
@@ -56,36 +61,33 @@ export default function Pengumuman() {
           <span className="hidden shrink-0 rounded bg-surface-container-lowest/15 px-2.5 py-1 text-xs font-semibold text-primary-fixed sm:inline-block">
             Pengumuman
           </span>
-          <div className="overflow-hidden whitespace-nowrap text-sm">
-            {loading ? (
-              "Memuat pengumuman..."
-            ) : (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  className="inline-flex gap-x-96"
-                  initial={{ x: "100%" }}
-                  animate={{ x: "-100%" }}
-                  transition={{
-                    duration: 50,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                >
-                  {items.length > 0 ? (
-                    [...items, ...items].map((item, index) => (
-                      <p key={`${item.id}-${index}`} className="shrink-0">
-                        <span className="font-semibold text-on-primary">
-                          {item.judul} :{" "}
-                        </span>
-                        {item.isi}
-                      </p>
-                    ))
-                  ) : (
-                    <p>Saat ini: belum ada pengumuman aktif.</p>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            )}
+          <div className="relative min-w-0 flex-1 overflow-hidden whitespace-nowrap text-sm">
+            <motion.div
+              key={marqueeKey}
+              className="relative inline-flex gap-x-96"
+              initial={{ left: "100%", x: 0 }}
+              animate={{ left: "0%", x: "-100%" }}
+              transition={{
+                duration: 50,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              {loading ? (
+                <p>Memuat pengumuman...</p>
+              ) : items.length > 0 ? (
+                [...items, ...items].map((item, index) => (
+                  <p key={`${item.id}-${index}`} className="shrink-0">
+                    <span className="font-semibold text-on-primary">
+                      {item.judul} :{" "}
+                    </span>
+                    {item.isi}
+                  </p>
+                ))
+              ) : (
+                <p>Saat ini: belum ada pengumuman aktif.</p>
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
