@@ -196,6 +196,8 @@ func runMigrateFiles() error {
 				if err := updateFilePath(ctx, tx, target.table, target.column, newPath, item.id); err != nil {
 					return fmt.Errorf("update %s.%s id=%d: %w", target.table, target.column, item.id, err)
 				}
+				fmt.Printf("ENCRYPT %s.%s id=%d: %s -> %s\n",
+					target.table, target.column, item.id, item.path, newPath)
 				encryptedPath := filepath.Join(uploadsDir, filepath.FromSlash(newPath))
 				if src != encryptedPath {
 					if err := os.Remove(src); err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -218,6 +220,8 @@ func runMigrateFiles() error {
 			if err := updateFilePath(ctx, tx, target.table, target.column, newRel, item.id); err != nil {
 				return fmt.Errorf("update %s.%s id=%d: %w", target.table, target.column, item.id, err)
 			}
+			fmt.Printf("MOVE    %s.%s id=%d: %s -> %s\n",
+				target.table, target.column, item.id, item.path, newRel)
 			changed++
 		}
 
