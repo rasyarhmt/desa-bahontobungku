@@ -31,7 +31,7 @@ export default function ProfileTabs() {
   }, []);
 
   return (
-    <div className="sticky top-28 z-30 border-y border-surface-container bg-surface/95 backdrop-blur-xl">
+    <div className="top-28 z-30 border-y border-surface-container bg-surface/95 backdrop-blur-xl">
       <nav
         aria-label="Navigasi profil desa"
         className={`scrollbar-hide flex gap-2 overflow-x-auto py-3 ${CONTAINER_CLASS}`}
