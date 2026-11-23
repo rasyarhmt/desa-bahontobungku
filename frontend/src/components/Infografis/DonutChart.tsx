@@ -40,7 +40,7 @@ export default function DonutChart({
             const dashOffset = -offset;
             offset += length;
             const color =
-              CHART_COLORS[segment.colorIndex ?? index % CHART_COLORS.length].stroke;
+              CHART_COLORS[(segment.colorIndex ?? index) % CHART_COLORS.length].stroke;
 
             return (
               <circle

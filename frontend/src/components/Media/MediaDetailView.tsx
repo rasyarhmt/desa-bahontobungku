@@ -31,7 +31,7 @@ function MediaViewer({ item }: { item: Media }) {
       <video
         key={item.id}
         controls
-        className="max-h-[70vh] w-full bg-black"
+        className="h-full w-full bg-black object-contain"
         poster={mediaUtils.getVideoThumbnail(item)}
       >
         <source src={fileUrl} />
@@ -46,18 +46,30 @@ function MediaViewer({ item }: { item: Media }) {
         key={item.id}
         src={fileUrl}
         title={item.nama}
-        className="h-[70vh] w-full bg-surface-container-lowest"
+        className="h-full w-full bg-surface-container-lowest"
       />
     );
   }
 
+  const imgSrc = fileUrl || mediaUtils.getVideoThumbnail(item);
+
   return (
-    <img
-      key={item.id}
-      src={fileUrl || mediaUtils.getVideoThumbnail(item)}
-      alt={item.nama}
-      className="max-h-[70vh] w-full object-contain"
-    />
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-neutral-900">
+      {/* Latar belakang blur dari gambar yang sama */}
+      <img
+        src={imgSrc}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+      />
+      {/* Gambar utama tetap utuh dan menempel rapi atas-bawah */}
+      <img
+        key={item.id}
+        src={imgSrc}
+        alt={item.nama}
+        className="relative z-10 h-full w-auto max-w-full object-contain shadow-lg"
+      />
+    </div>
   );
 }
 
@@ -203,7 +215,7 @@ export default function MediaDetailView({ item, related }: MediaDetailViewProps)
 
       <section className={CONTAINER_CLASS}>
         <div className="relative overflow-hidden rounded-3xl bg-inverse-surface shadow-xl">
-          <div className="flex h-[380px] items-center justify-center bg-surface-container-low p-4 lg:h-[560px]">
+          <div className="flex h-[380px] items-center justify-center bg-neutral-900 lg:h-[560px]">
             <MediaViewer item={item} />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5 text-inverse-on-surface lg:px-10">
