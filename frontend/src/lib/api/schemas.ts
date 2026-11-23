@@ -9,10 +9,6 @@ export const EnvelopeSchema = z.object({
   message: z.string(),
   data: z.unknown().optional(),
 });
-export type Envelope<T = unknown> = z.infer<typeof EnvelopeSchema> & {
-  data?: T;
-};
-
 export const AnyDataSchema = z.unknown();
 
 // ============================================================================
@@ -25,14 +21,12 @@ export const RefreshTokensSchema = z.object({
 });
 export type RefreshTokens = z.infer<typeof RefreshTokensSchema>;
 
-export const AuthUserSchema = z.object({
+const AuthUserSchema = z.object({
   id: z.number(),
   nama: z.string(),
   email: z.string(),
   role: z.enum(["superadmin", "admin"]).catch("admin"),
 });
-export type AuthUser = z.infer<typeof AuthUserSchema>;
-
 export const LoginResponseSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string().optional(),
@@ -74,7 +68,7 @@ export const AjukanSuratSchema = z.object({
 });
 export type AjukanSuratResponse = z.infer<typeof AjukanSuratSchema>;
 
-export const TemplateFieldTipeSchema = z.enum([
+const TemplateFieldTipeSchema = z.enum([
   "text",
   "textarea",
   "date",
@@ -82,7 +76,7 @@ export const TemplateFieldTipeSchema = z.enum([
   "select",
 ]);
 
-export const TemplateFieldSchema = z.object({
+const TemplateFieldSchema = z.object({
   key: z.string(),
   label: z.string(),
   tipe: TemplateFieldTipeSchema,
@@ -102,7 +96,7 @@ export const TemplateFieldSchema = z.object({
 export type TemplateField = z.infer<typeof TemplateFieldSchema>;
 export const TemplateFieldsSchema = z.array(TemplateFieldSchema);
 
-export const TemplateFieldUpdateSchema = z.object({
+const TemplateFieldUpdateSchema = z.object({
   key: z.string().min(1),
   label: z.string().min(1),
   tipe: TemplateFieldTipeSchema,
@@ -223,8 +217,6 @@ export const AparaturListSchema = z.array(AparaturSchema);
 export const StatsTotalSchema = z.object({
   total: z.number(),
 });
-export type StatsTotal = z.infer<typeof StatsTotalSchema>;
-
 /** Item kategori statistik (agama/umur) — bentuk backend variatif, di-passthrough. */
 export const StatsCategorySchema = z.array(
   z
@@ -278,7 +270,7 @@ export const DanaKeluarSchema = z
 export type DanaKeluar = z.infer<typeof DanaKeluarSchema>;
 export const DanaKeluarListSchema = z.array(DanaKeluarSchema);
 
-export const APBDesMonthlySchema = z
+const APBDesMonthlySchema = z
   .object({
     bulan: z.union([z.number(), z.string()]),
     total: z.number(),
@@ -319,7 +311,7 @@ export const AdminUserSchema = z
 export type AdminUser = z.infer<typeof AdminUserSchema>;
 export const AdminUserListSchema = z.array(AdminUserSchema);
 
-export const SuratMasukSchema = z
+const SuratMasukSchema = z
   .object({
     id: z.number(),
     nomorSurat: z.string().nullable().optional(),
@@ -331,10 +323,9 @@ export const SuratMasukSchema = z
     created_at: z.string().nullable().optional(),
   })
   .passthrough();
-export type SuratMasuk = z.infer<typeof SuratMasukSchema>;
 export const SuratMasukListSchema = z.array(SuratMasukSchema);
 
-export const SuratKeluarSchema = z
+const SuratKeluarSchema = z
   .object({
     id: z.number(),
     nomorSurat: z.string().nullable().optional(),
@@ -346,7 +337,6 @@ export const SuratKeluarSchema = z
     created_at: z.string().nullable().optional(),
   })
   .passthrough();
-export type SuratKeluar = z.infer<typeof SuratKeluarSchema>;
 export const SuratKeluarListSchema = z.array(SuratKeluarSchema);
 
 export const SuratTemplateSchema = z

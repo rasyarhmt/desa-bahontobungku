@@ -2,16 +2,12 @@ import { http } from "./client";
 import {
   AjukanSuratRequestSchema,
   AjukanSuratSchema,
-  AnyDataSchema,
-  LogCetakSuratListSchema,
-  LogCetakSuratSchema,
   LogCetakVerifikasiSchema,
   PelayananListSchema,
   PelayananSchema,
   TemplateFieldsSchema,
   type AjukanSuratRequest,
   type AjukanSuratResponse,
-  type LogCetakSurat,
   type LogCetakVerifikasi,
   type Pelayanan,
   type TemplateField,
@@ -71,34 +67,4 @@ export const pelayananApi = {
       `/v1/log-cetak-surat/verifikasi/${kodeUnik}`,
       LogCetakVerifikasiSchema,
     ),
-};
-
-/** Akses log cetak surat (admin). */
-export const logCetakApi = {
-  getAll: async (): Promise<LogCetakSurat[]> =>
-    http.get<LogCetakSurat[]>("/v1/log-cetak-surat", LogCetakSuratListSchema),
-
-  getById: async (id: number | string): Promise<LogCetakSurat> =>
-    http.get<LogCetakSurat>(`/v1/log-cetak-surat/${id}`, LogCetakSuratSchema),
-
-  getByKode: async (kodeUnik: string): Promise<LogCetakSurat> =>
-    http.get<LogCetakSurat>(
-      `/v1/log-cetak-surat/kode/${kodeUnik}`,
-      LogCetakSuratSchema,
-    ),
-
-  resmikan: async (
-    id: number | string,
-    payload: { nomor_surat: string },
-  ): Promise<LogCetakSurat> =>
-    http.post<LogCetakSurat>(
-      `/v1/log-cetak-surat/${id}/resmikan`,
-      payload,
-      LogCetakSuratSchema,
-    ),
-
-  /** Hapus log cetak (admin) — data kosong, cukup cek sukses. */
-  delete: async (id: number | string): Promise<void> => {
-    await http.delete<unknown>(`/v1/log-cetak-surat/${id}`, AnyDataSchema);
-  },
 };

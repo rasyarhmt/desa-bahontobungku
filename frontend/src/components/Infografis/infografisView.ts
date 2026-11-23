@@ -21,7 +21,7 @@ export const CHART_COLORS = [
 export const formatNumber = (value: number): string =>
   new Intl.NumberFormat("id-ID").format(value);
 
-export const toPercent = (value: number, total: number): number =>
+const toPercent = (value: number, total: number): number =>
   total > 0 ? Math.round((value / total) * 1000) / 10 : 0;
 
 export const formatPercent = (value: number, total: number): string =>

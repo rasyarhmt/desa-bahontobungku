@@ -42,7 +42,3 @@ export const getPaginationNumbers = (
 
   return pages;
 };
-
-/** Potong daftar untuk satu halaman (paginasi sisi klien). */
-export const paginate = <T>(items: T[], page: number, perPage: number): T[] =>
-  items.slice((page - 1) * perPage, page * perPage);

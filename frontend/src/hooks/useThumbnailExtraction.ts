@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const extractThumbnailFromVideo = (videoFile: File): Promise<File> => {
+const extractThumbnailFromVideo = (videoFile: File): Promise<File> => {
   return new Promise((resolve, reject) => {
     try {
       const video = document.createElement("video");

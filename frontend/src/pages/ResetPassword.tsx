@@ -10,7 +10,7 @@ import { authApi } from "@/lib/api/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 
-export const requestPasswordReset = async (email: string): Promise<unknown> => {
+const requestPasswordReset = async (email: string): Promise<unknown> => {
   try {
     return await authApi.resetPassword(email);
   } catch (err) {
