@@ -2,7 +2,7 @@ import type { Berita } from "@/lib/api/schemas";
 
 export type BeritaSort = "terbaru" | "terlama";
 
-export const BERITA_PAGE_SIZE = 8;
+export const BERITA_PAGE_SIZE = 9;
 
 export const beritaDetailPath = (id: number): string => `/berita-detail/${id}`;
 

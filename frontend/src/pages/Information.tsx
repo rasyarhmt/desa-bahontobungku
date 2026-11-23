@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import BeritaCard from "@/components/Berita/BeritaCard";
 import BeritaFilters from "@/components/Berita/BeritaFilters";
 import BeritaPageHero from "@/components/Berita/BeritaPageHero";
-import BeritaPagination from "@/components/Berita/BeritaPagination";
 import BeritaSpotlight from "@/components/Berita/BeritaSpotlight";
 import { BeritaEmpty, BeritaError, BeritaLoading } from "@/components/Berita/BeritaStates";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/components/Berita/beritaView";
 import HomeFooter from "@/components/home/HomeFooter";
 import HomeHeader from "@/components/home/HomeHeader";
+import Pagination from "@/components/Pagination";
 import { useAsyncData } from "@/hooks";
 import { beritaApi } from "@/lib/api/berita";
 import type { Berita } from "@/lib/api/schemas";
@@ -118,10 +118,11 @@ export default function Information() {
                 <BeritaEmpty query={query} />
               )}
 
-              <BeritaPagination
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onChange={handlePageChange}
+                ariaLabel="Paginasi berita"
               />
             </section>
           </>
