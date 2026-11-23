@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 
 import HomeFooter from "@/components/home/HomeFooter";
 import HomeHeader from "@/components/home/HomeHeader";
@@ -9,16 +8,17 @@ import MediaPageHero from "@/components/Media/MediaPageHero";
 import MediaSpotlight from "@/components/Media/MediaSpotlight";
 import { MediaEmpty, MediaError, MediaLoading } from "@/components/Media/MediaStates";
 import type { MediaFilterValue } from "@/components/Media/mediaShared";
+import Pagination from "@/components/Pagination";
 import { useAsyncData, useSearchFilter } from "@/hooks";
 import { mediaApi } from "@/lib/api/media";
 import type { Media } from "@/lib/api/schemas";
 import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 9;
 
 export default function Media() {
   const [activeFilter, setActiveFilter] = useState<MediaFilterValue>("all");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     data: mediaData,
@@ -45,7 +45,7 @@ export default function Media() {
   });
 
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
+    setCurrentPage(1);
   }, [activeFilter, query]);
 
   const stats = useMemo(
@@ -71,8 +71,20 @@ export default function Media() {
   const galleryItems = featured
     ? sorted.filter((item) => item.id !== featured.id)
     : sorted;
-  const visibleItems = galleryItems.slice(0, visibleCount);
-  const hasMore = visibleCount < galleryItems.length;
+  const totalPages = Math.max(1, Math.ceil(galleryItems.length / PAGE_SIZE));
+  const visibleItems = galleryItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="home-theme min-h-screen bg-surface font-sans text-on-surface antialiased">
@@ -109,7 +121,8 @@ export default function Media() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-medium text-on-surface-variant">
-                  Menampilkan {visibleItems.length} dari {galleryItems.length} arsip
+                  Menampilkan {visibleItems.length} dari {galleryItems.length} arsip · Halaman{" "}
+                  {currentPage} dari {totalPages}
                 </span>
               </div>
 
@@ -121,18 +134,12 @@ export default function Media() {
                     ))}
                   </div>
 
-                  {hasMore && (
-                    <div className="mt-12 text-center">
-                      <button
-                        type="button"
-                        onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-                        className="inline-flex items-center gap-2 rounded-full bg-surface-container px-8 py-3.5 text-xs font-semibold text-on-surface transition-all hover:bg-primary hover:text-on-primary"
-                      >
-                        Muat Lebih Banyak Galeri
-                        <ChevronDown className="size-4" />
-                      </button>
-                    </div>
-                  )}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={handlePageChange}
+                    ariaLabel="Paginasi media"
+                  />
                 </>
               ) : (
                 <MediaEmpty />

@@ -3,22 +3,24 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getPaginationNumbers } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
 
-interface BeritaPaginationProps {
+interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onChange: (page: number) => void;
+  ariaLabel?: string;
 }
 
-export default function BeritaPagination({
+export default function Pagination({
   currentPage,
   totalPages,
   onChange,
-}: BeritaPaginationProps) {
+  ariaLabel = "Paginasi",
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
     <nav
-      aria-label="Paginasi berita"
+      aria-label={ariaLabel}
       className="mt-10 flex flex-wrap items-center justify-center gap-2"
     >
       <button
