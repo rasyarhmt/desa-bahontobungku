@@ -24,7 +24,7 @@ export default function StatCard({
   return (
     <article className="flex flex-col justify-between gap-5 rounded-2xl bg-surface-container-lowest p-6 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-4">
-        <div className={`flex size-12 items-center justify-center rounded-xl ${color.bar} text-on-primary`}>
+        <div className={`flex size-12 items-center justify-center rounded-xl ${color.bar} ${color.icon}`}>
           <Icon className="size-6" />
         </div>
         {note && (

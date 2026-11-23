@@ -171,7 +171,7 @@ export const toNewsItems = (berita: Berita[]): NewsItem[] =>
         ? "bg-primary text-on-primary"
         : index % 3 === 1
           ? "bg-tertiary-container text-on-tertiary-container"
-          : "bg-secondary text-on-secondary",
+          : "bg-primary-fixed-dim text-on-primary-fixed",
   }));
 
 export const toApparatusItems = (

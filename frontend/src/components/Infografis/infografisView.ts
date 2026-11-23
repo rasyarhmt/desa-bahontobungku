@@ -1,9 +1,21 @@
 export const CHART_COLORS = [
-  { bar: "bg-primary", stroke: "var(--primary)" },
-  { bar: "bg-tertiary-fixed-dim", stroke: "var(--tertiary-fixed-dim)" },
-  { bar: "bg-secondary", stroke: "var(--secondary)" },
-  { bar: "bg-primary-container", stroke: "var(--primary-container)" },
-  { bar: "bg-outline", stroke: "var(--outline)" },
+  { bar: "bg-primary", icon: "text-on-primary", stroke: "var(--primary)" },
+  {
+    bar: "bg-tertiary-fixed-dim",
+    icon: "text-on-tertiary-fixed",
+    stroke: "var(--tertiary-fixed-dim)",
+  },
+  {
+    bar: "bg-primary-fixed-dim",
+    icon: "text-on-primary-fixed",
+    stroke: "var(--primary-fixed-dim)",
+  },
+  {
+    bar: "bg-primary-container",
+    icon: "text-on-primary-container",
+    stroke: "var(--primary-container)",
+  },
+  { bar: "bg-outline", icon: "text-on-primary", stroke: "var(--outline)" },
 ];
 
 export const formatNumber = (value: number): string =>

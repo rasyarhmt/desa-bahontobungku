@@ -183,7 +183,7 @@ export default function GeographySection({
                 icon={Mountain}
                 title="Topografi & Iklim"
                 description="Dominan dataran pesisir pada ketinggian 0–150 mdpl dengan iklim tropis dan suhu rata-rata 26–30°C."
-                iconClass="bg-secondary-container text-on-secondary-container"
+                iconClass="bg-primary-fixed-dim text-on-primary-fixed"
               />
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function GeographySection({
               value={display(summary.totalKepalaKeluarga)}
               unit="KK"
               icon={MapPin}
-              iconClass="text-secondary"
+              iconClass="text-primary"
             />
             <StatCard
               label="Laki-laki"
