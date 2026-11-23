@@ -52,7 +52,7 @@ export default function HomeHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 xl:flex">
+        <nav className="hidden items-center gap-4 lg:flex xl:gap-6">
           {NAV_LINKS.map((link) => {
             const active = isActiveLink(link.path);
             return (
@@ -86,7 +86,7 @@ export default function HomeHeader() {
             aria-expanded={isOpen}
             aria-controls="mobile-nav"
             aria-label={isOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
-            className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-surface-container-low text-on-surface transition-colors hover:bg-surface-container xl:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-surface-container-low text-on-surface transition-colors hover:bg-surface-container lg:hidden"
           >
             {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -97,7 +97,7 @@ export default function HomeHeader() {
         <div
           aria-hidden="true"
           onClick={toggle}
-          className="fixed inset-x-0 bottom-0 top-20 z-40 bg-inverse-surface/30 backdrop-blur-[2px] xl:hidden"
+          className="fixed inset-x-0 bottom-0 top-20 z-40 bg-inverse-surface/30 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
@@ -105,7 +105,7 @@ export default function HomeHeader() {
         <nav
           id="mobile-nav"
           aria-label="Navigasi mobile"
-          className={`${CONTAINER_CLASS} relative z-50 flex flex-col gap-1 border-t border-border bg-surface py-4 shadow-lg xl:hidden`}
+          className={`${CONTAINER_CLASS} relative z-50 flex flex-col gap-1 border-t border-border bg-surface py-4 shadow-lg lg:hidden`}
         >
           {NAV_LINKS.map((link) => {
             const active = isActiveLink(link.path);

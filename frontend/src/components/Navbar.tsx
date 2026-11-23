@@ -66,7 +66,7 @@ function Navbar() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-6 relative">
+          <nav className="hidden items-center space-x-3 relative lg:flex xl:space-x-6">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.name}
@@ -99,7 +99,7 @@ function Navbar() {
 
           <button
             onClick={toggleMenu}
-            className="md:hidden text-gray-700 focus:outline-none"
+            className="lg:hidden text-gray-700 focus:outline-none"
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -109,7 +109,7 @@ function Navbar() {
       <aside
         className={`fixed inset-0 z-50 w-full transform transition-transform ease-in-out ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
+        } lg:hidden`}
         style={{ fontFamily: "Poppins" }}
       >
         <div className="relative flex flex-col h-full p-6 w-3/4 sm:w-1/2 bg-white/95 backdrop-blur-md">
