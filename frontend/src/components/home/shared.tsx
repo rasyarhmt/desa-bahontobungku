@@ -4,7 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SectionHeadingProps {
-  eyebrow: string;
+  eyebrow?: string;
   icon?: LucideIcon;
   title: string;
   description?: string;
@@ -22,10 +22,12 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div className={cn("space-y-4", className)}>
-      <span className="inline-flex items-center gap-2 rounded-full bg-surface-container px-3 py-1 text-xs font-semibold text-primary">
-        {Icon && <Icon className="size-4" />}
-        {eyebrow}
-      </span>
+      {eyebrow && (
+        <span className="inline-flex items-center gap-2 rounded-full bg-surface-container px-3 py-1 text-xs font-semibold text-primary">
+          {Icon && <Icon className="size-4" />}
+          {eyebrow}
+        </span>
+      )}
       <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-on-surface md:text-4xl">
         {title}
       </h2>

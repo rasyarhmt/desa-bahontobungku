@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 
 import ApplicationSteps from "@/components/Pelayanan/ApplicationSteps";
-import HelpBanner from "@/components/Pelayanan/HelpBanner";
 import PelayananHero from "@/components/Pelayanan/PelayananHero";
 import ServiceCatalog from "@/components/Pelayanan/ServiceCatalog";
 import { toServiceItems } from "@/components/Pelayanan/pelayananView";
@@ -24,7 +23,7 @@ export default function Pelayanan() {
       <main className="w-full pt-28">
         <nav
           aria-label="Breadcrumb"
-          className={`flex items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant ${CONTAINER_CLASS}`}
+          className={`flex items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant md:pt-12 ${CONTAINER_CLASS}`}
         >
           <Link to="/" className="flex items-center gap-1.5 hover:text-primary">
             <Home className="size-4" />
@@ -43,7 +42,6 @@ export default function Pelayanan() {
           onRetry={() => void refetch()}
         />
         <ApplicationSteps />
-        <HelpBanner contact={data.contact} />
       </main>
 
       <HomeFooter />
