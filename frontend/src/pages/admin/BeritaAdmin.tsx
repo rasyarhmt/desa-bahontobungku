@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FaCheck, FaClock, FaNewspaper, FaPlus } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import BeritaDetailView from "@/components/admin/BeritaDetailView";
 import BeritaFormView from "@/components/admin/BeritaFormView";
@@ -15,7 +16,7 @@ import {
   adminPrimaryButtonClass,
 } from "@/components/admin/admin-ui";
 import type { BeritaForm } from "@/components/admin/beritaShared";
-import { useAsyncData, useCrudResource, useDisclosure, useSearchFilter } from "@/hooks";
+import { useAsyncData, useCrudResource, useDisclosure, useSearchFilter, useTablePagination } from "@/hooks";
 import { adminBeritaApi, type BeritaAdminView } from "@/lib/api/admin";
 import { resolveUploadUrl } from "@/lib/api/config";
 import { getAuthState } from "@/lib/auth";
@@ -59,6 +60,18 @@ const BeritaAdmin = () => {
       (activeTab === "draft" && item.status === "Draft");
 
     return matchesSearch && matchesFilter;
+  });
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filteredData, {
+    resetKey: `${activeTab}|${searchQuery}`,
   });
 
   const countPublished = beritaData.filter(
@@ -265,7 +278,7 @@ const BeritaAdmin = () => {
             </AdminToolbar>
 
             <BeritaTable
-              items={filteredData}
+              items={pageItems}
               isLoading={isLoading}
               error={error}
               searchQuery={searchQuery}
@@ -276,6 +289,17 @@ const BeritaAdmin = () => {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onToggleStatus={(id) => void togglePublishStatus(id)}
+              footer={
+                <AdminTablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  label="berita"
+                />
+              }
             />
           </>
         )}

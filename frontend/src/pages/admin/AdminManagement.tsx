@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import {
   AdminField,
@@ -16,7 +17,7 @@ import TableAdmin from "@/components/admin/TableAdmin";
 import { adminUserApi } from "@/lib/api/admin";
 import { authApi } from "@/lib/api/auth";
 import { type AdminUser } from "@/lib/api/schemas";
-import { useAsyncData } from "@/hooks";
+import { useAsyncData, useTablePagination } from "@/hooks";
 import { getAuthState } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { toast } from "@/lib/toast";
@@ -70,8 +71,9 @@ export default function AdminManagement() {
   const openAdd = () =>
     setFormState({ mode: "add", original: null, values: { ...emptyForm } });
 
-  const openEdit = (idx: number) => {
-    const user = users[idx];
+  const openEdit = (id: number) => {
+    const user = users.find((user) => user.id === id);
+    if (!user) return;
     if (user.role === "superadmin") {
       toast.warning("Gunakan halaman Pengaturan untuk mengubah akun superadmin.");
       return;
@@ -118,8 +120,9 @@ export default function AdminManagement() {
     }
   };
 
-  const handleDelete = (idx: number) => {
-    const user = users[idx];
+  const handleDelete = (id: number) => {
+    const user = users.find((user) => user.id === id);
+    if (!user) return;
     if (user.role === "superadmin") {
       toast.error("Tidak bisa menghapus superadmin.");
       return;
@@ -138,8 +141,9 @@ export default function AdminManagement() {
     }
   };
 
-  const handleTransfer = (idx: number) => {
-    const user = users[idx];
+  const handleTransfer = (id: number) => {
+    const user = users.find((user) => user.id === id);
+    if (!user) return;
     if (user.role === "superadmin") {
       toast.info("User ini sudah superadmin.");
       return;
@@ -168,6 +172,18 @@ export default function AdminManagement() {
     role: u.role,
     last_login: formatDateTime(u.last_login),
   }));
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(data, {
+    resetKey: users.map((u) => u.id).join(","),
+  });
 
   const targetName = users.find((user) => user.id === confirmDeleteId)?.nama ?? "";
   const transferName = users.find((user) => user.id === transferId)?.nama ?? "";
@@ -300,11 +316,22 @@ export default function AdminManagement() {
       ) : (
         <TableAdmin
           columns={columns}
-          data={data}
+          data={pageItems}
           onDelete={handleDelete}
           onEdit={openEdit}
           onTransfer={handleTransfer}
           loading={loading}
+          footer={
+            <AdminTablePagination
+              page={page}
+              pageSize={pageSize}
+              totalItems={totalItems}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+              label="admin"
+            />
+          }
         />
       )}
 

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { FaEdit, FaMoneyBillWave, FaPlus, FaTrash } from "react-icons/fa";
 
 import {
@@ -16,6 +17,7 @@ interface DanaMasukTableProps {
   onAdd: () => void;
   onEdit: (item: DanaMasukDisplay) => void;
   onDelete: (id: number) => void;
+  footer?: ReactNode;
 }
 
 const actionButtonClass =
@@ -28,6 +30,7 @@ export default function DanaMasukTable({
   onAdd,
   onEdit,
   onDelete,
+  footer,
 }: DanaMasukTableProps) {
   const headerClass =
     "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground";
@@ -36,12 +39,15 @@ export default function DanaMasukTable({
   return (
     <AdminTableShell
       footer={
-        <div className="flex items-center justify-between gap-3 border-t border-border bg-success-bg px-6 py-3 text-sm text-success-fg">
-          <span className="font-medium">Total</span>
-          <span className="font-semibold tabular-nums">
-            {formatCurrency(totalPendapatan)}
-          </span>
-        </div>
+        <>
+          <div className="flex items-center justify-between gap-3 border-t border-border bg-success-bg px-6 py-3 text-sm text-success-fg">
+            <span className="font-medium">Total</span>
+            <span className="font-semibold tabular-nums">
+              {formatCurrency(totalPendapatan)}
+            </span>
+          </div>
+          {footer}
+        </>
       }
     >
       <div className="p-5 sm:p-6">

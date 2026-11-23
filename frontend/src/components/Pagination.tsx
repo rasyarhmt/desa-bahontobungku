@@ -8,6 +8,7 @@ interface PaginationProps {
   totalPages: number;
   onChange: (page: number) => void;
   ariaLabel?: string;
+  className?: string;
 }
 
 export default function Pagination({
@@ -15,13 +16,17 @@ export default function Pagination({
   totalPages,
   onChange,
   ariaLabel = "Paginasi",
+  className,
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
     <nav
       aria-label={ariaLabel}
-      className="mt-10 flex flex-wrap items-center justify-center gap-2"
+      className={cn(
+        "flex flex-wrap items-center justify-center gap-2",
+        className ?? "mt-10",
+      )}
     >
       <button
         type="button"

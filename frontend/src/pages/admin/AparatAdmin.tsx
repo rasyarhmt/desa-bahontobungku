@@ -10,6 +10,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import {
   AdminField,
@@ -27,7 +28,12 @@ import {
 } from "@/components/admin/admin-ui";
 import { adminAparatApi, type AparatFormattedAdmin } from "@/lib/api/admin";
 import { getAuthState } from "@/lib/auth";
-import { useAsyncData, useCrudResource, useSearchFilter } from "@/hooks";
+import {
+  useAsyncData,
+  useCrudResource,
+  useSearchFilter,
+  useTablePagination,
+} from "@/hooks";
 
 interface AparatForm {
   nama: string;
@@ -129,6 +135,18 @@ const AparatAdmin = () => {
       (item.jabatan?.toLowerCase() || "").includes(q) ||
       (item.nip?.toLowerCase() || "").includes(q)
     );
+  });
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filteredData, {
+    resetKey: searchQuery,
   });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -380,6 +398,17 @@ const AparatAdmin = () => {
                   ? "Tidak ada aparat yang ditemukan dengan pencarian tersebut."
                   : "Belum ada data aparat desa."
               }
+              footer={
+                <AdminTablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  label="aparat"
+                />
+              }
             >
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] text-left">
@@ -393,7 +422,7 @@ const AparatAdmin = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {filteredData.map((aparat) => (
+                    {pageItems.map((aparat) => (
                       <tr
                         key={aparat.id}
                         className="transition-colors hover:bg-surface-container-low"

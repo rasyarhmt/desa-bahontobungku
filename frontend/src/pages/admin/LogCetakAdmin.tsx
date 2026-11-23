@@ -25,12 +25,13 @@ import {
   adminPrimaryButtonClass,
   adminSecondaryButtonClass,
 } from "@/components/admin/admin-ui";
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import LogCetakDetailView from "@/components/admin/LogCetakDetailView";
 import { type LogCetakSurat } from "@/lib/api/schemas";
 import { adminLogCetakApi } from "@/lib/api/admin";
 import { getErrorMessage } from "@/lib/errors";
 import { formatDateTime } from "@/lib/format";
-import { useAsyncData, useDisclosure } from "@/hooks";
+import { useAsyncData, useDisclosure, useTablePagination } from "@/hooks";
 import { toast } from "@/lib/toast";
 
 const statusOptions = ["semua", "dicetak", "diresmikan"];
@@ -71,6 +72,19 @@ const LogCetakAdmin = () => {
     activeTab === "semua"
       ? logs
       : logs.filter((item) => item.status === activeTab);
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+    rangeStart,
+  } = useTablePagination(filteredData, {
+    resetKey: activeTab,
+  });
 
   const countDicetak = logs.filter((item) => item.status === "dicetak").length;
   const countDiresmikan = logs.filter(
@@ -269,6 +283,17 @@ const LogCetakAdmin = () => {
               onRetry={() => void fetchLogData()}
               empty={filteredData.length === 0}
               emptyLabel="Tidak ada data log cetak surat."
+              footer={
+                <AdminTablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  label="log cetak surat"
+                />
+              }
             >
               <div className="border-b border-border px-5 py-5">
                 <h2 className="text-base font-semibold text-on-surface">
@@ -297,12 +322,12 @@ const LogCetakAdmin = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {filteredData.map((item, idx) => (
+                    {pageItems.map((item, idx) => (
                       <tr
                         key={item.id}
                         className="transition-colors hover:bg-surface-container-low/60"
                       >
-                        <td className={tdClass}>{idx + 1}</td>
+                        <td className={tdClass}>{rangeStart + idx}</td>
                         <td className={tdClass}>
                           <span className="rounded-lg bg-secondary-container px-2 py-1 font-mono text-xs font-medium text-on-secondary-container">
                             {item.kode_unik}

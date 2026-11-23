@@ -9,6 +9,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import {
   AdminDetailGrid,
@@ -32,7 +33,12 @@ import {
 import { adminPengumumanApi } from "@/lib/api/admin";
 import { getAuthState } from "@/lib/auth";
 import { formatDateLong, formatDateShort, toDateInputValue } from "@/lib/format";
-import { useAsyncData, useCrudResource, useSearchFilter } from "@/hooks";
+import {
+  useAsyncData,
+  useCrudResource,
+  useSearchFilter,
+  useTablePagination,
+} from "@/hooks";
 
 interface PengumumanItem {
   id: number;
@@ -103,6 +109,18 @@ const PengumumanAdmin = () => {
       (activeTab === "kadaluarsa" && item.status === "Kadaluarsa");
 
     return matchesSearch && matchesFilter;
+  });
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filteredData, {
+    resetKey: `${activeTab}|${searchQuery}`,
   });
 
   const countAktif = pengumumanData.filter(
@@ -428,6 +446,17 @@ const PengumumanAdmin = () => {
               onRetry={() => void fetchAllPengumuman()}
               empty={filteredData.length === 0}
               emptyLabel="Tidak ada data pengumuman yang ditemukan."
+              footer={
+                <AdminTablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  label="pengumuman"
+                />
+              }
             >
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[860px] text-left">
@@ -442,7 +471,7 @@ const PengumumanAdmin = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {filteredData.map((pengumuman) => (
+                    {pageItems.map((pengumuman) => (
                       <tr
                         key={pengumuman.id}
                         className="transition-colors hover:bg-surface-container-low"

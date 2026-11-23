@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { FaEdit, FaExchangeAlt, FaTrash } from "react-icons/fa";
 
 import { AdminStatusBadge, AdminTableShell } from "@/components/admin/admin-ui";
@@ -7,10 +8,11 @@ interface TableAdminProps {
   data: ({ [key: string]: string | number | boolean | null | undefined } & {
     role?: string | null;
   })[];
-  onDelete?: (idx: number) => void;
-  onEdit?: (idx: number) => void;
-  onTransfer?: (idx: number) => void;
+  onDelete?: (id: number) => void;
+  onEdit?: (id: number) => void;
+  onTransfer?: (id: number) => void;
   loading?: boolean;
+  footer?: ReactNode;
 }
 
 const actionButtonClass =
@@ -31,12 +33,14 @@ export default function TableAdmin({
   onEdit,
   onTransfer,
   loading = false,
+  footer,
 }: TableAdminProps) {
   return (
     <AdminTableShell
       loading={loading}
       empty={data.length === 0}
       emptyLabel="Tidak ada data admin."
+      footer={footer}
     >
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-on-surface-variant">
@@ -56,9 +60,9 @@ export default function TableAdmin({
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {data.map((item, idx) => (
+            {data.map((item) => (
               <tr
-                key={idx}
+                key={String(item.id)}
                 className="transition-colors hover:bg-surface-container-low"
               >
                 {columns.map((col, i) => (
@@ -80,7 +84,7 @@ export default function TableAdmin({
                     {onEdit && item.role !== "superadmin" && (
                       <button
                         type="button"
-                        onClick={() => onEdit(idx)}
+                        onClick={() => onEdit(Number(item.id))}
                         className={actionButtonClass}
                         title="Edit"
                       >
@@ -90,7 +94,7 @@ export default function TableAdmin({
                     {onTransfer && item.role !== "superadmin" && (
                       <button
                         type="button"
-                        onClick={() => onTransfer(idx)}
+                        onClick={() => onTransfer(Number(item.id))}
                         className={actionButtonClass}
                         title="Jadikan Superadmin"
                       >
@@ -100,7 +104,7 @@ export default function TableAdmin({
                     {onDelete && item.role !== "superadmin" && (
                       <button
                         type="button"
-                        onClick={() => onDelete(idx)}
+                        onClick={() => onDelete(Number(item.id))}
                         className={`${actionButtonClass} hover:text-destructive`}
                         title="Hapus"
                       >

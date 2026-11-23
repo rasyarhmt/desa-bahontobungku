@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import {
   AdminFilterTabs,
   AdminPageHeader,
@@ -11,7 +12,7 @@ import {
 } from "@/components/admin/admin-ui";
 import { adminApbdesApi } from "@/lib/api/admin";
 import { getErrorMessage } from "@/lib/errors";
-import { useAsyncData } from "@/hooks";
+import { useAsyncData, useTablePagination } from "@/hooks";
 import DanaForm from "./DanaForm";
 import ApbdesSummaryCards from "./ApbdesSummaryCards";
 import ApbdesCharts from "./ApbdesCharts";
@@ -105,6 +106,30 @@ export default function APBDes() {
   const filteredDanaKeluar = danaKeluar.filter(
     (item) => item.tahun.toString() === selectedYear,
   );
+
+  const {
+    page: masukPage,
+    setPage: setMasukPage,
+    pageSize: masukPageSize,
+    setPageSize: setMasukPageSize,
+    pageItems: masukPageItems,
+    totalItems: masukTotalItems,
+    totalPages: masukTotalPages,
+  } = useTablePagination(filteredDanaMasuk, {
+    resetKey: `${selectedYear}|${activeTab}`,
+  });
+
+  const {
+    page: keluarPage,
+    setPage: setKeluarPage,
+    pageSize: keluarPageSize,
+    setPageSize: setKeluarPageSize,
+    pageItems: keluarPageItems,
+    totalItems: keluarTotalItems,
+    totalPages: keluarTotalPages,
+  } = useTablePagination(filteredDanaKeluar, {
+    resetKey: `${selectedYear}|${activeTab}`,
+  });
 
   const totalPendapatan = filteredDanaMasuk.reduce(
     (sum, item) => sum + Number.parseInt(String(item.jumlah ?? 0)),
@@ -332,23 +357,45 @@ export default function APBDes() {
 
           {activeTab === "income" && (
             <DanaMasukTable
-              items={filteredDanaMasuk}
+              items={masukPageItems}
               totalPendapatan={totalPendapatan}
               selectedYear={selectedYear}
               onAdd={() => openForm("masuk")}
               onEdit={handleEditDanaMasuk}
               onDelete={(id) => setDeleteTarget({ id, type: "masuk" })}
+              footer={
+                <AdminTablePagination
+                  page={masukPage}
+                  pageSize={masukPageSize}
+                  totalItems={masukTotalItems}
+                  totalPages={masukTotalPages}
+                  onPageChange={setMasukPage}
+                  onPageSizeChange={setMasukPageSize}
+                  label="pendapatan"
+                />
+              }
             />
           )}
 
           {activeTab === "expense" && (
             <DanaKeluarTable
-              items={filteredDanaKeluar}
+              items={keluarPageItems}
               totalPengeluaran={totalPengeluaran}
               selectedYear={selectedYear}
               onAdd={() => openForm("keluar")}
               onEdit={handleEditDanaKeluar}
               onDelete={(id) => setDeleteTarget({ id, type: "keluar" })}
+              footer={
+                <AdminTablePagination
+                  page={keluarPage}
+                  pageSize={keluarPageSize}
+                  totalItems={keluarTotalItems}
+                  totalPages={keluarTotalPages}
+                  onPageChange={setKeluarPage}
+                  onPageSizeChange={setKeluarPageSize}
+                  label="pengeluaran"
+                />
+              }
             />
           )}
         </>

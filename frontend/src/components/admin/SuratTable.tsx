@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
 
 import {
@@ -21,6 +22,7 @@ interface SuratTableProps {
   onPreview: (id: number) => void;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
+  footer?: ReactNode;
 }
 
 const thClass =
@@ -40,6 +42,7 @@ export default function SuratTable({
   onPreview,
   onEdit,
   onDelete,
+  footer,
 }: SuratTableProps) {
   return (
     <div className="space-y-4">
@@ -78,6 +81,7 @@ export default function SuratTable({
         onRetry={onRetry}
         empty={items.length === 0}
         emptyLabel="Tidak ada data surat yang ditemukan."
+        footer={footer}
       >
         <div className="overflow-x-auto">
           <table className="w-full">

@@ -1,6 +1,5 @@
+import type { ReactNode } from "react";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaEdit,
   FaEye,
   FaPlus,
@@ -22,10 +21,6 @@ interface MediaTableProps {
   allVisibleSelected: boolean;
   isLoading: boolean;
   error: string | null;
-  page: number;
-  totalPages: number;
-  totalItems: number;
-  pageSize: number;
   onRetry: () => void;
   onAdd: () => void;
   onPreview: (id: number) => void;
@@ -33,7 +28,7 @@ interface MediaTableProps {
   onDelete: (id: number) => void;
   onToggleSelect: (id: number) => void;
   onToggleAll: () => void;
-  onPageChange: (page: number) => void;
+  footer?: ReactNode;
 }
 
 const typeBadgeClass: Record<string, string> = {
@@ -114,10 +109,6 @@ export default function MediaTable({
   allVisibleSelected,
   isLoading,
   error,
-  page,
-  totalPages,
-  totalItems,
-  pageSize,
   onRetry,
   onAdd,
   onPreview,
@@ -125,11 +116,8 @@ export default function MediaTable({
   onDelete,
   onToggleSelect,
   onToggleAll,
-  onPageChange,
+  footer,
 }: MediaTableProps) {
-  const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
-  const end = Math.min(page * pageSize, totalItems);
-
   return (
     <section className="overflow-hidden rounded-3xl border border-border bg-surface-container-lowest shadow-sm">
       <div className="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -317,36 +305,7 @@ export default function MediaTable({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-6 py-4">
-        <p className="text-sm text-muted-foreground">
-          Menampilkan <span className="font-medium text-on-surface">{start}</span>–
-          <span className="font-medium text-on-surface">{end}</span> dari{" "}
-          <span className="font-medium text-on-surface">{totalItems}</span> media
-        </p>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onPageChange(page - 1)}
-            disabled={page <= 1}
-            aria-label="Halaman sebelumnya"
-            className="rounded-xl border border-border p-2 text-on-surface-variant transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <FaChevronLeft />
-          </button>
-          <span className="text-sm font-medium text-on-surface">
-            {page} / {totalPages}
-          </span>
-          <button
-            type="button"
-            onClick={() => onPageChange(page + 1)}
-            disabled={page >= totalPages}
-            aria-label="Halaman berikutnya"
-            className="rounded-xl border border-border p-2 text-on-surface-variant transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <FaChevronRight />
-          </button>
-        </div>
-      </div>
+      {footer}
     </section>
   );
 }

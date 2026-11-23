@@ -17,6 +17,7 @@ import {
 } from "react-icons/fa";
 
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import DetailKeluarga from "./DetailKeluarga";
 import PopupForm from "./PopupForm";
 import {
@@ -37,7 +38,11 @@ import {
   type StatusKeluarga,
 } from "@/lib/api/admin";
 import { getErrorMessage } from "@/lib/errors";
-import { useAsyncData, useDisclosure } from "@/hooks";
+import {
+  useAsyncData,
+  useDisclosure,
+  useTablePagination,
+} from "@/hooks";
 import { toast } from "@/lib/toast";
 
 interface StatItem {
@@ -210,6 +215,26 @@ export default function Penduduk() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [selectedNik, setSelectedNik] = useState<string | null>(null);
+
+  const filteredPenduduk = pendudukData.filter(
+    (item) =>
+      item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.nik.includes(searchTerm) ||
+      item.alamat.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+    rangeStart,
+  } = useTablePagination(filteredPenduduk, {
+    resetKey: searchTerm,
+  });
 
   const openForm = (editData: PendudukAdminView | null = null) => {
     fetchKepalaKeluarga();
@@ -492,18 +517,23 @@ export default function Penduduk() {
   };
 
   const renderDataList = () => {
-    const filteredData = pendudukData.filter(
-      (item) =>
-        item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.nik.includes(searchTerm) ||
-        item.alamat.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-
     const headerClass =
       "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground";
 
     return (
-      <AdminCard className="overflow-hidden">
+      <AdminTableShell
+        footer={
+          <AdminTablePagination
+            page={page}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+            label="penduduk"
+          />
+        }
+      >
         <div className="p-5 sm:p-6">
           <AdminSectionHeader
             icon={<FaListAlt />}
@@ -535,12 +565,14 @@ export default function Penduduk() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filteredData.map((item, idx) => (
+                {pageItems.map((item, idx) => (
                   <tr
                     key={item.id || idx}
                     className="transition-colors hover:bg-surface-container-low"
                   >
-                    <td className="px-4 py-3 text-on-surface">{idx + 1}</td>
+                    <td className="px-4 py-3 text-on-surface">
+                      {rangeStart + idx}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col gap-0.5">
                         <button
@@ -612,7 +644,7 @@ export default function Penduduk() {
                     </td>
                   </tr>
                 ))}
-                {filteredData.length === 0 && (
+                {pageItems.length === 0 && (
                   <tr>
                     <td
                       colSpan={10}
@@ -626,7 +658,7 @@ export default function Penduduk() {
             </table>
           </div>
         </div>
-      </AdminCard>
+      </AdminTableShell>
     );
   };
 

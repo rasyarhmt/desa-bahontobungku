@@ -8,6 +8,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import {
   AdminField,
@@ -27,7 +28,7 @@ import {
   adminStatusKeluargaApi,
   adminPendudukApi,
 } from "@/lib/api/admin";
-import { useAsyncData } from "@/hooks";
+import { useAsyncData, useTablePagination } from "@/hooks";
 import { getErrorMessage } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 
@@ -91,6 +92,18 @@ const StatusKeluargaAdmin = () => {
     return (
       matchTab && s.nama.toLowerCase().includes(search.trim().toLowerCase())
     );
+  });
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filtered, {
+    resetKey: `${activeTab}|${search}`,
   });
 
   const countAktif = list.filter((s) => s.is_active).length;
@@ -284,6 +297,17 @@ const StatusKeluargaAdmin = () => {
             loading={isLoading}
             error={error}
             onRetry={() => void fetchData()}
+            footer={
+              <AdminTablePagination
+                page={page}
+                pageSize={pageSize}
+                totalItems={totalItems}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                label="status keluarga"
+              />
+            }
           >
             <div className="p-5 sm:p-6">
               <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
@@ -326,8 +350,8 @@ const StatusKeluargaAdmin = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                      {filtered.length > 0 ? (
-                        filtered.map((item) => {
+                      {pageItems.length > 0 ? (
+                        pageItems.map((item) => {
                           const used = usage[item.id] ?? 0;
                           const reserved = isReserved(item.nama);
                           return (

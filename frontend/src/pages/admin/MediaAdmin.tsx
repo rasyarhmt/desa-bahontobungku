@@ -15,6 +15,7 @@ import {
   FaVideo,
 } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import MediaFormModal from "@/components/admin/MediaFormModal";
 import MediaPreviewModal from "@/components/admin/MediaPreviewModal";
@@ -26,6 +27,7 @@ import {
   useAsyncData,
   useCrudResource,
   useDisclosure,
+  useTablePagination,
   useThumbnailExtraction,
 } from "@/hooks";
 import { adminMediaApi } from "@/lib/api/admin";
@@ -35,7 +37,6 @@ import { toast } from "@/lib/toast";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp"];
 const VIDEO_EXTENSIONS = ["mp4", "webm", "ogg", "mkv"];
 const PDF_EXTENSIONS = ["pdf"];
-const PAGE_SIZE = 8;
 
 const getExtension = (name: string) => name.split(".").pop()!.toLowerCase();
 
@@ -69,7 +70,6 @@ const MediaAdmin = () => {
   const [activeTab, setActiveTab] = useState("semua");
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<MediaViewMode>("tabel");
-  const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isBulkDeleting, setBulkDeleting] = useState(false);
 
@@ -198,24 +198,25 @@ const MediaAdmin = () => {
     });
   }, [mediaData, activeTab, searchTerm]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageItems = useMemo(
-    () => filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [filteredData, page],
-  );
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filteredData, {
+    resetKey: `${activeTab}|${searchTerm}`,
+  });
+
   const visibleIds = pageItems.map((item) => item.id);
   const allVisibleSelected =
-    visibleIds.length > 0 &&
-    visibleIds.every((id) => selectedIds.includes(id));
+    visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
 
   useEffect(() => {
-    setPage(1);
     setSelectedIds([]);
-  }, [activeTab, searchTerm]);
-
-  useEffect(() => {
-    if (page > totalPages) setPage(totalPages);
-  }, [page, totalPages]);
+  }, [activeTab, searchTerm, page]);
 
   useEffect(() => {
     setSelectedIds((previous) =>
@@ -500,10 +501,6 @@ const MediaAdmin = () => {
         allVisibleSelected={allVisibleSelected}
         isLoading={isLoading}
         error={error}
-        page={page}
-        totalPages={totalPages}
-        totalItems={filteredData.length}
-        pageSize={PAGE_SIZE}
         onRetry={() => void fetchMediaData()}
         onAdd={handleAdd}
         onPreview={handlePreview}
@@ -511,7 +508,17 @@ const MediaAdmin = () => {
         onDelete={handleDelete}
         onToggleSelect={toggleSelect}
         onToggleAll={toggleAllVisible}
-        onPageChange={setPage}
+        footer={
+          <AdminTablePagination
+            page={page}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+            label="media"
+          />
+        }
       />
 
       <MediaFormModal

@@ -6,6 +6,7 @@ import {
   FaSyncAlt,
 } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import SuratForm from "@/components/admin/SuratForm";
 import SuratDetailView from "@/components/admin/SuratDetailView";
@@ -21,7 +22,7 @@ import {
 import { type SuratItem, adminSuratApi } from "@/lib/api/admin";
 import { getAuthState } from "@/lib/auth";
 import { toDateInputValue } from "@/lib/format";
-import { useCrudResource, useDisclosure } from "@/hooks";
+import { useCrudResource, useDisclosure, useTablePagination } from "@/hooks";
 
 function SuratAdmin() {
   const { token } = getAuthState();
@@ -107,6 +108,18 @@ function SuratAdmin() {
       (item.pengirim?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
     return matchesSearch;
+  });
+
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filteredData, {
+    resetKey: `${activeTab}|${searchQuery}`,
   });
 
   const countMasuk = suratData.filter(
@@ -282,7 +295,7 @@ function SuratAdmin() {
             </AdminToolbar>
 
             <SuratTable
-              items={filteredData}
+              items={pageItems}
               isLoading={isLoading}
               error={error}
               searchQuery={searchQuery}
@@ -292,6 +305,17 @@ function SuratAdmin() {
               onPreview={handlePreview}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              footer={
+                <AdminTablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  label="surat"
+                />
+              }
             />
           </>
         )}

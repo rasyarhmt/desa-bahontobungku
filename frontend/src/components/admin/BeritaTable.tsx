@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   FaCheck,
   FaEdit,
@@ -32,6 +33,7 @@ interface BeritaTableProps {
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
   onToggleStatus: (id: number) => void;
+  footer?: ReactNode;
 }
 
 export default function BeritaTable({
@@ -46,6 +48,7 @@ export default function BeritaTable({
   onEdit,
   onDelete,
   onToggleStatus,
+  footer,
 }: BeritaTableProps) {
   return (
     <div className="space-y-4">
@@ -80,6 +83,7 @@ export default function BeritaTable({
         onRetry={onRetry}
         empty={items.length === 0}
         emptyLabel="Tidak ada data berita yang ditemukan."
+        footer={footer}
       >
         <div className="overflow-x-auto">
           <table className="w-full min-w-[860px] text-left">

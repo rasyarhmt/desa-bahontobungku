@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { FaEdit, FaMoneyCheckAlt, FaPlus, FaTrash } from "react-icons/fa";
 
 import {
@@ -17,6 +18,7 @@ interface DanaKeluarTableProps {
   onAdd: () => void;
   onEdit: (item: DanaKeluarDisplay) => void;
   onDelete: (id: number) => void;
+  footer?: ReactNode;
 }
 
 const actionButtonClass =
@@ -29,6 +31,7 @@ export default function DanaKeluarTable({
   onAdd,
   onEdit,
   onDelete,
+  footer,
 }: DanaKeluarTableProps) {
   const headerClass =
     "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground";
@@ -37,12 +40,15 @@ export default function DanaKeluarTable({
   return (
     <AdminTableShell
       footer={
-        <div className="flex items-center justify-between gap-3 border-t border-border bg-destructive/10 px-6 py-3 text-sm text-destructive">
-          <span className="font-medium">Total</span>
-          <span className="font-semibold tabular-nums">
-            {formatCurrency(totalPengeluaran)}
-          </span>
-        </div>
+        <>
+          <div className="flex items-center justify-between gap-3 border-t border-border bg-destructive/10 px-6 py-3 text-sm text-destructive">
+            <span className="font-medium">Total</span>
+            <span className="font-semibold tabular-nums">
+              {formatCurrency(totalPengeluaran)}
+            </span>
+          </div>
+          {footer}
+        </>
       }
     >
       <div className="p-5 sm:p-6">

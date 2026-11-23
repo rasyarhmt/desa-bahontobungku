@@ -13,6 +13,7 @@ import {
   FaUpload,
 } from "react-icons/fa";
 
+import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import {
   AdminField,
   AdminFilterTabs,
@@ -31,7 +32,7 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import TemplateDetailView from "@/components/admin/TemplateDetailView";
 import { type SuratTemplate } from "@/lib/api/schemas";
 import { adminTemplateApi } from "@/lib/api/admin";
-import { useAsyncData, useCrudResource } from "@/hooks";
+import { useAsyncData, useCrudResource, useTablePagination } from "@/hooks";
 import TemplateFieldModal from "./TemplateFieldModal";
 
 interface TemplateFormData {
@@ -208,6 +209,18 @@ const TemplateSuratAdmin = () => {
       ? templates
       : templates.filter((item) => item.status === activeTab);
 
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pageItems,
+    totalItems,
+    totalPages,
+  } = useTablePagination(filteredData, {
+    resetKey: activeTab,
+  });
+
   const countAktif = templates.filter((item) => item.status === "aktif").length;
   const countNonaktif = templates.filter(
     (item) => item.status !== "aktif",
@@ -380,6 +393,17 @@ const TemplateSuratAdmin = () => {
               onRetry={() => void fetchTemplateData()}
               empty={filteredData.length === 0}
               emptyLabel="Tidak ada template surat yang ditemukan."
+              footer={
+                <AdminTablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  label="template surat"
+                />
+              }
             >
               <div className="flex flex-col gap-4 border-b border-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -416,7 +440,7 @@ const TemplateSuratAdmin = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {filteredData.map((item) => (
+                    {pageItems.map((item) => (
                       <tr
                         key={item.id}
                         className="transition-colors hover:bg-surface-container-low/60"
