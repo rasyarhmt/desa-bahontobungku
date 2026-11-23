@@ -10,7 +10,7 @@ import HomeHeader from "@/components/home/HomeHeader";
 import { pelayananApi } from "@/lib/api/pelayanan";
 import type { LogCetakVerifikasi } from "@/lib/api/schemas";
 import { getErrorMessage } from "@/lib/errors";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 export default function Verifikasi() {
   const [searchParams] = useSearchParams();
@@ -62,7 +62,7 @@ export default function Verifikasi() {
       <main className="w-full pt-28">
         <VerificationHero />
 
-        <div className={`${CONTAINER_CLASS} py-12`}>
+        <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
           <div className="space-y-6">
             <VerificationForm
               kode={kode}

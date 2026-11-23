@@ -2,7 +2,7 @@ import { FileSearch, TriangleAlert } from "lucide-react";
 
 import ServiceCard from "@/components/Pelayanan/ServiceCard";
 import type { ServiceItem } from "@/components/Pelayanan/pelayananView";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 interface ServiceCatalogProps {
   items: ServiceItem[];
@@ -27,8 +27,8 @@ export default function ServiceCatalog({
     : items;
 
   return (
-    <section id="katalog-layanan" className={`py-12 ${CONTAINER_CLASS}`}>
-      <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <section id="katalog-layanan" className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+      <div className="mb-10 flex flex-col gap-3 md:mb-12 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
             01 / Katalog Administrasi

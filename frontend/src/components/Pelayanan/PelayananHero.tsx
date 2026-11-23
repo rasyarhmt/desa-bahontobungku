@@ -13,7 +13,7 @@ export default function PelayananHero({
   onQueryChange,
 }: PelayananHeroProps) {
   return (
-    <section className={`pb-16 pt-4 ${CONTAINER_CLASS}`}>
+    <section className={`pt-8 pb-8 md:pt-12 md:pb-12 ${CONTAINER_CLASS}`}>
       <div className="relative overflow-hidden rounded-3xl bg-surface-container-low p-8 shadow-sm lg:p-12">
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 size-72 rounded-full bg-tertiary-fixed/30 blur-3xl" />
@@ -22,7 +22,7 @@ export default function PelayananHero({
           <div className="space-y-6 lg:col-span-7">
             <span className="inline-flex items-center gap-2 rounded-full bg-tertiary-fixed px-3.5 py-1.5 text-xs font-semibold text-on-tertiary-fixed shadow-sm">
               <span className="size-2 animate-pulse rounded-full bg-primary" />
-              Layanan Administrasi Digital 24/7
+              Layanan Administrasi Digital
             </span>
 
             <h1 className="font-display text-3xl font-bold leading-tight tracking-tight text-on-surface lg:text-4xl">

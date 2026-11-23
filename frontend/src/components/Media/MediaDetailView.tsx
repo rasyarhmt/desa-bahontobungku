@@ -82,8 +82,8 @@ export default function MediaDetailView({ item, related }: MediaDetailViewProps)
   };
 
   return (
-    <div className="flex flex-col gap-8 pb-20">
-      <section className={`${CONTAINER_CLASS} pt-6`}>
+    <div className="flex flex-col gap-10 pb-16 md:gap-12 md:pb-24">
+      <section className={`${CONTAINER_CLASS} pt-8 md:pt-12`}>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <nav
             aria-label="Breadcrumb"
@@ -224,7 +224,7 @@ export default function MediaDetailView({ item, related }: MediaDetailViewProps)
 
       {related.length > 0 && (
         <section className={CONTAINER_CLASS}>
-          <div className="mb-6 flex items-end justify-between gap-4">
+          <div className="mb-10 flex items-end justify-between gap-4 md:mb-12">
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                 Arsip Terkait

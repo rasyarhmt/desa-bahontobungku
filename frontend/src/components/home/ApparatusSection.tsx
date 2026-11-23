@@ -1,6 +1,6 @@
 import { CircleUserRound } from "lucide-react";
 
-import { CONTAINER_CLASS, cn } from "@/lib/utils";
+import { CONTAINER_CLASS, cn, SECTION_CLASS } from "@/lib/utils";
 import type { ApparatusItem } from "@/content/home";
 import { SectionHeading } from "./shared";
 
@@ -37,13 +37,13 @@ function ApparatusCard({ item }: { item: ApparatusItem }) {
 
 export default function ApparatusSection({ items }: { items: ApparatusItem[] }) {
   return (
-    <section className={`${CONTAINER_CLASS} py-20`}>
+    <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
       <SectionHeading
         eyebrow="Aparatur Pemerintah Desa"
         icon={CircleUserRound}
         title="Pelayan Masyarakat Bahontobungku"
         description="Kenali jajaran pimpinan dan staf pemerintah desa yang berdedikasi mengawal kemajuan desa kita bersama."
-        className="mx-auto mb-14 max-w-2xl text-center"
+        className="mx-auto mb-10 max-w-2xl text-center md:mb-12"
       />
       {items.length ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

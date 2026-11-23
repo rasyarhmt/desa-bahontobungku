@@ -7,7 +7,7 @@ import MediaDetailView from "@/components/Media/MediaDetailView";
 import { MediaError, MediaLoading } from "@/components/Media/MediaStates";
 import { mediaApi } from "@/lib/api/media";
 import type { Media } from "@/lib/api/schemas";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 export default function MediaDetail() {
   const { id } = useParams();
@@ -67,7 +67,7 @@ export default function MediaDetail() {
         {isLoading ? (
           <MediaLoading />
         ) : error ? (
-          <div className={`${CONTAINER_CLASS} py-16`}>
+          <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
             <MediaError message={error} onRetry={() => setReloadKey((key) => key + 1)} />
           </div>
         ) : item ? (

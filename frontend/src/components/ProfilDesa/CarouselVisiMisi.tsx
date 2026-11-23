@@ -1,11 +1,11 @@
 import { Quote, Sparkles } from "lucide-react";
 
 import { SectionHeading } from "@/components/home/shared";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 export default function VisiMisiDesa() {
   return (
-    <section className="bg-surface py-16 md:py-20">
+    <section className={`bg-surface ${SECTION_CLASS}`}>
       <div className={`${CONTAINER_CLASS}`}>
         <SectionHeading
           eyebrow="Identitas Desa"
@@ -14,7 +14,7 @@ export default function VisiMisiDesa() {
           description="Landasan pembangunan dan arah pembangunan Desa Bahontobungku."
         />
 
-        <div className="relative mt-8 overflow-hidden rounded-3xl border border-surface-container bg-white p-8 shadow-sm md:p-10">
+        <div className="relative mt-10 overflow-hidden rounded-3xl border border-surface-container bg-white p-8 shadow-sm md:mt-12 md:p-10">
           <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#006948_0%,#85f8c4_100%)]" />
 
           <div className="flex items-center gap-3">

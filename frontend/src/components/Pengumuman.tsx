@@ -52,7 +52,7 @@ export default function Pengumuman() {
       : "empty";
 
   return (
-    <section className={`${CONTAINER_CLASS} relative z-20 -mt-6`}>
+    <section className={`${CONTAINER_CLASS} relative z-20`}>
       <div className="flex items-center gap-4 overflow-hidden rounded-2xl bg-inverse-surface p-4 text-inverse-on-surface shadow-xl">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary shadow-md">
           <Megaphone className="size-5" />

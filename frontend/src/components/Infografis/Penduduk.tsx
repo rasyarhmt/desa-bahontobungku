@@ -10,7 +10,7 @@ import {
 } from "@/components/Infografis/infografisView";
 import { pendudukApi, type PendudukStatsAll } from "@/lib/api/penduduk";
 import type { StatsCategory } from "@/lib/api/schemas";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 import { useAsyncData } from "@/hooks";
 
 type StatsItem = StatsCategory[number];
@@ -83,7 +83,7 @@ export default function Penduduk() {
 
   if (isLoading) {
     return (
-      <div className={`py-12 ${CONTAINER_CLASS}`}>
+      <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
@@ -101,7 +101,7 @@ export default function Penduduk() {
 
   if (error) {
     return (
-      <div className={`py-12 ${CONTAINER_CLASS}`}>
+      <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
           <TriangleAlert className="mx-auto size-8 text-destructive" />
           <p className="mt-3 text-sm text-destructive">{error}</p>
@@ -120,7 +120,7 @@ export default function Penduduk() {
   return (
     <section
       id="demografi"
-      className={`scroll-mt-28 space-y-10 py-12 ${CONTAINER_CLASS}`}
+      className={`${SECTION_CLASS} scroll-mt-28 space-y-10 md:space-y-12 ${CONTAINER_CLASS}`}
     >
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">

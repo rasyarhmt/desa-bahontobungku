@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, MousePointerClick } from "lucide-react";
 
-import { CONTAINER_CLASS, cn } from "@/lib/utils";
+import { CONTAINER_CLASS, cn, SECTION_CLASS } from "@/lib/utils";
 import type { SelfServiceItem } from "@/content/home";
 import { SectionHeading } from "./shared";
 
@@ -38,13 +39,13 @@ function ServiceCard({ service }: { service: SelfServiceItem }) {
   );
 }
 
-function ButtonLink({ to }: { to: string }) {
+function ButtonLink({ to, children }: { to: string; children: ReactNode }) {
   return (
     <Link
       to={to}
       className="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-on-primary transition-colors hover:bg-tertiary-container"
     >
-      Ajukan
+      {children}
     </Link>
   );
 }
@@ -57,9 +58,9 @@ export default function SelfServiceSection({
   total: number;
 }) {
   return (
-    <section className="w-full bg-surface-container-low py-20">
+    <section className={`w-full bg-surface-container-low ${SECTION_CLASS}`}>
       <div className={CONTAINER_CLASS}>
-        <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div className="mb-10 flex flex-col justify-between gap-6 md:mb-12 md:flex-row md:items-end">
           <SectionHeading
             eyebrow="Layanan Mandiri Warga"
             icon={MousePointerClick}

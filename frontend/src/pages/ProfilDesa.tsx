@@ -9,7 +9,7 @@ import HomeFooter from "@/components/home/HomeFooter";
 import HomeHeader from "@/components/home/HomeHeader";
 import { SectionHeading } from "@/components/home/shared";
 import { useProfileData } from "@/hooks/useProfileData";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 export default function ProfilDesa() {
   const { data, isLoading, error } = useProfileData();
@@ -28,7 +28,7 @@ export default function ProfilDesa() {
 
         <section
           id="struktur-aparatur"
-          className="scroll-mt-40 border-t border-surface-container bg-surface py-16 md:py-20"
+          className={`scroll-mt-40 border-t border-surface-container bg-surface ${SECTION_CLASS}`}
         >
           <div className={`${CONTAINER_CLASS}`}>
             <SectionHeading
@@ -37,7 +37,7 @@ export default function ProfilDesa() {
               title="Struktur Organisasi & Aparatur"
               description="Kenali perangkat pemerintahan desa yang melayani masyarakat Bahontobungku."
             />
-            <div className="mt-8">
+            <div className="mt-10 md:mt-12">
               <CarouselAparatur />
             </div>
           </div>

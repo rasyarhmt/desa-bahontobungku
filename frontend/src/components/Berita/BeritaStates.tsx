@@ -1,8 +1,10 @@
 import { AlertTriangle, Loader2, Newspaper } from "lucide-react";
 
+import { SECTION_CLASS } from "@/lib/utils";
+
 export function BeritaLoading() {
   return (
-    <div className="flex justify-center py-20">
+    <div className={`flex justify-center ${SECTION_CLASS}`}>
       <Loader2 className="size-10 animate-spin text-primary" />
     </div>
   );
@@ -16,7 +18,7 @@ export function BeritaError({
   onRetry: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center py-20 text-center">
+    <div className={`flex flex-col items-center ${SECTION_CLASS} text-center`}>
       <AlertTriangle className="mb-3 size-10 text-tertiary-container" />
       <p className="text-sm text-on-surface-variant">{message}</p>
       <button

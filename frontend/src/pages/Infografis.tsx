@@ -21,7 +21,7 @@ export default function Infografis() {
       <main className="w-full pt-28">
         <nav
           aria-label="Breadcrumb"
-          className={`flex items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant ${CONTAINER_CLASS}`}
+          className={`flex items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant md:pt-12 ${CONTAINER_CLASS}`}
         >
           <Link to="/" className="flex items-center gap-1.5 hover:text-primary">
             <Home className="size-4" />

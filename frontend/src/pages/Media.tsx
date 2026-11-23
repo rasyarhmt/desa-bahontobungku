@@ -12,7 +12,7 @@ import type { MediaFilterValue } from "@/components/Media/mediaShared";
 import { useAsyncData, useSearchFilter } from "@/hooks";
 import { mediaApi } from "@/lib/api/media";
 import type { Media } from "@/lib/api/schemas";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 
 const PAGE_SIZE = 6;
 
@@ -91,15 +91,15 @@ export default function Media() {
         ) : error ? (
           <MediaError message={error} onRetry={() => void refetch()} />
         ) : !mediaData.length ? (
-          <div className={`${CONTAINER_CLASS} py-16`}>
+          <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
             <MediaEmpty />
           </div>
         ) : (
           <>
             {featured && <MediaSpotlight item={featured} />}
 
-            <section className={`${CONTAINER_CLASS} pb-20`}>
-              <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+              <div className="mb-10 flex flex-col justify-between gap-4 md:mb-12 md:flex-row md:items-end">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                     Arsip Dokumentasi

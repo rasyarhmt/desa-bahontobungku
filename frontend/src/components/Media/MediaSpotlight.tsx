@@ -4,14 +4,14 @@ import { ArrowUpRight, CalendarDays, Sparkles } from "lucide-react";
 import { mediaUtils } from "@/lib/api/media";
 import type { Media } from "@/lib/api/schemas";
 import { formatDateLong } from "@/lib/format";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
 import { mediaDetailPath, mediaTypeLabel } from "./mediaShared";
 
 export default function MediaSpotlight({ item }: { item: Media }) {
   const thumbnail = mediaUtils.getVideoThumbnail(item);
 
   return (
-    <section className={`${CONTAINER_CLASS} py-10`}>
+    <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
       <div className="group relative w-full overflow-hidden rounded-3xl bg-inverse-surface shadow-xl">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity transition-transform duration-700 group-hover:scale-105"

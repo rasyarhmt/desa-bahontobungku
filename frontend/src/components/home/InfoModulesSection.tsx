@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, LayoutGrid } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-import { CONTAINER_CLASS, cn } from "@/lib/utils";
+import { CONTAINER_CLASS, cn, SECTION_CLASS } from "@/lib/utils";
 import { INFO_MODULES, type InfoModule } from "@/content/home";
 import { SectionHeading } from "./shared";
 
@@ -37,12 +37,10 @@ function InfoModuleCard({ module }: { module: InfoModule }) {
 
 export default function InfoModulesSection() {
   return (
-    <section className={CONTAINER_CLASS}>
+    <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
       <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <SectionHeading
-            eyebrow="Modul Informasi Digital"
-            icon={LayoutGrid}
             title="Dapatkan Informasi Terbaru terkait desa"
             description="Desa digital sebagai sarana penunjang kebutuhan informasi dan pelayanan masyarakat secara cepat, transparan, dan terintegrasi dari mana saja."
           >

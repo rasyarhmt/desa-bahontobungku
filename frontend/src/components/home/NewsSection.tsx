@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, CalendarDays, Newspaper } from "lucide-react";
 
-import { CONTAINER_CLASS, cn } from "@/lib/utils";
+import { CONTAINER_CLASS, cn, SECTION_CLASS } from "@/lib/utils";
 import type { NewsItem } from "@/content/home";
 import { SectionHeading } from "./shared";
 
@@ -52,9 +52,9 @@ function NewsCard({ item }: { item: NewsItem }) {
 
 export default function NewsSection({ items }: { items: NewsItem[] }) {
   return (
-    <section className="w-full bg-surface-container-low py-20">
+    <section className={`w-full bg-surface-container-low ${SECTION_CLASS}`}>
       <div className={CONTAINER_CLASS}>
-        <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div className="mb-10 flex flex-col justify-between gap-6 md:mb-12 md:flex-row md:items-end">
           <SectionHeading
             eyebrow="Kabar Desa Terkini"
             icon={Newspaper}

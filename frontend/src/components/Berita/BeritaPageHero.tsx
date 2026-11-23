@@ -26,7 +26,7 @@ export default function BeritaPageHero({
   ];
 
   return (
-    <section className="relative w-full overflow-hidden bg-surface-container-low pb-12 pt-6">
+    <section className="relative w-full overflow-hidden bg-surface-container-low pb-12 pt-8 md:pt-12">
       <div className="pointer-events-none absolute -top-24 -right-20 size-96 rounded-full bg-primary/5 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-20 left-1/3 size-80 rounded-full bg-tertiary-fixed/20 blur-2xl" />
 

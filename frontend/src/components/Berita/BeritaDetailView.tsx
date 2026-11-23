@@ -68,8 +68,8 @@ export default function BeritaDetailView({ item, related }: BeritaDetailViewProp
   };
 
   return (
-    <div className="flex flex-col gap-8 pb-20">
-      <section className={`${CONTAINER_CLASS} pt-6`}>
+    <div className="flex flex-col gap-10 pb-16 md:gap-12 md:pb-24">
+      <section className={`${CONTAINER_CLASS} pt-8 md:pt-12`}>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <nav
             aria-label="Breadcrumb"

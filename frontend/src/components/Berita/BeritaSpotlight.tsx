@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import type { Berita } from "@/lib/api/schemas";
 import { formatDateLong, formatImageUrl } from "@/lib/format";
-import { CONTAINER_CLASS, cn } from "@/lib/utils";
+import { CONTAINER_CLASS, cn, SECTION_CLASS } from "@/lib/utils";
 import { beritaDetailPath, getBeritaExcerpt } from "./beritaView";
 
 export default function BeritaSpotlight({ items }: { items: Berita[] }) {
@@ -19,7 +19,7 @@ export default function BeritaSpotlight({ items }: { items: Berita[] }) {
   const active = items[index % items.length];
 
   return (
-    <section className={`${CONTAINER_CLASS} pt-12`}>
+    <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
       <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
