@@ -66,7 +66,7 @@ export default function VerificationForm({
               onChange={(event) =>
                 onKodeChange(event.target.value.toUpperCase())
               }
-              placeholder="Contoh: BHB-2026-XXXX"
+              placeholder="Contoh: A2B3C4D5E6"
               autoComplete="off"
               className="w-full bg-transparent font-mono text-sm font-semibold tracking-wider text-on-surface outline-none placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-outline"
             />
@@ -87,8 +87,9 @@ export default function VerificationForm({
         </div>
 
         <p className="mt-2.5 text-xs text-on-surface-variant">
-          Kode unik tercetak di bagian bawah surat atau di samping QR Code
-          dokumen resmi.
+          Pindai QR pada surat untuk mengisi otomatis. Jika manual, kode unik
+          dapat dilihat pada nama berkas PDF hasil unduhan, misalnya
+          surat-A2B3C4D5E6.pdf.
         </p>
       </form>
 

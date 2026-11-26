@@ -10,21 +10,21 @@ import { Link } from "react-router-dom";
 const STEPS: { icon: LucideIcon; title: string; description: string }[] = [
   {
     icon: QrCode,
-    title: "Temukan kode pada surat",
+    title: "Pindai QR pada surat",
     description:
-      "Kode unik dan QR tercetak pada surat yang diterbitkan melalui layanan desa.",
+      "QR di dalam surat berisi tautan verifikasi dengan kode unik surat. Memindainya akan membuka halaman ini dengan kode terisi otomatis.",
   },
   {
     icon: Search,
-    title: "Masukkan kode verifikasi",
+    title: "Atau ambil kode dari berkas",
     description:
-      "Ketik kode unik pada formulir atau gunakan tautan yang terdapat pada QR.",
+      "Jika QR tidak dapat dipindai, lihat nama PDF hasil unduhan berformat surat-KODE.pdf lalu ketik bagian KODE pada formulir.",
   },
   {
     icon: BadgeCheck,
     title: "Periksa hasilnya",
     description:
-      "Sistem menampilkan status dokumen, pemohon, nomor surat, dan waktu cetaknya.",
+      "Sistem mencocokkan kode dengan catatan cetak desa, lalu menampilkan status surat, nama pemohon yang disamarkan, nomor surat jika tersedia, dan waktu cetaknya.",
   },
 ];
 
@@ -40,8 +40,8 @@ export default function VerificationGuide() {
             Bagaimana cara verifikasi?
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface-variant">
-            Verifikasi dilakukan dengan mencocokkan kode unik surat terhadap
-            data cetak yang tersimpan di sistem desa.
+            Kode unik tidak dicetak di dalam surat; kode tersebut tersimpan pada
+            QR dan pada nama berkas PDF hasil generate surat.
           </p>
         </div>
 

@@ -36,8 +36,9 @@ export default function VerificationHero() {
               Verifikasi Keaslian Surat Desa
             </h1>
             <p className="text-sm leading-relaxed text-on-surface-variant md:text-base">
-              Pastikan keaslian surat Pemerintah Desa Bahontobungku melalui kode
-              unik atau QR yang tercetak pada dokumen.
+              Pindai QR yang tercetak pada surat atau masukkan kode unik dari
+              nama berkas PDF hasil unduhan untuk mengecek datanya di sistem
+              desa.
             </p>
           </div>
 
@@ -51,7 +52,7 @@ export default function VerificationHero() {
             <div className="flex flex-col items-center gap-2 px-5 py-3 text-center">
               <QrCode className="size-6 text-primary" />
               <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
-                Kode unik / QR surat
+                QR surat / kode berkas
               </span>
             </div>
           </div>
