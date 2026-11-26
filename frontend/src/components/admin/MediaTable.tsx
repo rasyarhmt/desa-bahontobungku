@@ -1,11 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  FaEdit,
-  FaEye,
-  FaPlus,
-  FaSpinner,
-  FaTrash,
-} from "react-icons/fa";
+import { FaEdit, FaEye, FaSpinner, FaTrash } from "react-icons/fa";
 
 import { adminMediaUtils } from "@/lib/api/admin";
 import { formatDateShort } from "@/lib/format";
@@ -22,7 +16,6 @@ interface MediaTableProps {
   isLoading: boolean;
   error: string | null;
   onRetry: () => void;
-  onAdd: () => void;
   onPreview: (id: number) => void;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
@@ -110,7 +103,6 @@ export default function MediaTable({
   isLoading,
   error,
   onRetry,
-  onAdd,
   onPreview,
   onEdit,
   onDelete,
@@ -129,14 +121,6 @@ export default function MediaTable({
             Kelola berkas yang tersedia di website desa.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onAdd}
-          className="inline-flex w-fit items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary/90"
-        >
-          <FaPlus />
-          Tambah Media
-        </button>
       </div>
 
       {isLoading ? (

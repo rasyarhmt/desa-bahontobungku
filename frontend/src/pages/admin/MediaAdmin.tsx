@@ -7,7 +7,6 @@ import {
   FaFileAlt,
   FaImage,
   FaList,
-  FaPlus,
   FaSearch,
   FaSpinner,
   FaSyncAlt,
@@ -22,6 +21,10 @@ import MediaPreviewModal from "@/components/admin/MediaPreviewModal";
 import MediaTable from "@/components/admin/MediaTable";
 import type { MediaViewMode } from "@/components/admin/MediaTable";
 import ModalPortal from "@/components/admin/ModalPortal";
+import {
+  AdminPageHeader,
+  adminSecondaryButtonClass,
+} from "@/components/admin/admin-ui";
 import type { MediaFormState, MediaItem } from "@/components/admin/mediaShared";
 import {
   useAsyncData,
@@ -313,37 +316,23 @@ const MediaAdmin = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            Manajemen Konten
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-on-surface sm:text-3xl">
-            Pusat Data Multimoda
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manajemen media &amp; berkas digital desa.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+      <AdminPageHeader
+        eyebrow="Manajemen Konten"
+        title="Pusat Data Multimoda"
+        description="Manajemen media & berkas digital desa."
+        actions={
           <button
             type="button"
             onClick={() => void fetchMediaData()}
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-container-lowest px-4 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+            className={adminSecondaryButtonClass}
           >
             <FaSyncAlt />
             Muat Ulang
           </button>
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary/90"
-          >
-            <FaPlus />
-            Tambah Media
-          </button>
-        </div>
-      </div>
+        }
+        onAdd={handleAdd}
+        addLabel="Tambah Media"
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => (
@@ -502,7 +491,6 @@ const MediaAdmin = () => {
         isLoading={isLoading}
         error={error}
         onRetry={() => void fetchMediaData()}
-        onAdd={handleAdd}
         onPreview={handlePreview}
         onEdit={handleEdit}
         onDelete={handleDelete}

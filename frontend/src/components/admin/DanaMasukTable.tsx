@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
-import { FaEdit, FaMoneyBillWave, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaMoneyBillWave, FaTrash } from "react-icons/fa";
 
 import {
   AdminSectionHeader,
   AdminTableShell,
-  adminPrimaryButtonClass,
 } from "@/components/admin/admin-ui";
 import { formatCurrency, getMonthName } from "@/lib/format";
 
@@ -14,7 +13,6 @@ interface DanaMasukTableProps {
   items: DanaMasukDisplay[];
   totalPendapatan: number;
   selectedYear: string;
-  onAdd: () => void;
   onEdit: (item: DanaMasukDisplay) => void;
   onDelete: (id: number) => void;
   footer?: ReactNode;
@@ -27,7 +25,6 @@ export default function DanaMasukTable({
   items,
   totalPendapatan,
   selectedYear,
-  onAdd,
   onEdit,
   onDelete,
   footer,
@@ -55,11 +52,6 @@ export default function DanaMasukTable({
           icon={<FaMoneyBillWave />}
           title="Data Pendapatan"
           description={`Rekap dana masuk tahun ${selectedYear}`}
-          action={
-            <button type="button" onClick={onAdd} className={adminPrimaryButtonClass}>
-              <FaPlus /> Tambah Pendapatan
-            </button>
-          }
         />
 
         <div className="overflow-x-auto">

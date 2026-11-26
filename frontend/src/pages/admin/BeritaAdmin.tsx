@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaCheck, FaClock, FaNewspaper, FaPlus } from "react-icons/fa";
+import { FaCheck, FaClock, FaNewspaper } from "react-icons/fa";
 
 import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -13,7 +13,6 @@ import {
   AdminMetricCard,
   AdminPageHeader,
   AdminToolbar,
-  adminPrimaryButtonClass,
 } from "@/components/admin/admin-ui";
 import type { BeritaForm } from "@/components/admin/beritaShared";
 import { useAsyncData, useCrudResource, useDisclosure, useSearchFilter, useTablePagination } from "@/hooks";
@@ -222,16 +221,8 @@ const BeritaAdmin = () => {
               eyebrow="Manajemen Konten"
               title="Manajemen Berita"
               description="Kelola berita dan artikel website desa."
-              actions={
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  className={adminPrimaryButtonClass}
-                >
-                  <FaPlus />
-                  Tambah Berita
-                </button>
-              }
+              onAdd={handleAdd}
+              addLabel="Tambah Berita"
             />
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -284,7 +275,6 @@ const BeritaAdmin = () => {
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               onRetry={() => void fetchBeritaData()}
-              onAdd={handleAdd}
               onPreview={handlePreview}
               onEdit={handleEdit}
               onDelete={handleDelete}

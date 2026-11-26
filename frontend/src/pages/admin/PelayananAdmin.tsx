@@ -7,7 +7,6 @@ import {
   FaEye,
   FaFileSignature,
   FaLink,
-  FaPlus,
   FaSyncAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -328,6 +327,8 @@ const PelayananAdmin = () => {
                   Muat Ulang
                 </button>
               }
+              onAdd={handleAdd}
+              addLabel="Tambah Layanan"
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -397,14 +398,6 @@ const PelayananAdmin = () => {
                     Kelola layanan administrasi desa yang tersedia untuk warga
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  className={adminPrimaryButtonClass}
-                >
-                  <FaPlus />
-                  Tambah Layanan
-                </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">

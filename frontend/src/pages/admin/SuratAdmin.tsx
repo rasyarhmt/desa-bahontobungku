@@ -256,6 +256,8 @@ function SuratAdmin() {
                   Muat Ulang
                 </button>
               }
+              onAdd={handleAdd}
+              addLabel="Tambah Surat"
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -301,7 +303,6 @@ function SuratAdmin() {
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               onRetry={() => void refetchCurrentTab()}
-              onAdd={handleAdd}
               onPreview={handlePreview}
               onEdit={handleEdit}
               onDelete={handleDelete}

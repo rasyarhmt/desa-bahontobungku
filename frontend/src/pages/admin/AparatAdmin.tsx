@@ -344,6 +344,8 @@ const AparatAdmin = () => {
               eyebrow="Manajemen Aparat"
               title="Manajemen Aparat Desa"
               description="Kelola data aparat dan pejabat desa."
+              onAdd={handleAdd}
+              addLabel="Tambah Aparat"
             />
 
             <div className="grid gap-4 sm:grid-cols-3">
@@ -377,14 +379,6 @@ const AparatAdmin = () => {
                   placeholder="Cari aparat..."
                   className="lg:w-80"
                 />
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  className={adminPrimaryButtonClass}
-                >
-                  <FaPlus />
-                  Tambah Aparat
-                </button>
               </div>
             </AdminToolbar>
 

@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 import {
   AdminSearchInput,
   AdminStatusBadge,
   AdminTableShell,
   AdminToolbar,
-  adminPrimaryButtonClass,
 } from "@/components/admin/admin-ui";
 import { type SuratItem } from "@/lib/api/admin";
 import { formatDateShort } from "@/lib/format";
@@ -18,7 +17,6 @@ interface SuratTableProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   onRetry: () => void;
-  onAdd: () => void;
   onPreview: (id: number) => void;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
@@ -38,7 +36,6 @@ export default function SuratTable({
   searchQuery,
   onSearchChange,
   onRetry,
-  onAdd,
   onPreview,
   onEdit,
   onDelete,
@@ -56,22 +53,12 @@ export default function SuratTable({
               Kelola arsip surat masuk dan keluar di sistem
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <AdminSearchInput
-              value={searchQuery}
-              onChange={onSearchChange}
-              placeholder="Cari nomor, perihal, atau pengirim..."
-              className="sm:w-72"
-            />
-            <button
-              type="button"
-              onClick={onAdd}
-              className={adminPrimaryButtonClass}
-            >
-              <FaPlus />
-              Tambah Surat
-            </button>
-          </div>
+          <AdminSearchInput
+            value={searchQuery}
+            onChange={onSearchChange}
+            placeholder="Cari nomor, perihal, atau pengirim..."
+            className="sm:w-72"
+          />
         </div>
       </AdminToolbar>
 

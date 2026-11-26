@@ -4,7 +4,13 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import { FaArrowLeft, FaExclamationTriangle, FaSearch, FaSpinner } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaExclamationTriangle,
+  FaPlus,
+  FaSearch,
+  FaSpinner,
+} from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 
@@ -57,11 +63,15 @@ export function AdminPageHeader({
   title,
   description,
   actions,
+  onAdd,
+  addLabel = "Tambah",
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   actions?: ReactNode;
+  onAdd?: () => void;
+  addLabel?: string;
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -78,7 +88,21 @@ export function AdminPageHeader({
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      {(actions || onAdd) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {actions}
+          {onAdd && (
+            <button
+              type="button"
+              onClick={onAdd}
+              className={adminPrimaryButtonClass}
+            >
+              <FaPlus />
+              {addLabel}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

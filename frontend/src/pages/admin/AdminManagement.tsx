@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
 
 import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -194,17 +193,8 @@ export default function AdminManagement() {
         eyebrow="Pengaturan Backoffice"
         title="Manajemen Admin"
         description="Kelola akun administrator dan hak aksesnya."
-        actions={
-          !formState ? (
-            <button
-              type="button"
-              onClick={openAdd}
-              className={adminPrimaryButtonClass}
-            >
-              <FaPlus /> Tambah Admin
-            </button>
-          ) : undefined
-        }
+        onAdd={!formState ? openAdd : undefined}
+        addLabel="Tambah Admin"
       />
 
       {formState ? (

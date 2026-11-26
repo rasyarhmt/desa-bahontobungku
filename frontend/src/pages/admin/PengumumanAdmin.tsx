@@ -5,7 +5,6 @@ import {
   FaClock,
   FaEdit,
   FaEye,
-  FaPlus,
   FaTrash,
 } from "react-icons/fa";
 
@@ -32,7 +31,11 @@ import {
 } from "@/components/admin/admin-ui";
 import { adminPengumumanApi } from "@/lib/api/admin";
 import { getAuthState } from "@/lib/auth";
-import { formatDateLong, formatDateShort, toDateInputValue } from "@/lib/format";
+import {
+  formatDateLong,
+  formatDateShort,
+  toDateInputValue,
+} from "@/lib/format";
 import {
   useAsyncData,
   useCrudResource,
@@ -172,7 +175,9 @@ const PengumumanAdmin = () => {
         ? "Semua data wajib diisi!"
         : null,
     guard: () =>
-      token ? null : "Anda harus login sebagai admin untuk mengelola pengumuman",
+      token
+        ? null
+        : "Anda harus login sebagai admin untuk mengelola pengumuman",
     create: (form) => adminPengumumanApi.addPengumuman(form),
     update: (form, item) => adminPengumumanApi.updatePengumuman(item.id, form),
     remove: (item) => adminPengumumanApi.deletePengumuman(item.id),
@@ -244,7 +249,9 @@ const PengumumanAdmin = () => {
             </button>
             <button
               type="button"
-              onClick={isEdit ? () => void saveEditedItem() : () => void saveNewItem()}
+              onClick={
+                isEdit ? () => void saveEditedItem() : () => void saveNewItem()
+              }
               className={adminPrimaryButtonClass}
             >
               {isEdit ? "Simpan Perubahan" : "Simpan"}
@@ -355,9 +362,7 @@ const PengumumanAdmin = () => {
               <AdminDetailItem label="Status">
                 <AdminStatusBadge
                   label={previewItem.status}
-                  tone={
-                    previewItem.status === "Aktif" ? "success" : "neutral"
-                  }
+                  tone={previewItem.status === "Aktif" ? "success" : "neutral"}
                 />
               </AdminDetailItem>
             </AdminDetailGrid>
@@ -377,6 +382,8 @@ const PengumumanAdmin = () => {
               eyebrow="Manajemen Konten"
               title="Manajemen Pengumuman"
               description="Kelola pengumuman dan informasi penting desa."
+              onAdd={handleAdd}
+              addLabel="Tambah Pengumuman"
             />
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -421,22 +428,12 @@ const PengumumanAdmin = () => {
                   value={activeTab}
                   onChange={setActiveTab}
                 />
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <AdminSearchInput
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder="Cari pengumuman..."
-                    className="sm:w-72"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAdd}
-                    className={adminPrimaryButtonClass}
-                  >
-                    <FaPlus />
-                    Tambah Pengumuman
-                  </button>
-                </div>
+                <AdminSearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Cari pengumuman..."
+                  className="sm:w-72"
+                />
               </div>
             </AdminToolbar>
 

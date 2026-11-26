@@ -3,7 +3,6 @@ import {
   FaBan,
   FaCheck,
   FaEdit,
-  FaPlus,
   FaTrash,
   FaUsers,
 } from "react-icons/fa";
@@ -267,11 +266,8 @@ const StatusKeluargaAdmin = () => {
             eyebrow="Data Master"
             title="Manajemen Status Keluarga"
             description="Kelola pilihan status yang tersedia di form penduduk."
-            actions={
-              <button type="button" onClick={openAdd} className={adminPrimaryButtonClass}>
-                <FaPlus /> Tambah Status
-              </button>
-            }
+            onAdd={openAdd}
+            addLabel="Tambah Status"
           />
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">

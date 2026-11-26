@@ -4,7 +4,6 @@ import {
   FaEdit,
   FaEye,
   FaImage,
-  FaPlus,
   FaTimesCircle,
   FaTrash,
 } from "react-icons/fa";
@@ -15,7 +14,6 @@ import {
   AdminStatusBadge,
   AdminTableShell,
   AdminToolbar,
-  adminPrimaryButtonClass,
 } from "@/components/admin/admin-ui";
 import { formatDateLong, formatImageUrl } from "@/lib/format";
 
@@ -28,7 +26,6 @@ interface BeritaTableProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   onRetry: () => void;
-  onAdd: () => void;
   onPreview: (id: number) => void;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
@@ -43,7 +40,6 @@ export default function BeritaTable({
   searchQuery,
   onSearchChange,
   onRetry,
-  onAdd,
   onPreview,
   onEdit,
   onDelete,
@@ -65,14 +61,6 @@ export default function BeritaTable({
               placeholder="Cari berita..."
               className="sm:w-72"
             />
-            <button
-              type="button"
-              onClick={onAdd}
-              className={adminPrimaryButtonClass}
-            >
-              <FaPlus />
-              Tambah Berita
-            </button>
           </div>
         </div>
       </AdminToolbar>
@@ -129,9 +117,7 @@ export default function BeritaTable({
                     <div className="flex items-center gap-2">
                       <AdminStatusBadge
                         label={berita.status || "Dipublikasi"}
-                        tone={
-                          berita.status === "Draft" ? "warning" : "success"
-                        }
+                        tone={berita.status === "Draft" ? "warning" : "success"}
                       />
                       <button
                         type="button"

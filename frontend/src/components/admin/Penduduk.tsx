@@ -10,7 +10,6 @@ import {
   FaPray,
   FaSpinner,
   FaTrash,
-  FaUserPlus,
   FaUserTie,
   FaUsers,
   FaVenus,
@@ -779,15 +778,10 @@ export default function Penduduk() {
                   )}
                   {isExporting ? "Mengekspor..." : "Ekspor Excel"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => openForm()}
-                  className={adminPrimaryButtonClass}
-                >
-                  <FaUserPlus /> Tambah Penduduk
-                </button>
               </>
             }
+            onAdd={() => openForm()}
+            addLabel="Tambah Penduduk"
           />
           {showForm ? (
             <PopupForm

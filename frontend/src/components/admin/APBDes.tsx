@@ -292,6 +292,10 @@ export default function APBDes() {
             </AdminSelect>
           </div>
         }
+        onAdd={() => openForm(activeTab === "expense" ? "keluar" : "masuk")}
+        addLabel={
+          activeTab === "expense" ? "Tambah Pengeluaran" : "Tambah Pendapatan"
+        }
       />
 
       <AdminToolbar>
@@ -360,7 +364,6 @@ export default function APBDes() {
               items={masukPageItems}
               totalPendapatan={totalPendapatan}
               selectedYear={selectedYear}
-              onAdd={() => openForm("masuk")}
               onEdit={handleEditDanaMasuk}
               onDelete={(id) => setDeleteTarget({ id, type: "masuk" })}
               footer={
@@ -382,7 +385,6 @@ export default function APBDes() {
               items={keluarPageItems}
               totalPengeluaran={totalPengeluaran}
               selectedYear={selectedYear}
-              onAdd={() => openForm("keluar")}
               onEdit={handleEditDanaKeluar}
               onDelete={(id) => setDeleteTarget({ id, type: "keluar" })}
               footer={

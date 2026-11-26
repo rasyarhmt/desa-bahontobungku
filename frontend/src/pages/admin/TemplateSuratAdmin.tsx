@@ -7,7 +7,6 @@ import {
   FaEye,
   FaFileAlt,
   FaListUl,
-  FaPlus,
   FaSyncAlt,
   FaTrash,
   FaUpload,
@@ -341,6 +340,8 @@ const TemplateSuratAdmin = () => {
                   Muat Ulang
                 </button>
               }
+              onAdd={handleAdd}
+              addLabel="Tambah Template"
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -415,14 +416,6 @@ const TemplateSuratAdmin = () => {
                     surat yang dicetak warga
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  className={adminPrimaryButtonClass}
-                >
-                  <FaPlus />
-                  Tambah Template
-                </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">

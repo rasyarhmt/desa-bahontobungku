@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import { FaEdit, FaMoneyCheckAlt, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaMoneyCheckAlt, FaTrash } from "react-icons/fa";
 
 import {
   AdminSectionHeader,
   AdminStatusBadge,
   AdminTableShell,
-  adminPrimaryButtonClass,
 } from "@/components/admin/admin-ui";
 import { formatCurrency, getMonthName } from "@/lib/format";
 
@@ -15,7 +14,6 @@ interface DanaKeluarTableProps {
   items: DanaKeluarDisplay[];
   totalPengeluaran: number;
   selectedYear: string;
-  onAdd: () => void;
   onEdit: (item: DanaKeluarDisplay) => void;
   onDelete: (id: number) => void;
   footer?: ReactNode;
@@ -28,7 +26,6 @@ export default function DanaKeluarTable({
   items,
   totalPengeluaran,
   selectedYear,
-  onAdd,
   onEdit,
   onDelete,
   footer,
@@ -56,11 +53,6 @@ export default function DanaKeluarTable({
           icon={<FaMoneyCheckAlt />}
           title="Data Pengeluaran"
           description={`Rekap dana keluar tahun ${selectedYear}`}
-          action={
-            <button type="button" onClick={onAdd} className={adminPrimaryButtonClass}>
-              <FaPlus /> Tambah Pengeluaran
-            </button>
-          }
         />
 
         <div className="overflow-x-auto">
