@@ -1,6 +1,6 @@
 import { BadgeCheck, ClipboardList, FileText, QrCode } from "lucide-react";
 
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 const STEPS = [
   {
@@ -31,7 +31,7 @@ const STEPS = [
 
 export default function ApplicationSteps() {
   return (
-    <section className={`my-8 w-full bg-surface-container-low ${SECTION_CLASS}`}>
+    <section className={`w-full bg-surface-container-low ${INNER_SECTION_CLASS}`}>
       <div className={CONTAINER_CLASS}>
         <div className="mx-auto mb-10 max-w-2xl space-y-2 text-center md:mb-12">
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">

@@ -20,7 +20,11 @@ import { pelayananApi } from "@/lib/api/pelayanan";
 import { resolveFileUrl } from "@/lib/api/config";
 import { getErrorMessage } from "@/lib/errors";
 import { useAsyncData } from "@/hooks";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import {
+  CONTAINER_CLASS,
+  INNER_BREADCRUMB_CLASS,
+  INNER_SECTION_CLASS,
+} from "@/lib/utils";
 import type {
   AjukanSuratRequest,
   AjukanSuratResponse,
@@ -183,7 +187,7 @@ export default function PelayananSuratUmum() {
       <main className="w-full pt-28">
         <nav
           aria-label="Breadcrumb"
-          className={`flex flex-wrap items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant md:pt-12 ${CONTAINER_CLASS}`}
+          className={`flex flex-wrap items-center gap-2 text-xs font-semibold text-on-surface-variant ${INNER_BREADCRUMB_CLASS} ${CONTAINER_CLASS}`}
         >
           <Link to="/" className="flex items-center gap-1.5 hover:text-primary">
             <Home className="size-4" />
@@ -197,7 +201,7 @@ export default function PelayananSuratUmum() {
           <span className="text-primary">Ajukan Surat</span>
         </nav>
 
-        <section className={`pt-8 pb-8 md:pt-12 md:pb-12 ${CONTAINER_CLASS}`}>
+        <section className={CONTAINER_CLASS}>
           <div className="relative overflow-hidden rounded-3xl bg-surface-container-low p-8 lg:p-12">
             <div className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative space-y-4">
@@ -224,7 +228,7 @@ export default function PelayananSuratUmum() {
           </div>
         </section>
 
-        <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+        <section className={`${INNER_SECTION_CLASS} ${CONTAINER_CLASS}`}>
           {pageLoading ? (
             <div className="flex justify-center rounded-2xl bg-white p-12 shadow-sm">
               <Loader2 className="size-8 animate-spin text-primary" />

@@ -1,11 +1,11 @@
 import { Quote, Sparkles } from "lucide-react";
 
 import { SectionHeading } from "@/components/home/shared";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 export default function VisiMisiDesa() {
   return (
-    <section className={`bg-surface ${SECTION_CLASS}`}>
+    <section className={`bg-surface ${INNER_SECTION_CLASS}`}>
       <div className={`${CONTAINER_CLASS}`}>
         <SectionHeading
           eyebrow="Identitas Desa"

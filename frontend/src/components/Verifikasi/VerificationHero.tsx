@@ -1,18 +1,18 @@
 import { ChevronRight, Home, QrCode, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_BREADCRUMB_CLASS } from "@/lib/utils";
 
 export default function VerificationHero() {
   return (
-    <section className="relative w-full overflow-hidden bg-surface-container-low pb-12 pt-8 md:pt-12">
+    <section className="relative w-full overflow-hidden bg-surface-container-low pt-8 md:pt-12">
       <div className="pointer-events-none absolute -top-24 -right-20 size-96 rounded-full bg-primary/5 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-20 left-1/3 size-80 rounded-full bg-tertiary-fixed/20 blur-2xl" />
 
       <div className={`relative z-10 ${CONTAINER_CLASS}`}>
         <nav
           aria-label="Breadcrumb"
-          className="mb-6 flex items-center gap-2 text-xs font-semibold text-on-surface-variant"
+          className={`flex items-center gap-2 text-xs font-semibold text-on-surface-variant ${INNER_BREADCRUMB_CLASS}`}
         >
           <Link to="/" className="inline-flex items-center gap-1 hover:text-primary">
             <Home className="size-4" />

@@ -12,7 +12,7 @@ import {
 import Bg from "@/assets/Background.jpg";
 import { SectionHeading } from "@/components/home/shared";
 import type { PendudukSummary } from "@/lib/api/penduduk";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 interface GeographySectionProps {
   summary: PendudukSummary;
@@ -95,7 +95,7 @@ export default function GeographySection({
   return (
     <section
       id="geografis"
-      className={`scroll-mt-40 bg-surface-container-low/60 ${SECTION_CLASS}`}
+      className={`scroll-mt-40 bg-surface-container-low/60 ${INNER_SECTION_CLASS}`}
     >
       <div className={`space-y-10 md:space-y-12 ${CONTAINER_CLASS}`}>
         <SectionHeading

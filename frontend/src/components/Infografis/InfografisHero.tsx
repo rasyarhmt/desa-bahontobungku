@@ -27,7 +27,7 @@ export default function InfografisHero({
   };
 
   return (
-    <section className={`pt-8 pb-12 md:pt-12 md:pb-16 ${CONTAINER_CLASS}`}>
+    <section className={CONTAINER_CLASS}>
       <div className="relative overflow-hidden rounded-3xl bg-surface-container-low p-8 shadow-sm lg:p-12">
         <div className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 size-72 rounded-full bg-tertiary-fixed/20 blur-3xl" />

@@ -9,7 +9,7 @@ import HomeHeader from "@/components/home/HomeHeader";
 import { useAsyncData } from "@/hooks";
 import { beritaApi } from "@/lib/api/berita";
 import type { Berita } from "@/lib/api/schemas";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 interface BeritaDetailPayload {
   item: Berita | null;
@@ -57,7 +57,7 @@ export default function BeritaDetail() {
         ) : data.item ? (
           <BeritaDetailView item={data.item} related={data.related} />
         ) : (
-          <div className={`mx-auto ${SECTION_CLASS} ${CONTAINER_CLASS} max-w-3xl`}>
+          <div className={`mx-auto ${INNER_SECTION_CLASS} ${CONTAINER_CLASS} max-w-3xl`}>
             <div className="rounded-3xl bg-surface-container-lowest p-12 text-center shadow-sm">
               <Newspaper className="mx-auto mb-4 size-12 text-outline-variant" />
               <p className="text-sm font-semibold text-on-surface">

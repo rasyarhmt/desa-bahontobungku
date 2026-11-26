@@ -9,7 +9,7 @@ import HomeFooter from "@/components/home/HomeFooter";
 import HomeHeader from "@/components/home/HomeHeader";
 import { SectionHeading } from "@/components/home/shared";
 import { useProfileData } from "@/hooks/useProfileData";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 export default function ProfilDesa() {
   const { data, isLoading, error } = useProfileData();
@@ -28,7 +28,7 @@ export default function ProfilDesa() {
 
         <section
           id="struktur-aparatur"
-          className={`scroll-mt-40 border-t border-surface-container bg-surface ${SECTION_CLASS}`}
+          className={`scroll-mt-40 border-t border-surface-container bg-surface ${INNER_SECTION_CLASS}`}
         >
           <div className={`${CONTAINER_CLASS}`}>
             <SectionHeading

@@ -21,7 +21,7 @@ import type {
 } from "@/lib/api/schemas";
 import { getErrorMessage } from "@/lib/errors";
 import { formatCurrency, getMonthName } from "@/lib/format";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 interface GroupItem {
   label: string;
@@ -220,7 +220,7 @@ export default function APBDes() {
   return (
     <section
       id="apbdes"
-      className={`w-full scroll-mt-28 bg-surface-container-low ${SECTION_CLASS}`}
+      className={`w-full scroll-mt-28 bg-surface-container-low ${INNER_SECTION_CLASS}`}
     >
       <div className={`space-y-10 md:space-y-12 ${CONTAINER_CLASS}`}>
         <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">

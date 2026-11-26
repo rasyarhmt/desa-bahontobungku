@@ -18,7 +18,7 @@ import Pagination from "@/components/Pagination";
 import { useAsyncData } from "@/hooks";
 import { beritaApi } from "@/lib/api/berita";
 import type { Berita } from "@/lib/api/schemas";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 export default function Information() {
   const [query, setQuery] = useState("");
@@ -86,14 +86,14 @@ export default function Information() {
         ) : error ? (
           <BeritaError message={error} onRetry={() => void refetch()} />
         ) : !data.length ? (
-          <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+          <div className={`${INNER_SECTION_CLASS} ${CONTAINER_CLASS}`}>
             <BeritaEmpty />
           </div>
         ) : (
           <>
             {!query && <BeritaSpotlight items={featured} />}
 
-            <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+            <section className={`${INNER_SECTION_CLASS} ${CONTAINER_CLASS}`}>
               <div className="mb-10 flex flex-col justify-between gap-4 md:mb-12 md:flex-row md:items-end">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-primary">

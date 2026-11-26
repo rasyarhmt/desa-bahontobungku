@@ -12,7 +12,7 @@ import Pagination from "@/components/Pagination";
 import { useAsyncData, useSearchFilter } from "@/hooks";
 import { mediaApi } from "@/lib/api/media";
 import type { Media } from "@/lib/api/schemas";
-import { CONTAINER_CLASS, SECTION_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_SECTION_CLASS } from "@/lib/utils";
 
 const PAGE_SIZE = 9;
 
@@ -103,14 +103,14 @@ export default function Media() {
         ) : error ? (
           <MediaError message={error} onRetry={() => void refetch()} />
         ) : !mediaData.length ? (
-          <div className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+          <div className={`${INNER_SECTION_CLASS} ${CONTAINER_CLASS}`}>
             <MediaEmpty />
           </div>
         ) : (
           <>
             {featured && <MediaSpotlight item={featured} />}
 
-            <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+            <section className={`${INNER_SECTION_CLASS} ${CONTAINER_CLASS}`}>
               <div className="mb-10 flex flex-col justify-between gap-4 md:mb-12 md:flex-row md:items-end">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-primary">

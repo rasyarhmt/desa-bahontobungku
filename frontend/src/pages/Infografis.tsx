@@ -9,7 +9,7 @@ import InfografisHero, {
 import Penduduk from "@/components/Infografis/Penduduk";
 import HomeFooter from "@/components/home/HomeFooter";
 import HomeHeader from "@/components/home/HomeHeader";
-import { CONTAINER_CLASS } from "@/lib/utils";
+import { CONTAINER_CLASS, INNER_BREADCRUMB_CLASS } from "@/lib/utils";
 
 export default function Infografis() {
   const [activeTab, setActiveTab] = useState<InfografisTab>("demografi");
@@ -21,7 +21,7 @@ export default function Infografis() {
       <main className="w-full pt-28">
         <nav
           aria-label="Breadcrumb"
-          className={`flex items-center gap-2 pb-4 pt-8 text-xs font-semibold text-on-surface-variant md:pt-12 ${CONTAINER_CLASS}`}
+          className={`flex items-center gap-2 text-xs font-semibold text-on-surface-variant ${INNER_BREADCRUMB_CLASS} ${CONTAINER_CLASS}`}
         >
           <Link to="/" className="flex items-center gap-1.5 hover:text-primary">
             <Home className="size-4" />

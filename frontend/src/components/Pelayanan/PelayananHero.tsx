@@ -13,7 +13,7 @@ export default function PelayananHero({
   onQueryChange,
 }: PelayananHeroProps) {
   return (
-    <section className={`pt-8 pb-8 md:pt-12 md:pb-12 ${CONTAINER_CLASS}`}>
+    <section className={CONTAINER_CLASS}>
       <div className="relative overflow-hidden rounded-3xl bg-surface-container-low p-8 shadow-sm lg:p-12">
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 size-72 rounded-full bg-tertiary-fixed/30 blur-3xl" />

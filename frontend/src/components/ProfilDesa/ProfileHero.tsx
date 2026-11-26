@@ -5,7 +5,7 @@ import { CONTAINER_CLASS } from "@/lib/utils";
 
 export default function ProfileHero() {
   return (
-    <section className={`relative overflow-hidden bg-[linear-gradient(120deg,#0b1c30_0%,#0d3a35_55%,#006948_100%)] py-12 text-white md:py-16 ${CONTAINER_CLASS}`}>
+    <section className={`relative overflow-hidden bg-[linear-gradient(120deg,#0b1c30_0%,#0d3a35_55%,#006948_100%)] py-8 text-white md:py-10 ${CONTAINER_CLASS}`}>
       <div className="pointer-events-none absolute -top-24 -right-20 size-80 rounded-full border border-white/10" />
       <div className="pointer-events-none absolute -bottom-32 right-1/4 size-72 rounded-full bg-primary-fixed/10 blur-2xl" />
 
