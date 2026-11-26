@@ -2,17 +2,116 @@ package utils
 
 import (
 	"bytes"
+	"encoding/xml"
 	"fmt"
+	"html"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/nguyenthenguyen/docx"
 )
 
-// docxPlaceholderPattern mencocokkan {{ key }} pada dokumen DOCX.
-var docxPlaceholderPattern = regexp.MustCompile(`\{\{\s*([^}]+?)\s*\}\}`)
+var (
+	docxPlaceholderPattern = regexp.MustCompile(`\{\{\s*([^}]+?)\s*\}\}`)
+	docxTextNodePattern    = regexp.MustCompile(`<w:t(?:\s[^>]*)?>([^<]*)</w:t>`)
+	docxEntityPattern      = regexp.MustCompile(`&(?:#x[0-9a-fA-F]+|#[0-9]+|[a-zA-Z]+);`)
+)
+
+type docxFlatText struct {
+	text   string
+	starts []int
+	ends   []int
+}
+
+func flattenDOCXText(content string) docxFlatText {
+	var text strings.Builder
+	flat := docxFlatText{}
+	for _, loc := range docxTextNodePattern.FindAllStringSubmatchIndex(content, -1) {
+		innerStart, innerEnd := loc[2], loc[3]
+		encoded := content[innerStart:innerEnd]
+		for pos := 0; pos < len(encoded); {
+			size := 0
+			if entity := docxEntityPattern.FindStringIndex(encoded[pos:]); entity != nil && entity[0] == 0 {
+				size = entity[1]
+			} else {
+				_, runeSize := utf8.DecodeRuneInString(encoded[pos:])
+				if runeSize == 0 {
+					runeSize = 1
+				}
+				size = runeSize
+			}
+			decoded := html.UnescapeString(encoded[pos : pos+size])
+			for i := 0; i < len(decoded); i++ {
+				flat.starts = append(flat.starts, innerStart+pos)
+				flat.ends = append(flat.ends, innerStart+pos+size)
+			}
+			text.WriteString(decoded)
+			pos += size
+		}
+	}
+	flat.text = text.String()
+	return flat
+}
+
+func placeholderKeyValues(data map[string]string) map[string]string {
+	values := make(map[string]string, len(data))
+	for key, value := range data {
+		key = strings.TrimSpace(key)
+		if key == "" {
+			continue
+		}
+		if strings.HasPrefix(key, "{{") && strings.HasSuffix(key, "}}") {
+			key = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(key, "{{"), "}}"))
+		}
+		if key == "" {
+			continue
+		}
+		values[key] = value
+	}
+	return values
+}
+
+func replaceDOCXPlaceholders(content string, data map[string]string) (string, error) {
+	flat := flattenDOCXText(content)
+	values := placeholderKeyValues(data)
+
+	type replacement struct {
+		start int
+		end   int
+		value string
+	}
+	replacements := make([]replacement, 0)
+	for _, loc := range docxPlaceholderPattern.FindAllStringSubmatchIndex(flat.text, -1) {
+		key := strings.TrimSpace(flat.text[loc[2]:loc[3]])
+		value, ok := values[key]
+		if !ok || loc[0] >= len(flat.starts) || loc[1] == 0 || loc[1]-1 >= len(flat.ends) {
+			continue
+		}
+		replacements = append(replacements, replacement{
+			start: flat.starts[loc[0]],
+			end:   flat.ends[loc[1]-1],
+			value: value,
+		})
+	}
+
+	for i := len(replacements) - 1; i >= 0; i-- {
+		r := replacements[i]
+		var escaped strings.Builder
+		if err := xml.EscapeText(&escaped, []byte(r.value)); err != nil {
+			return "", err
+		}
+		value := escaped.String()
+		value = strings.ReplaceAll(value, "&#xD;&#xA;", docx.NEWLINE)
+		value = strings.ReplaceAll(value, "&#xD;", docx.NEWLINE)
+		value = strings.ReplaceAll(value, "&#xA;", docx.NEWLINE)
+		value = strings.ReplaceAll(value, "&#x9;", docx.TAB)
+		content = content[:r.start] + value + content[r.end:]
+	}
+	return content, nil
+}
 
 // ExtractDOCXPlaceholders mengembalikan daftar key placeholder {{ key }} yang
 // ditemukan di bagian dokumen utama template DOCX. Urutan sesuai kemunculan
@@ -31,11 +130,11 @@ func ExtractDOCXPlaceholders(templateBytes []byte) ([]string, error) {
 	}
 	defer reader.Close()
 
-	content := reader.Editable().GetContent()
+	flat := flattenDOCXText(reader.Editable().GetContent())
 
 	seen := make(map[string]bool)
 	fields := make([]string, 0)
-	for _, m := range docxPlaceholderPattern.FindAllStringSubmatch(content, -1) {
+	for _, m := range docxPlaceholderPattern.FindAllStringSubmatch(flat.text, -1) {
 		if len(m) != 2 {
 			continue
 		}
@@ -79,31 +178,11 @@ func BindDOCX(
 	defer reader.Close()
 
 	document := reader.Editable()
-
-	for key, value := range data {
-		if strings.TrimSpace(key) == "" {
-			continue
-		}
-
-		// Jika caller sudah mengirim token lengkap ({{ key }}), pakai apa adanya.
-		// Jika hanya nama key polos, bentuk menjadi token placeholder termasuk
-		// variasi spasi agar tetap cocok.
-		tokens := []string{key}
-		if !strings.Contains(key, "{{") {
-			tokens = []string{
-				"{{" + key + "}}",
-				"{{ " + key + " }}",
-				"{{" + key + " }}",
-				"{{ " + key + "}}",
-			}
-		}
-
-		for _, token := range tokens {
-			if err := document.Replace(token, value, -1); err != nil {
-				return nil, fmt.Errorf("gagal mengganti placeholder %q: %w", token, err)
-			}
-		}
+	content, err := replaceDOCXPlaceholders(document.GetContent(), data)
+	if err != nil {
+		return nil, fmt.Errorf("gagal mengganti placeholder: %w", err)
 	}
+	document.SetContent(content)
 
 	if err := document.WriteToFile(outputPath); err != nil {
 		return nil, fmt.Errorf("gagal menyimpan DOCX hasil binding: %w", err)

@@ -306,6 +306,9 @@ func (u *suratTemplateUsecase) UpdateFields(
 		if key == "" {
 			return domain.NewValidation("key field wajib diisi")
 		}
+		if err := validateFieldKeyLength(key); err != nil {
+			return err
+		}
 		if !allowed[key] {
 			return domain.NewValidation("field " + key + " tidak ada di template")
 		}

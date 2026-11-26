@@ -2,12 +2,30 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/rasyarhmt/desa-bahontobungku/domain"
 	"github.com/rasyarhmt/desa-bahontobungku/dto"
 	"github.com/rasyarhmt/desa-bahontobungku/utils"
 )
+
+const maxFieldKeyLength = 100
+
+func validateFieldKeyLength(key string) error {
+	if utf8.RuneCountInString(key) <= maxFieldKeyLength {
+		return nil
+	}
+	shown := key
+	if runes := []rune(key); len(runes) > 40 {
+		shown = string(runes[:40]) + "..."
+	}
+	return domain.NewValidation(fmt.Sprintf(
+		"field %q terlalu panjang (maksimal %d karakter)",
+		shown, maxFieldKeyLength,
+	))
+}
 
 func humanizeFieldKey(key string) string {
 	words := strings.Split(key, "_")
@@ -117,6 +135,11 @@ func ensureTemplateFields(
 	placeholders, err := utils.ExtractDOCXPlaceholders(content)
 	if err != nil {
 		return nil, domain.NewInternal("Gagal membaca field template", err)
+	}
+	for _, raw := range placeholders {
+		if err := validateFieldKeyLength(strings.TrimSpace(raw)); err != nil {
+			return nil, err
+		}
 	}
 
 	existing, err := fieldRepo.GetByTemplateID(ctx, templateID)
