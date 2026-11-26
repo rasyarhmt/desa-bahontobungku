@@ -290,7 +290,7 @@ func (u *suratTemplateUsecase) UpdateFields(
 	allowed := make(map[string]bool)
 	for _, raw := range placeholders {
 		key := strings.TrimSpace(raw)
-		if key == "" || key == "nama_pemohon" || key == "nik_pemohon" {
+		if key == "" || isBuiltinTemplateFieldKey(key) {
 			continue
 		}
 		allowed[key] = true

@@ -12,11 +12,24 @@ import (
 
 const emuPerCM = 360000
 
-var relationshipIDPattern = regexp.MustCompile(`Id="([^"]+)"`)
+const qrSizeEMU = 3 * emuPerCM
+
+var (
+	relationshipIDPattern = regexp.MustCompile(`Id="([^"]+)"`)
+	qrRunStartPattern     = regexp.MustCompile(`<w:r(?:\s[^>]*)?>`)
+)
 
 // InsertQRCodeDOCX menyisipkan QR ke DOCX tepat setelah paragraf terakhir
 // pada body, yaitu blok tanda tangan / nama kepala desa.
 func InsertQRCodeDOCX(docxBytes []byte, pngBytes []byte) ([]byte, error) {
+	return insertQRCodeDOCX(docxBytes, pngBytes, "")
+}
+
+func InsertQRCodeDOCXAtPlaceholder(docxBytes []byte, pngBytes []byte, marker string) ([]byte, error) {
+	return insertQRCodeDOCX(docxBytes, pngBytes, marker)
+}
+
+func insertQRCodeDOCX(docxBytes []byte, pngBytes []byte, marker string) ([]byte, error) {
 	if len(docxBytes) == 0 {
 		return nil, errors.New("konten DOCX kosong")
 	}
@@ -29,21 +42,9 @@ func InsertQRCodeDOCX(docxBytes []byte, pngBytes []byte) ([]byte, error) {
 		return nil, fmt.Errorf("gagal membaca DOCX: %w", err)
 	}
 
-	entries := make(map[string][]byte)
-	order := make([]string, 0, len(zr.File))
-
-	for _, f := range zr.File {
-		rc, err := f.Open()
-		if err != nil {
-			return nil, fmt.Errorf("gagal membuka %s: %w", f.Name, err)
-		}
-		data, err := io.ReadAll(rc)
-		rc.Close()
-		if err != nil {
-			return nil, fmt.Errorf("gagal membaca %s: %w", f.Name, err)
-		}
-		entries[f.Name] = data
-		order = append(order, f.Name)
+	entries, order, err := readDOCXEntries(zr)
+	if err != nil {
+		return nil, err
 	}
 
 	doc, ok := entries["word/document.xml"]
@@ -58,14 +59,7 @@ func InsertQRCodeDOCX(docxBytes []byte, pngBytes []byte) ([]byte, error) {
 	}
 
 	relID := nextRelationshipID(rels)
-
-	mediaName := "word/media/qr_verifikasi.png"
-	for i := 1; ; i++ {
-		if _, exists := entries[mediaName]; !exists {
-			break
-		}
-		mediaName = fmt.Sprintf("word/media/qr_verifikasi_%d.png", i)
-	}
+	mediaName := nextQRMediaName(entries)
 	target := strings.TrimPrefix(mediaName, "word/")
 
 	relEntry := fmt.Sprintf(
@@ -89,18 +83,99 @@ func InsertQRCodeDOCX(docxBytes []byte, pngBytes []byte) ([]byte, error) {
 		entries["[Content_Types].xml"] = contentTypes
 	}
 
-	qrParagraph := buildQRParagraph(relID, 3*emuPerCM)
-	offset := qrInsertionOffset(doc)
+	drawingRun := buildQRRun(relID, qrSizeEMU)
+	if marker != "" {
+		if replaced, ok := replaceQRMarker(doc, marker, drawingRun); ok {
+			doc = replaced
+		} else {
+			doc = appendQRParagraph(doc, buildQRParagraph(relID, qrSizeEMU))
+		}
+	} else {
+		doc = appendQRParagraph(doc, buildQRParagraph(relID, qrSizeEMU))
+	}
 
-	newDoc := make([]byte, 0, len(doc)+len(qrParagraph))
-	newDoc = append(newDoc, doc[:offset]...)
-	newDoc = append(newDoc, qrParagraph...)
-	newDoc = append(newDoc, doc[offset:]...)
-
-	entries["word/document.xml"] = newDoc
+	entries["word/document.xml"] = doc
 	entries[mediaName] = pngBytes
 
 	return rebuildZip(order, entries)
+}
+
+func readDOCXEntries(zr *zip.Reader) (map[string][]byte, []string, error) {
+	entries := make(map[string][]byte, len(zr.File))
+	order := make([]string, 0, len(zr.File))
+
+	for _, f := range zr.File {
+		rc, err := f.Open()
+		if err != nil {
+			return nil, nil, fmt.Errorf("gagal membuka %s: %w", f.Name, err)
+		}
+		data, err := io.ReadAll(rc)
+		rc.Close()
+		if err != nil {
+			return nil, nil, fmt.Errorf("gagal membaca %s: %w", f.Name, err)
+		}
+		entries[f.Name] = data
+		order = append(order, f.Name)
+	}
+	return entries, order, nil
+}
+
+func nextQRMediaName(entries map[string][]byte) string {
+	mediaName := "word/media/qr_verifikasi.png"
+	for i := 1; ; i++ {
+		if _, exists := entries[mediaName]; !exists {
+			return mediaName
+		}
+		mediaName = fmt.Sprintf("word/media/qr_verifikasi_%d.png", i)
+	}
+}
+
+func replaceQRMarker(doc []byte, marker string, drawingRun string) ([]byte, bool) {
+	markerStart := bytes.Index(doc, []byte(marker))
+	if markerStart < 0 {
+		return doc, false
+	}
+	markerEnd := markerStart + len(marker)
+
+	if _, _, ok := textNodeRangeContaining(string(doc), markerStart, markerEnd); !ok {
+		return doc, false
+	}
+
+	runStart := 0
+	for _, m := range qrRunStartPattern.FindAllStringSubmatchIndex(string(doc), -1) {
+		if m[1] > markerStart {
+			break
+		}
+		runStart = m[0]
+	}
+	if runStart >= markerStart {
+		return doc, false
+	}
+
+	runEndOffset := bytes.Index(doc[markerStart:], []byte("</w:r>"))
+	if runEndOffset < 0 {
+		return doc, false
+	}
+	runEnd := markerStart + runEndOffset + len("</w:r>")
+
+	withDrawing := make([]byte, 0, len(doc)+len(drawingRun))
+	withDrawing = append(withDrawing, doc[:runEnd]...)
+	withDrawing = append(withDrawing, []byte(drawingRun)...)
+	withDrawing = append(withDrawing, doc[runEnd:]...)
+
+	result := make([]byte, 0, len(withDrawing)-len(marker))
+	result = append(result, withDrawing[:markerStart]...)
+	result = append(result, withDrawing[markerEnd:]...)
+	return result, true
+}
+
+func textNodeRangeContaining(content string, start, end int) (int, int, bool) {
+	for _, loc := range docxTextNodePattern.FindAllStringSubmatchIndex(content, -1) {
+		if loc[2] <= start && end <= loc[3] {
+			return loc[2], loc[3], true
+		}
+	}
+	return 0, 0, false
 }
 
 func nextRelationshipID(rels []byte) string {
@@ -121,6 +196,16 @@ func nextRelationshipID(rels []byte) string {
 			return id
 		}
 	}
+}
+
+func appendQRParagraph(doc []byte, paragraph string) []byte {
+	offset := qrInsertionOffset(doc)
+
+	newDoc := make([]byte, 0, len(doc)+len(paragraph))
+	newDoc = append(newDoc, doc[:offset]...)
+	newDoc = append(newDoc, []byte(paragraph)...)
+	newDoc = append(newDoc, doc[offset:]...)
+	return newDoc
 }
 
 func qrInsertionOffset(doc []byte) int {
@@ -149,7 +234,15 @@ func buildQRParagraph(relID string, sizeEMU int) string {
 			`<w:ind w:start="5245"/>`+
 			`<w:jc w:val="end"/>`+
 			`</w:pPr>`+
-			`<w:r><w:drawing>`+
+			`%s`+
+			`</w:p>`,
+		buildQRRun(relID, sizeEMU),
+	)
+}
+
+func buildQRRun(relID string, sizeEMU int) string {
+	return fmt.Sprintf(
+		`<w:r><w:drawing>`+
 			`<wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" distT="0" distB="0" distL="0" distR="0">`+
 			`<wp:extent cx="%d" cy="%d"/>`+
 			`<wp:effectExtent l="0" t="0" r="0" b="0"/>`+
@@ -167,8 +260,7 @@ func buildQRParagraph(relID string, sizeEMU int) string {
 			`</a:graphicData>`+
 			`</a:graphic>`+
 			`</wp:inline>`+
-			`</w:drawing></w:r>`+
-			`</w:p>`,
+			`</w:drawing></w:r>`,
 		sizeEMU,
 		sizeEMU,
 		relID,

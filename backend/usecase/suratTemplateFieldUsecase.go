@@ -13,6 +13,15 @@ import (
 
 const maxFieldKeyLength = 100
 
+func isBuiltinTemplateFieldKey(key string) bool {
+	switch strings.TrimSpace(key) {
+	case "nama_pemohon", "nik_pemohon", "tanggal_surat", "qr":
+		return true
+	default:
+		return false
+	}
+}
+
 func validateFieldKeyLength(key string) error {
 	if utf8.RuneCountInString(key) <= maxFieldKeyLength {
 		return nil
@@ -79,7 +88,7 @@ func mergeTemplateFields(
 	orderedKeys := make([]string, 0, len(placeholders))
 	for _, raw := range placeholders {
 		key := strings.TrimSpace(raw)
-		if key == "" || key == "nama_pemohon" || key == "nik_pemohon" || key == "tanggal_surat" {
+		if key == "" || isBuiltinTemplateFieldKey(key) {
 			continue
 		}
 		if allowed[key] {

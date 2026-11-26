@@ -5,12 +5,20 @@ import (
 	"strings"
 )
 
+const qrPlaceholderMarker = "DESA_QR_PLACEHOLDER_4F8C2E1A"
+
 func GeneratePDFWithQR(
 	templateBytes []byte,
 	data map[string]string,
 	qrPNG []byte,
 ) ([]byte, error) {
-	boundDOCX, err := BindDOCX(templateBytes, data)
+	bindData := make(map[string]string, len(data)+1)
+	for key, value := range data {
+		bindData[key] = value
+	}
+	bindData["qr"] = qrPlaceholderMarker
+
+	boundDOCX, err := BindDOCX(templateBytes, bindData)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +32,7 @@ func GeneratePDFWithQR(
 	}
 
 	if len(qrPNG) > 0 {
-		boundDOCX, err = InsertQRCodeDOCX(boundDOCX, qrPNG)
+		boundDOCX, err = InsertQRCodeDOCXAtPlaceholder(boundDOCX, qrPNG, qrPlaceholderMarker)
 		if err != nil {
 			return nil, err
 		}

@@ -96,7 +96,7 @@ func (u *logCetakSuratUsecase) Ajukan(ctx context.Context, idPelayanan int, req 
 	}
 	for _, field := range fields {
 		key := strings.TrimSpace(field)
-		if key == "" || key == "nama_pemohon" || key == "nik_pemohon" || key == "tanggal_surat" {
+		if key == "" || isBuiltinTemplateFieldKey(key) {
 			continue
 		}
 		if strings.TrimSpace(data[key]) == "" {
