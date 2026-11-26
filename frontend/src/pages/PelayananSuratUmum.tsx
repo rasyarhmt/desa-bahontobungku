@@ -224,7 +224,7 @@ export default function PelayananSuratUmum() {
           </div>
         </section>
 
-        <section className={`mx-auto max-w-4xl ${SECTION_CLASS} ${CONTAINER_CLASS}`}>
+        <section className={`${SECTION_CLASS} ${CONTAINER_CLASS}`}>
           {pageLoading ? (
             <div className="flex justify-center rounded-2xl bg-white p-12 shadow-sm">
               <Loader2 className="size-8 animate-spin text-primary" />
